@@ -1,0 +1,430 @@
+/* =========================================================
+   KGU FOOTBALL — 비공식 팬 홈페이지 스타일
+   팀 컬러: 흑백 줄무늬 / 포인트: 주황
+   ========================================================= */
+
+/* 1. 디자인 토큰 ------------------------------------------ */
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --paper: #f4f4f2;        /* 구역 배경용 아주 옅은 회색 */
+  --ink-soft: #4a4a4a;     /* 보조 글자 */
+  --line: #d9d9d6;         /* 구분선 */
+  --orange: #ff6a13;       /* 포인트 컬러 */
+  --orange-deep: #c94c00;  /* 흰 배경 위 주황 글자(대비 확보용) */
+
+  --font-display: "Black Han Sans", "Pretendard", "Malgun Gothic", sans-serif;
+  --font-body: "Pretendard", "Malgun Gothic", sans-serif;
+
+  --stripe: 56px;          /* 유니폼 줄무늬 한 칸 폭 */
+  --container: 1120px;
+  --gutter: 24px;
+}
+
+/* 2. 기본 초기화 ------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--black);
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;    /* 한글이 단어 중간에서 줄바꿈되지 않게 */
+}
+
+h1, h2, p, ul, dl, dd {
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+}
+
+/* 키보드로 이동할 때 현재 위치가 보이도록 */
+:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 10;
+  padding: 10px 16px;
+  background: var(--orange);
+  color: var(--black);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+/* 3. 헤더 ------------------------------------------------- */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 40px;
+  background: var(--black);
+  color: var(--white);
+  border-bottom: 4px solid var(--orange);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+/* 자체 엠블럼: 흑백 줄무늬 방패 */
+.logo-mark {
+  width: 28px;
+  height: 34px;
+  border: 2px solid var(--white);
+  border-radius: 2px 2px 14px 14px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--white) 0 5px,
+    var(--black) 5px 10px
+  );
+}
+
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+
+.site-nav {
+  display: flex;
+  gap: 28px;
+}
+
+.site-nav a {
+  padding: 6px 0;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.site-nav a:hover {
+  color: var(--orange);
+}
+
+.site-nav a[aria-current="page"] {
+  border-bottom-color: var(--orange);
+}
+
+/* 4. 메인 비주얼: 유니폼 줄무늬 ---------------------------- */
+.hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 68vh;
+  padding: 64px var(--gutter);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--black) 0 var(--stripe),
+    var(--white) var(--stripe) calc(var(--stripe) * 2)
+  );
+}
+
+/* 줄무늬 위에 글자가 읽히도록 검은 판을 얹음 */
+.hero-plate {
+  padding: 40px 56px 44px;
+  background: var(--black);
+  color: var(--white);
+  text-align: center;
+  border-top: 6px solid var(--orange);
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(40px, 7vw, 88px);
+  line-height: 1.05;
+  letter-spacing: -1px;
+}
+
+.hero-slogan {
+  margin-top: 16px;
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+/* 5. 공통 구역 제목 --------------------------------------- */
+.section-title {
+  margin-bottom: 20px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+/* 6. 다음 경기 배너 --------------------------------------- */
+.next-match {
+  padding: 64px 0;
+  background: var(--paper);
+}
+
+.match-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "competition competition competition"
+    "teams teams button"
+    "info info button";
+  row-gap: 12px;
+  column-gap: 32px;
+  align-items: center;
+  padding: 32px 40px;
+  background: var(--black);
+  color: var(--white);
+  border-left: 10px solid var(--orange);
+}
+
+.match-competition {
+  grid-area: competition;
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.match-teams {
+  grid-area: teams;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.1;
+}
+
+.versus {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 600;
+  color: #bdbdbd;
+}
+
+.match-info {
+  grid-area: info;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+}
+
+.match-info div {
+  display: flex;
+  gap: 10px;
+}
+
+.match-info dt {
+  color: #bdbdbd;
+}
+
+.match-info dd {
+  font-weight: 600;
+}
+
+/* 주황 버튼 위 글씨는 검정으로 (대비 확보) */
+.button {
+  grid-area: button;
+  justify-self: end;
+  display: inline-block;
+  padding: 14px 24px;
+  background: var(--orange);
+  color: var(--black);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.button:hover {
+  background: var(--white);
+}
+
+/* 7. 최근 결과 + 최신 소식 --------------------------------- */
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  padding-top: 64px;
+  padding-bottom: 80px;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 0;
+  border-top: 3px solid var(--black);
+  border-bottom: 1px solid var(--line);
+}
+
+.score-team {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.score-number {
+  font-family: var(--font-display);
+  font-size: 72px;
+  line-height: 1;
+}
+
+.score-win {
+  color: var(--orange-deep);
+}
+
+.score-colon {
+  font-family: var(--font-display);
+  font-size: 48px;
+  color: var(--ink-soft);
+}
+
+.score-label {
+  margin-top: 12px;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.news-list {
+  border-top: 3px solid var(--black);
+}
+
+.news-list li {
+  border-bottom: 1px solid var(--line);
+}
+
+.news-list a {
+  display: block;
+  padding: 16px 0;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.news-list a:hover {
+  color: var(--orange-deep);
+}
+
+/* 본문 링크는 밑줄로 일반 글과 구별 */
+.text-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--orange-deep);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* 8. 푸터 ------------------------------------------------- */
+.site-footer {
+  padding: 40px 0;
+  background: var(--black);
+  color: #bdbdbd;
+  font-size: 14px;
+}
+
+.site-footer p + p {
+  margin-top: 6px;
+}
+
+.footer-name {
+  margin-bottom: 12px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--white);
+}
+
+/* 9. 반응형: 태블릿 이하 ----------------------------------- */
+@media (max-width: 900px) {
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px var(--gutter);
+  }
+
+  /* 메뉴가 넘치면 가로로 밀어서 보기 */
+  .site-nav {
+    width: 100%;
+    gap: 20px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+
+  .home-grid {
+    grid-template-columns: 1fr;
+    gap: 56px;
+  }
+}
+
+/* 10. 반응형: 휴대폰 --------------------------------------- */
+@media (max-width: 600px) {
+  :root {
+    --stripe: 36px;
+    --gutter: 16px;
+  }
+
+  .hero {
+    min-height: 56vh;
+  }
+
+  .hero-plate {
+    padding: 28px 24px 32px;
+  }
+
+  .match-card {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "competition"
+      "teams"
+      "info"
+      "button";
+    padding: 24px;
+    border-left-width: 6px;
+  }
+
+  .button {
+    justify-self: stretch;
+    text-align: center;
+  }
+
+  .score-number {
+    font-size: 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}

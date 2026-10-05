@@ -4,13 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>경기대학교 축구부 | KGU Football</title>
+  <meta name="description" content="경기대학교 축구부 비공식 팬 홈페이지. 경기 일정, 결과, 선수단 소식을 모았습니다.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <header>
-    <a href="index.html">KGU FOOTBALL</a>
-    <nav>
-      <a href="index.html">홈</a>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+
+  <header class="site-header">
+    <a href="index.html" class="logo" aria-label="경기대학교 축구부 홈">
+      <span class="logo-mark" aria-hidden="true"></span>
+      <span class="logo-text">KGU FOOTBALL</span>
+    </a>
+    <nav class="site-nav" aria-label="주요 메뉴">
+      <a href="index.html" aria-current="page">홈</a>
       <a href="about.html">팀 소개</a>
       <a href="players.html">선수단</a>
       <a href="matches.html">일정·결과</a>
@@ -19,34 +30,73 @@
     </nav>
   </header>
 
-  <main>
-    <section>
-      <h1>경기대학교 축구부</h1>
-      <p>흑과 백, 하나의 팀</p>
+  <main id="main">
+
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-plate">
+        <h1 id="hero-title">경기대학교 축구부</h1>
+        <p class="hero-slogan">흑과 백, 하나의 팀</p>
+      </div>
     </section>
 
-    <section>
-      <h2>다음 경기</h2>
-      <p>U리그 · 경기대 vs 상대팀</p>
-      <p>날짜 · 장소 (예시)</p>
+    <section class="next-match" aria-labelledby="next-match-title">
+      <div class="container next-match-inner">
+        <h2 id="next-match-title" class="section-title">다음 경기</h2>
+        <div class="match-card">
+          <p class="match-competition">U리그</p>
+          <p class="match-teams">
+            <span class="team team-home">경기대</span>
+            <span class="versus">vs</span>
+            <span class="team">상대팀</span>
+          </p>
+          <dl class="match-info">
+            <div>
+              <dt>일시</dt>
+              <dd>일정 확인 중</dd>
+            </div>
+            <div>
+              <dt>장소</dt>
+              <dd>장소 확인 중</dd>
+            </div>
+          </dl>
+          <a class="button" href="matches.html">전체 일정 보기</a>
+        </div>
+      </div>
     </section>
 
-    <section>
-      <h2>최근 결과</h2>
-      <p>경기대 3 : 2 칼빈대</p>
-    </section>
+    <div class="container home-grid">
 
-    <section>
-      <h2>최신 소식</h2>
-      <ul>
-        <li>소식 제목 1 (예시)</li>
-        <li>소식 제목 2 (예시)</li>
-      </ul>
-    </section>
+      <section class="recent-result" aria-labelledby="recent-result-title">
+        <h2 id="recent-result-title" class="section-title">최근 결과</h2>
+        <div class="score">
+          <span class="score-team">경기대</span>
+          <span class="score-number score-win">3</span>
+          <span class="score-colon" aria-hidden="true">:</span>
+          <span class="score-number">2</span>
+          <span class="score-team">칼빈대</span>
+        </div>
+        <p class="score-label">승리</p>
+      </section>
+
+      <section class="latest-news" aria-labelledby="latest-news-title">
+        <h2 id="latest-news-title" class="section-title">최신 소식</h2>
+        <ul class="news-list">
+          <li><a href="news.html">소식 제목 1 (예시)</a></li>
+          <li><a href="news.html">소식 제목 2 (예시)</a></li>
+          <li><a href="news.html">소식 제목 3 (예시)</a></li>
+        </ul>
+        <a class="text-link" href="news.html">소식 더 보기</a>
+      </section>
+
+    </div>
   </main>
 
-  <footer>
-    <p>이 사이트는 개인 포트폴리오용 비공식 팬 사이트입니다.</p>
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-name">KGU FOOTBALL</p>
+      <p>이 사이트는 개인 포트폴리오용 비공식 팬 사이트이며, 경기대학교 및 경기대학교 축구부와 관련이 없습니다.</p>
+      <p>경기 정보는 공개된 기사와 대회 기록을 참고했습니다.</p>
+    </div>
   </footer>
 
 </body>
