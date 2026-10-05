@@ -45,7 +45,7 @@
 | 색 | 검정 바탕 + 크림색(`#e1e0cc`) 글자 |
 | 참고 | 축구부 인스타그램 https://www.instagram.com/kgu_football/ (자동 조회 불가 → 사용자가 직접 정보 전달 예정) |
 | 진행 방식 | **AI 활용 개발** — Claude가 제작, GPT가 리뷰, 사용자가 결정·검수 (2026-10-05 변경. 이전엔 '직접 타이핑하며 배우기') |
-| 배포 | GitHub Pages, GitHub Actions로 자동 빌드·배포 |
+| 배포 | GitHub Pages (`gh-pages` 브랜치). main에 올리면 GitHub Actions가 빌드해서 `gh-pages`에 자동 반영. 주소 https://iin0ru.github.io/kgu_football/ |
 
 ### 페이지 구성 (확정)
 
@@ -94,6 +94,21 @@ kgu_football/
 ## 5. 개발 로그
 
 > 최신이 위. 각 항목: 무엇을 바꿨는지 / 왜 / 확인 결과 / 남은 일.
+
+### 2026-10-06 #7 — 배포 방식 변경: gh-pages 브랜치 (Claude)
+
+**왜**: Pages를 켜려면 저장소 Settings → Pages에서 Source를 바꿔야 하는데, 사용자 화면에서 Settings 메뉴를 찾지 못함. 사용자 요청으로 Claude가 대신 켜려 했으나 Pages 설정 API는 Claude 작업 환경에서 막혀 있음(HTTP 403)
+
+**한 일**
+- GitHub은 `gh-pages` 브랜치가 생기면 Pages를 자동으로 켜는 방식이 있어, 빌드 결과(`dist`)를 `gh-pages` 브랜치에 직접 올림 (첫 배포, `.nojekyll` 포함)
+- `.github/workflows/deploy.yml`을 "Pages Actions 배포"에서 "빌드 후 `gh-pages` 브랜치에 올리기"(`peaceiris/actions-gh-pages@v4`)로 변경. 앞으로 main에 올라올 때마다 자동 반영
+
+**확인 결과**
+- `gh-pages` 브랜치 생성 확인
+- Claude 작업 환경에서는 github.io 접속이 막혀 실제 페이지가 열리는지 직접 확인 못 함 → 사용자 확인 필요
+
+**남은 일**
+- 주소가 계속 404이면, 저장소 Settings → Pages → Source를 "Deploy from a branch", 브랜치 `gh-pages` / `(root)`로 지정해야 함
 
 ### 2026-10-06 #6 — 움직임 추가: impeccable animate (Claude)
 
