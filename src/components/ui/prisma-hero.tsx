@@ -7,8 +7,9 @@
  * - 버튼을 <button> 대신 링크(<a>)로 변경 (페이지 안 이동이므로)
  * - 메뉴 색 변경을 JS 대신 CSS hover로 처리, 키보드 포커스 표시 추가
  * - 별표(*)는 각주로 연결 (비공식 사이트 고지)
- * - 스크롤 반응 추가 (impeccable animate): 내리면 카드가 살짝 작아지고 어두워지며,
- *   큰 글자는 카드보다 느리게 올라가 화면이 뒤로 물러나는 느낌. 동작 줄이기 설정 시 끔
+ * - 스크롤 반응 추가 (impeccable animate): 내리면 카드가 78%까지 작아지고 모서리가 더 둥글어지며 어두워짐.
+ *   큰 글자는 카드보다 느리게 올라가며 흐려져 화면이 뒤로 물러나는 느낌. 동작 줄이기 설정 시 끔
+ * - 큰 글자 등장 강화: 흐림 + 아래에서 크게 올라옴 (1.2초). 동작 줄이기 설정 시 페이드만
  */
 import { motion, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -44,9 +45,9 @@ export const WordsPullUp = ({
         return (
           <motion.span
             key={i}
-            initial={reduce ? false : { y: 20, opacity: 0 }}
-            animate={isInView ? { y: 0, opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: i * 0.08, ease: EASE }}
+            initial={reduce ? { opacity: 0 } : { y: "70%", opacity: 0, filter: "blur(12px)" }}
+            animate={isInView ? { y: 0, opacity: 1, filter: "blur(0px)" } : {}}
+            transition={{ duration: reduce ? 0.4 : 1.2, delay: 0.1 + i * 0.12, ease: EASE }}
             className="relative inline-block"
             style={{ marginRight: isLast ? 0 : "0.25em" }}
           >
@@ -140,22 +141,24 @@ const PrismaHero = ({
   const reduce = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
-  const cardScale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
-  const cardDim = useTransform(scrollYProgress, [0, 1], [0, 0.55]);
-  const titleY = useTransform(scrollYProgress, [0, 1], ["0%", "-18%"]);
+  const cardScale = useTransform(scrollYProgress, [0, 1], [1, 0.78]);
+  const cardRadius = useTransform(scrollYProgress, [0, 1], [32, 72]);
+  const cardDim = useTransform(scrollYProgress, [0, 0.9], [0, 0.75]);
+  const titleY = useTransform(scrollYProgress, [0, 1], ["0%", "-45%"]);
+  const titleBlur = useTransform(scrollYProgress, [0.2, 1], ["blur(0px)", "blur(8px)"]);
   const enter = (delay: number) =>
     reduce
-      ? {}
+      ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.4, delay: delay * 0.5 } }
       : {
-          initial: { y: 20, opacity: 0 },
+          initial: { y: 32, opacity: 0 },
           animate: { y: 0, opacity: 1 },
-          transition: { duration: 0.8, delay, ease: EASE },
+          transition: { duration: 1, delay: delay + 0.3, ease: EASE },
         };
 
   return (
     <section ref={sectionRef} id={id} className="h-screen min-h-[560px] w-full p-2 md:p-3" aria-label="소개">
       <motion.div
-        style={reduce ? undefined : { scale: cardScale }}
+        style={reduce ? undefined : { scale: cardScale, borderRadius: cardRadius }}
         className="relative h-full w-full origin-top overflow-hidden rounded-2xl bg-panel md:rounded-[2rem]"
       >
         {/* Background video (권한 확인된 영상만) */}
@@ -204,7 +207,7 @@ const PrismaHero = ({
         {/* Hero content */}
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-2 sm:px-6 md:px-10">
           <div className="grid grid-cols-12 items-end gap-4">
-            <motion.div style={reduce ? undefined : { y: titleY }} className="col-span-12 lg:col-span-8">
+            <motion.div style={reduce ? undefined : { y: titleY, filter: titleBlur }} className="col-span-12 lg:col-span-8">
               <h1 className="text-[26vw] font-medium leading-[0.85] tracking-[-0.07em] text-cream sm:text-[24vw] md:text-[22vw] lg:text-[20vw] xl:text-[19vw] 2xl:text-[20vw]">
                 <WordsPullUp text={title} showAsterisk asteriskHref={asteriskHref} />
               </h1>

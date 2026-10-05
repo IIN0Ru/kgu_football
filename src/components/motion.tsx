@@ -21,17 +21,21 @@ interface RevealProps extends React.HTMLAttributes<HTMLElement> {
  */
 export function Reveal({ children, className, delay = 0, id, ...rest }: RevealProps) {
   const ref = useRef<HTMLElement>(null)
-  const inView = useInView(ref, { once: true, amount: 0.2 })
+  const inView = useInView(ref, { once: true, amount: 0.15 })
   const reduce = useReducedMotion()
-  const hidden = reduce ? { opacity: 0 } : { clipPath: 'inset(100% 0% 0% 0% round 32px)' }
-  const shown = reduce ? { opacity: 1 } : { clipPath: 'inset(0% 0% 0% 0% round 32px)' }
+  const hidden = reduce
+    ? { opacity: 0 }
+    : { clipPath: 'inset(100% 0% 0% 0% round 32px)', y: 96, scale: 0.94 }
+  const shown = reduce
+    ? { opacity: 1 }
+    : { clipPath: 'inset(0% 0% 0% 0% round 32px)', y: 0, scale: 1 }
 
   return (
     <section ref={ref} id={id} className="scroll-mt-16" {...rest}>
       <motion.div
         initial={hidden}
         animate={inView ? shown : hidden}
-        transition={{ duration: reduce ? 0.3 : 0.8, delay, ease: EASE }}
+        transition={{ duration: reduce ? 0.4 : 1.1, delay, ease: EASE }}
         className={cn('h-full', className)}
       >
         {children}
