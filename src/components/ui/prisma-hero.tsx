@@ -7,8 +7,10 @@
  * - 버튼을 <button> 대신 링크(<a>)로 변경 (페이지 안 이동이므로)
  * - 메뉴 색 변경을 JS 대신 CSS hover로 처리, 키보드 포커스 표시 추가
  * - 별표(*)는 각주로 연결 (비공식 사이트 고지)
+ * - 스크롤 반응 추가 (impeccable animate): 내리면 카드가 살짝 작아지고 어두워지며,
+ *   큰 글자는 카드보다 느리게 올라가 화면이 뒤로 물러나는 느낌. 동작 줄이기 설정 시 끔
  */
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { motion, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
 
@@ -122,6 +124,7 @@ interface PrismaHeroProps {
   /** 배경 영상 주소. 사용 권한이 확인된 영상만 넣는다. 없으면 어두운 배경 */
   videoSrc?: string;
   asteriskHref?: string;
+  id?: string;
 }
 
 const PrismaHero = ({
@@ -132,8 +135,14 @@ const PrismaHero = ({
   navItems,
   videoSrc,
   asteriskHref,
+  id,
 }: PrismaHeroProps) => {
   const reduce = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+  const cardScale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
+  const cardDim = useTransform(scrollYProgress, [0, 1], [0, 0.55]);
+  const titleY = useTransform(scrollYProgress, [0, 1], ["0%", "-18%"]);
   const enter = (delay: number) =>
     reduce
       ? {}
@@ -144,8 +153,11 @@ const PrismaHero = ({
         };
 
   return (
-    <section className="h-screen min-h-[560px] w-full p-2 md:p-3" aria-label="소개">
-      <div className="relative h-full w-full overflow-hidden rounded-2xl bg-panel md:rounded-[2rem]">
+    <section ref={sectionRef} id={id} className="h-screen min-h-[560px] w-full p-2 md:p-3" aria-label="소개">
+      <motion.div
+        style={reduce ? undefined : { scale: cardScale }}
+        className="relative h-full w-full origin-top overflow-hidden rounded-2xl bg-panel md:rounded-[2rem]"
+      >
         {/* Background video (권한 확인된 영상만) */}
         {videoSrc && (
           <video
@@ -165,6 +177,15 @@ const PrismaHero = ({
         {/* Gradient overlay */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
 
+        {/* 스크롤하면 점점 어두워지는 막 */}
+        {!reduce && (
+          <motion.div
+            aria-hidden="true"
+            style={{ opacity: cardDim }}
+            className="pointer-events-none absolute inset-0 z-10 bg-black"
+          />
+        )}
+
         {/* Navbar */}
         <nav className="absolute left-1/2 top-0 z-20 -translate-x-1/2" aria-label="주요 메뉴">
           <div className="flex items-center gap-3 rounded-b-2xl bg-black px-4 py-2 sm:gap-6 md:gap-12 md:rounded-b-3xl md:px-8 lg:gap-14">
@@ -183,11 +204,11 @@ const PrismaHero = ({
         {/* Hero content */}
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-2 sm:px-6 md:px-10">
           <div className="grid grid-cols-12 items-end gap-4">
-            <div className="col-span-12 lg:col-span-8">
+            <motion.div style={reduce ? undefined : { y: titleY }} className="col-span-12 lg:col-span-8">
               <h1 className="text-[26vw] font-medium leading-[0.85] tracking-[-0.07em] text-cream sm:text-[24vw] md:text-[22vw] lg:text-[20vw] xl:text-[19vw] 2xl:text-[20vw]">
                 <WordsPullUp text={title} showAsterisk asteriskHref={asteriskHref} />
               </h1>
-            </div>
+            </motion.div>
 
             <div className="col-span-12 flex flex-col gap-5 pb-6 lg:col-span-4 lg:pb-10">
               <motion.p
@@ -211,7 +232,7 @@ const PrismaHero = ({
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };

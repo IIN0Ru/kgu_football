@@ -1,4 +1,6 @@
 import { ArrowRight } from 'lucide-react'
+import { DockNav } from '@/components/dock-nav'
+import { Reveal, RollingNumber } from '@/components/motion'
 import { PrismaHero, type HeroNavItem } from '@/components/ui/prisma-hero'
 import { instagramUrl, news, nextMatch, recentResult } from '@/data/home'
 
@@ -11,7 +13,7 @@ const navItems: HeroNavItem[] = [
 
 function SectionTitle({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <h2 id={id} className="text-4xl font-medium leading-[0.95] tracking-[-0.04em] md:text-6xl">
+    <h2 id={id} className="section-title text-4xl font-medium leading-[0.95] tracking-[-0.04em] md:text-6xl">
       {children}
     </h2>
   )
@@ -36,7 +38,10 @@ export default function App() {
 
   return (
     <>
+      <DockNav items={navItems} heroId="top" />
+
       <PrismaHero
+        id="top"
         title="KGU"
         description="경기대학교 축구부의 경기 일정과 결과, 소식을 한곳에 모아 보는 비공식 팬 사이트입니다."
         ctaLabel="다음 경기 보기"
@@ -47,10 +52,10 @@ export default function App() {
 
       <main className="mx-auto flex max-w-[1440px] flex-col gap-2 p-2 md:gap-3 md:p-3">
         {/* 다음 경기 */}
-        <section
+        <Reveal
           id="next-match"
           aria-labelledby="next-match-title"
-          className="flex scroll-mt-3 flex-col gap-10 rounded-2xl bg-panel p-6 md:rounded-[2rem] md:p-10"
+          className="flex flex-col gap-10 rounded-2xl bg-panel p-6 md:rounded-[2rem] md:p-10"
         >
           <SectionTitle id="next-match-title">다음 경기</SectionTitle>
           <div className="grid grid-cols-12 items-end gap-6">
@@ -74,14 +79,14 @@ export default function App() {
               <PillLink href={instagramUrl}>축구부 소식 확인</PillLink>
             </div>
           </div>
-        </section>
+        </Reveal>
 
         <div className="grid gap-2 md:gap-3 lg:grid-cols-2">
           {/* 최근 결과 */}
-          <section
+          <Reveal
             id="result"
             aria-labelledby="result-title"
-            className="flex scroll-mt-3 flex-col gap-10 rounded-2xl bg-panel p-6 md:rounded-[2rem] md:p-10"
+            className="flex flex-col gap-10 rounded-2xl bg-panel p-6 md:rounded-[2rem] md:p-10"
           >
             <SectionTitle id="result-title">최근 결과</SectionTitle>
             <div className="flex flex-col">
@@ -99,7 +104,7 @@ export default function App() {
                       i === 1 ? 'text-cream/50' : ''
                     }`}
                   >
-                    {team.score}
+                    <RollingNumber value={team.score} delay={0.3 + i * 0.15} />
                   </span>
                 </div>
               ))}
@@ -107,13 +112,14 @@ export default function App() {
                 {won ? '승리' : '경기 종료'}
               </p>
             </div>
-          </section>
+          </Reveal>
 
           {/* 최신 소식 */}
-          <section
+          <Reveal
             id="news"
+            delay={0.08}
             aria-labelledby="news-title"
-            className="flex scroll-mt-3 flex-col gap-10 rounded-2xl bg-panel p-6 md:rounded-[2rem] md:p-10"
+            className="flex flex-col gap-10 rounded-2xl bg-panel p-6 md:rounded-[2rem] md:p-10"
           >
             <SectionTitle id="news-title">최신 소식</SectionTitle>
             <ul className="flex flex-col">
@@ -132,7 +138,7 @@ export default function App() {
                 </li>
               ))}
             </ul>
-          </section>
+          </Reveal>
         </div>
       </main>
 

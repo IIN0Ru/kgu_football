@@ -51,3 +51,60 @@
 .noise-overlay {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
 }
+
+/* ---------------------------------------------------------
+   움직임 (impeccable animate)
+   --------------------------------------------------------- */
+
+/* 메뉴로 이동해 도착한 구역: 제목 아래로 크림색 줄이 그어졌다 사라짐 */
+.section-title {
+  position: relative;
+  width: fit-content;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.18em;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--color-cream);
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+}
+
+:target .section-title::after {
+  animation: arrive 1.4s var(--ease-pull) 0.35s both;
+}
+
+@keyframes arrive {
+  0% { transform: scaleX(0); opacity: 1; }
+  45% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :target .section-title::after {
+    animation: arrive-fade 1.2s ease both;
+  }
+
+  @keyframes arrive-fade {
+    0%, 60% { transform: scaleX(1); opacity: 1; }
+    100% { transform: scaleX(1); opacity: 0; }
+  }
+}
+
+/* ---------------------------------------------------------
+   브라우저 기본 요소도 사이트 색으로
+   --------------------------------------------------------- */
+::selection {
+  background: var(--color-cream);
+  color: #000;
+}
+
+html {
+  scrollbar-color: rgb(225 224 204 / 0.25) #000;
+}
