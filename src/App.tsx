@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import { DockNav } from '@/components/dock-nav'
+import { SiteBackground } from '@/components/site-background'
 import { Reveal, RollingNumber } from '@/components/motion'
 import { PrismaHero, type HeroNavItem } from '@/components/ui/prisma-hero'
 import { useHeroSnap } from '@/components/use-hero-snap'
@@ -40,12 +41,12 @@ export default function App() {
 
   return (
     <>
+      <SiteBackground away={away} image={heroImage} />
       <DockNav items={navItems} heroId="top" />
 
       <PrismaHero
         id="top"
-        away={away}
-        image={heroImage}
+        bare
         onCtaClick={goNext}
         title="KGU"
         description="경기대학교 축구부의 경기 일정과 결과, 소식을 한곳에 모아 보는 비공식 팬 사이트입니다."
@@ -60,7 +61,7 @@ export default function App() {
         <Reveal
           id="next-match"
           aria-labelledby="next-match-title"
-          className="flex flex-col gap-10 rounded-2xl bg-panel p-6 md:rounded-[2rem] md:p-10"
+          className="flex flex-col gap-10 rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
         >
           <SectionTitle id="next-match-title">다음 경기</SectionTitle>
           <div className="grid grid-cols-12 items-end gap-6">
@@ -91,7 +92,7 @@ export default function App() {
           <Reveal
             id="result"
             aria-labelledby="result-title"
-            className="flex flex-col gap-10 rounded-2xl bg-panel p-6 md:rounded-[2rem] md:p-10"
+            className="flex flex-col gap-10 rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
           >
             <SectionTitle id="result-title">최근 결과</SectionTitle>
             <div className="flex flex-col">
@@ -124,7 +125,7 @@ export default function App() {
             id="news"
             delay={0.08}
             aria-labelledby="news-title"
-            className="flex flex-col gap-10 rounded-2xl bg-panel p-6 md:rounded-[2rem] md:p-10"
+            className="flex flex-col gap-10 rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
           >
             <SectionTitle id="news-title">최신 소식</SectionTitle>
             <ul className="flex flex-col">

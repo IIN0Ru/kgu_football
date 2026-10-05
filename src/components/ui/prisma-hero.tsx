@@ -7,10 +7,10 @@
  * - 버튼을 <button> 대신 링크(<a>)로 변경 (페이지 안 이동이므로)
  * - 메뉴 색 변경을 JS 대신 CSS hover로 처리, 키보드 포커스 표시 추가
  * - 별표(*)는 각주로 연결 (비공식 사이트 고지)
- * - 첫 화면 넘기기 (사용자 요청, impeccable animate): away가 true가 되면 카드 전체가 위로 살짝 떠오르며
- *   흐려지고 페이드아웃. 실제 스크롤 이동은 use-hero-snap.ts가 담당. (이전의 스크롤 연동 축소 효과는 제거)
+ * - 첫 화면 넘기기는 use-hero-snap.ts가 화면을 미끄러뜨려 처리 → KGU·소개가 실제로 위로 올라가며 사라짐
  * - 버튼 클릭도 같은 넘기기 동작(onCtaClick)으로 연결
- * - 배경 사진(image) 추가: 영상 대신 사진을 깔 수 있게. 사진일 땐 글자 대비를 위해 아래쪽 그라데이션을 더 어둡게
+ * - 배경 사진(image) 추가: 카드 안에 사진을 깔 수 있게
+ * - bare 모드 추가: 카드 배경·모서리·덮개 없이 글자와 메뉴만. 사이트 전체 고정 배경(site-background.tsx) 위에 얹을 때 사용
  * - 큰 글자 등장 강화: 흐림 + 아래에서 크게 올라옴 (1.2초). 동작 줄이기 설정 시 페이드만
  */
 import { motion, useInView, useReducedMotion } from "framer-motion";
@@ -135,8 +135,8 @@ interface PrismaHeroProps {
     src: string;
     alt: string;
   };
-  /** true면 첫 화면이 페이드아웃된 상태 (다음 화면으로 넘어감) */
-  away?: boolean;
+  /** 카드 배경·모서리·덮개 없이 글자와 메뉴만 (뒤에 고정 배경이 있을 때) */
+  bare?: boolean;
   onCtaClick?: () => void;
 }
 
@@ -149,7 +149,7 @@ const PrismaHero = ({
   videoSrc,
   asteriskHref,
   id,
-  away = false,
+  bare = false,
   onCtaClick,
   image,
 }: PrismaHeroProps) => {
@@ -164,18 +164,9 @@ const PrismaHero = ({
         };
 
   return (
-    <section id={id} className="h-screen min-h-[560px] w-full p-2 md:p-3" aria-label="소개">
-      <motion.div
-        initial={false}
-        animate={
-          away
-            ? reduce
-              ? { opacity: 0 }
-              : { opacity: 0, y: -60, filter: "blur(10px)" }
-            : { opacity: 1, y: 0, filter: "blur(0px)" }
-        }
-        transition={{ duration: reduce ? 0.3 : away ? 0.55 : 0.9, ease: EASE }}
-        className="relative h-full w-full overflow-hidden rounded-2xl bg-panel md:rounded-[2rem]"
+    <section id={id} className={`h-screen min-h-[560px] w-full ${bare ? "" : "p-2 md:p-3"}`} aria-label="소개">
+      <div
+        className={`relative h-full w-full ${bare ? "" : "overflow-hidden rounded-2xl bg-panel md:rounded-[2rem]"}`}
       >
         {/* Background video (권한 확인된 영상만) */}
         {videoSrc && (
@@ -207,14 +198,14 @@ const PrismaHero = ({
         )}
 
         {/* Noise overlay */}
-        <div className="noise-overlay pointer-events-none absolute inset-0 opacity-[0.7] mix-blend-overlay" />
+        {!bare && <div className="noise-overlay pointer-events-none absolute inset-0 opacity-[0.7] mix-blend-overlay" />}
 
         {/* Gradient overlay */}
-        <div
+        {!bare && <div
           className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${
             image && !videoSrc ? "from-black/45 via-black/15 to-black/85" : "from-black/30 via-transparent to-black/60"
           }`}
-        />
+        />}
 
         {/* Navbar */}
         <nav className="absolute left-1/2 top-0 z-20 -translate-x-1/2" aria-label="주요 메뉴">
@@ -268,7 +259,7 @@ const PrismaHero = ({
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };
