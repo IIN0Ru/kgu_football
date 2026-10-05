@@ -37,15 +37,15 @@
 
 | 항목 | 결정 내용 |
 |---|---|
-| 범위 | **1단계만** — HTML/CSS/JS 정적 사이트 (서버·DB·관리자 페이지 없음) |
+| 범위 | 프론트엔드만 — **React 사이트** (서버·DB·관리자 페이지 없음). 2026-10-05 순수 HTML → React 전환 |
 | 사이트 성격 | 개인 포트폴리오용 **비공식** 사이트 (푸터에 비공식 명시) |
 | 콘텐츠 | **공개된 기사·대회 기록만** 사용 (U리그 결과 등). 우선 예시 데이터로 채우고 교체 |
 | 선수 사진·학교 로고 | 사용 안 함 → 등번호·실루엣, 사이트용 자체 엠블럼 |
-| 디자인 | **Nike DESIGN.md 기준** (awesome-design-md). 4번 참고 (2026-10-05 변경, 이전: 프로 구단 스타일) |
-| 색 | DESIGN.md의 흑·백·옅은 회색 (이전 흑백 줄무늬 + 주황은 폐기) |
+| 디자인 | **21st.dev PrismaHero 감성 기준** (자체 `DESIGN.md`). 4번 참고. 이전 기준(흑백 줄무늬 → Nike)은 폐기 |
+| 색 | 검정 바탕 + 크림색(`#e1e0cc`) 글자 |
 | 참고 | 축구부 인스타그램 https://www.instagram.com/kgu_football/ (자동 조회 불가 → 사용자가 직접 정보 전달 예정) |
 | 진행 방식 | **AI 활용 개발** — Claude가 제작, GPT가 리뷰, 사용자가 결정·검수 (2026-10-05 변경. 이전엔 '직접 타이핑하며 배우기') |
-| 배포 | GitHub Pages (무료) |
+| 배포 | GitHub Pages, GitHub Actions로 자동 빌드·배포 |
 
 ### 페이지 구성 (확정)
 
@@ -60,19 +60,22 @@
 
 ```
 kgu_football/
-├── index.html        ← 홈 ✅
-├── about.html        ← 팀 소개 (예정)
-├── players.html      ← 선수단 (예정)
-├── matches.html      ← 일정·결과 (예정)
-├── news.html         ← 소식 (예정)
-├── location.html     ← 오시는 길 (예정)
-├── css/
-│   └── style.css     ← 전체 공통 스타일 ✅
-├── DESIGN.md         ← 디자인 기준 (Nike, 원본 그대로)
-├── CLAUDE.md         ← 프로젝트 지침 (@DESIGN.md + 변경점)
-├── js/               ← (예정)
-├── images/           ← (예정)
-├── NOTES.md          ← 이 노트
+├── index.html                 ← Vite 진입점 (제목, 폰트)
+├── src/
+│   ├── main.tsx               ← React 시작점
+│   ├── App.tsx                ← 홈 화면 (히어로 + 다음 경기 + 최근 결과 + 소식 + 각주)
+│   ├── index.css              ← Tailwind + 색·글꼴 테마
+│   ├── components/ui/
+│   │   └── prisma-hero.tsx    ← 21st.dev 히어로 (수정본)
+│   ├── data/home.ts           ← 홈 화면 데이터 (경기·소식)
+│   └── lib/utils.ts           ← shadcn cn()
+├── public/favicon.svg
+├── .github/workflows/deploy.yml ← GitHub Pages 자동 배포
+├── components.json            ← shadcn 설정
+├── vite.config.ts, tsconfig*.json, package.json
+├── DESIGN.md                  ← 디자인 기준 (자체)
+├── CLAUDE.md                  ← 프로젝트 지침
+├── NOTES.md                   ← 이 노트
 └── README.md
 ```
 
@@ -80,22 +83,51 @@ kgu_football/
 
 ## 4. 디자인 시스템 (현재 기준)
 
-- **기준 파일**: 저장소 루트 `DESIGN.md` — GitHub `VoltAgent/awesome-design-md`(MIT, 커밋 `13be5c0`)의 `design-md/nike/DESIGN.md` 원본. 사용자가 Nike, PlayStation, BMW M, The Verge 중 **Nike**를 선택 (2026-10-05)
-- **프로젝트 지침**: `CLAUDE.md`가 `@DESIGN.md`로 불러오고, 그대로 못 쓰는 부분만 바꿔 적용
-- 핵심: 흰 바탕 + 검정(`#111111`) + 옅은 회색(`#f5f5f5`) 3색이 대부분, 버튼은 전부 알약 모양, 카드는 각진 모서리·그림자 없음, 8px 간격, 큰 제목(96px)은 메인 비주얼에만
-- 이 프로젝트에서 바꾼 점 (자세히는 `CLAUDE.md`):
-  - 글꼴: 큰 제목 Anton(영문), 한글은 전부 Pretendard
-  - 사진이 없어 메인 비주얼은 검정 배경 위 문구로 대체
-  - 9px 글자는 한글 가독성 때문에 12px로
-  - 승리 표시는 초록(`#007d48`)
-  - 모바일 메뉴는 햄버거 드로어 대신 임시로 가로 스크롤 (컴포넌트 출처 결정 대기)
-- 이전 디자인(흑백 줄무늬 + 주황 포인트)은 폐기. 기록은 커밋 `2b6e8b1`
+- **기준 파일**: `DESIGN.md` (이 프로젝트 고유). 사용자가 전달한 21st.dev `PrismaHero` 컴포넌트의 감성을 사이트 전체로 확장
+- 검정 페이지 + 둥근 카드(`#111110`) + 크림색 글자, 알약 버튼(크림 바탕 + 검은 원 화살표), Pretendard 한 가지 글꼴, 큰 글자는 자간을 좁게
+- 움직임은 히어로 한 곳에만 (단어별로 올라오는 등장)
+- 승리 표시 초록(`#9fd8a8`)이 유일한 유채색
+- **폐기된 기준**: 흑백 줄무늬 + 주황(커밋 `2b6e8b1`), Nike DESIGN.md(커밋 `3b10fe9`)
 
 ---
 
 ## 5. 개발 로그
 
 > 최신이 위. 각 항목: 무엇을 바꿨는지 / 왜 / 확인 결과 / 남은 일.
+
+### 2026-10-05 #5 — React 전환 + 21st.dev 히어로 적용 (Claude)
+
+**왜**: 사용자가 Nike 디자인도 폐기하고, 21st.dev의 `PrismaHero` 컴포넌트(React/TS/Tailwind/shadcn/framer-motion)를 전달. 결정 사항(사용자 선택):
+- 기술: 순수 HTML 유지 대신 **React로 전환**
+- 배경 영상: 원본 영상(컴포넌트 제작자 서버 파일, 사용 권한 불분명) 대신 **무료 스톡 영상** → 사용자가 고르면 넣음, 그 전까지 영상 없음
+- 디자인 기준: **이 히어로 감성을 사이트 전체 기준으로** (자체 `DESIGN.md` 작성)
+- 히어로 문구: 큰 글자 **KGU** + 한글 소개 (지어낸 정보 없이 사이트 설명만)
+
+**바깥 자료 사용 내역**
+- 21st.dev `prisma-hero.tsx` (사용자 전달) → `src/components/ui/prisma-hero.tsx`
+- 원본에서 바꾼 점: 문구·메뉴를 props로 / 원본 영상 제거, `videoSrc` 있을 때만 영상 / 버튼 → 링크 / 메뉴 hover를 CSS로 / '동작 줄이기' 설정 시 애니메이션 끔 / 별표(*)를 비공식 고지 각주 링크로 / 원본에 정의가 없던 `.noise-overlay` 질감을 CSS로 추가
+- shadcn CLI는 작업 환경에서 레지스트리(ui.shadcn.com) 접속이 막혀 실행 못 함. 이 컴포넌트는 shadcn 부품을 쓰지 않으므로 shadcn 구조(`components.json`, `src/components/ui`, `@/` 별칭, `cn()`)만 수동으로 맞춤
+
+**바뀐 파일**
+- 삭제: `index.html`(정적), `css/style.css`, `js/`, `images/`, Nike `DESIGN.md`
+- 신규: Vite 프로젝트 일체(`package.json`, `vite.config.ts`, `tsconfig*.json`, `src/*`), `components.json`, `.github/workflows/deploy.yml`, 자체 `DESIGN.md`
+- 수정: `CLAUDE.md`(React 기준으로 새로 작성), `README.md`, `NOTES.md`
+
+**구성**
+- `App.tsx`: 히어로(KGU) → 다음 경기 카드 → 최근 결과(경기대 3 : 2 칼빈대, 승리) + 최신 소식(예시 3건) → 각주(비공식 고지)
+- 히어로 메뉴는 아직 다른 페이지가 없어 같은 페이지 안 구역(다음 경기, 최근 결과, 소식) + 축구부 인스타그램으로 연결
+- 경기·소식 데이터는 `src/data/home.ts`로 분리
+- `vite.config.ts`의 `base: '/kgu_football/'` (GitHub Pages 하위 경로)
+
+**확인 결과**
+- `npm run build` 성공 (타입 검사 통과)
+- 빌드 결과를 데스크톱(1366px)·모바일(390px)에서 스크린샷 확인, 가로 스크롤·콘솔 오류 없음
+
+**남은 일**
+- 배경 영상: 사용자가 무료 스톡 영상 링크 전달 → 라이선스 확인 후 `videoSrc`에 연결
+- GitHub Pages 배포: 저장소 Settings → Pages → Source를 **GitHub Actions**로 바꿔야 자동 배포 시작
+- 히어로 메뉴가 모바일에서 11px로 작음 (원본 설계). 페이지가 늘어나면 메뉴 구조 재검토
+- 실제 경기 일정·결과·소식 데이터
 
 ### 2026-10-05 #4 — 디자인 전면 교체: Nike DESIGN.md 기준 (Claude)
 
@@ -179,18 +211,20 @@ kgu_football/
 
 ## 6. 검토 요청 (GPT에게)
 
-이번 변경(개발 로그 #4)에 대해:
+이번 변경(개발 로그 #5)에 대해:
 
-1. **DESIGN.md 준수**: `index.html`과 `css/style.css`가 `DESIGN.md`(Nike)의 색·간격·모서리·버튼 규칙을 잘 따르는가? 어긋난 곳은?
-2. **CLAUDE.md의 변경점**: 한글 글꼴, 사진 없는 메인 비주얼, 12px 최소 글자 등 바꿔 적용한 부분이 합리적인가?
-3. **사진 없는 메인 비주얼**: 저작권 문제 없이 검정 타일을 덜 비어 보이게 할 방법은?
-4. **모바일 메뉴**: 순수 HTML 사이트에서 햄버거 드로어를 21st.dev(React) 컴포넌트로 가져오는 게 맞는가, 아니면 직접 작성이 나은가?
+1. **React 구조**: `App.tsx` 한 파일에 구역이 다 있는데, 지금 단계에서 컴포넌트로 나누는 게 나은가? 나눈다면 어떤 단위로?
+2. **prisma-hero.tsx 수정**: 원본 대비 바꾼 점(파일 맨 위 주석)이 적절한가? 접근성·성능 문제는?
+3. **shadcn 수동 구성**: CLI 없이 맞춘 `components.json`, 별칭, `cn()` 설정에 빠진 게 있는가?
+4. **배포**: `.github/workflows/deploy.yml`과 `vite.config.ts`의 `base` 설정이 GitHub Pages(`/kgu_football/`)에 맞는가?
+5. **페이지 확장**: 다른 페이지(일정·결과, 선수단 등)를 추가할 때 react-router를 쓸지, 한 페이지 안 구역으로 둘지?
 
 ---
 
 ## 7. 원칙
 
 - 불명확하거나 애매한 부분은 **코드 짜기 전에 사용자에게 질문**
+- 화면 데이터는 `src/data/`에 분리
 - 실제 정보가 없으면 지어내지 않고 "(예시)" 또는 "확인 중"으로 표시
 - 선수 사진·학교 로고·실존 인물의 사적 정보는 사용하지 않음
 - Claude는 코드를 바꿀 때마다 개발 로그를 먼저 갱신하고 함께 커밋

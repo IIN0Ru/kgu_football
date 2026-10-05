@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/* =========================================================
+   디자인 기준: PrismaHero(21st.dev) 감성 — DESIGN.md 참고
+   ========================================================= */
+
+@theme {
+  /* 색 */
+  --color-cream: #e1e0cc;          /* 히어로 글자색, 사이트 기본 글자 */
+  --color-ink: #000000;            /* 페이지 배경 */
+  --color-panel: #111110;          /* 카드 배경 */
+  --color-line: rgb(225 224 204 / 0.14);
+  --color-win: #9fd8a8;            /* 승리 표시 */
+
+  /* shadcn 호환 이름: 컴포넌트의 bg-primary, text-primary가 크림색을 쓰도록 */
+  --color-primary: #e1e0cc;
+  --color-primary-foreground: #000000;
+  --color-background: #000000;
+  --color-foreground: #e1e0cc;
+
+  /* 글꼴 */
+  --font-sans: "Pretendard", ui-sans-serif, system-ui, sans-serif;
+
+  /* 움직임: 컴포넌트와 같은 곡선 */
+  --ease-pull: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    word-break: keep-all;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-cream);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* PrismaHero가 쓰는 노이즈 질감 (원본 코드에 정의가 없어 직접 추가) */
+.noise-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+}
