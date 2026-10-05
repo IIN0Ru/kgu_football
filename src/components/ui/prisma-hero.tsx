@@ -11,7 +11,7 @@
  *   큰 글자는 카드보다 느리게 올라가며 흐려져 화면이 뒤로 물러나는 느낌. 동작 줄이기 설정 시 끔
  * - 큰 글자 등장 강화: 흐림 + 아래에서 크게 올라옴 (1.2초). 동작 줄이기 설정 시 페이드만
  */
-import { motion, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useInView, useMotionTemplate, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
 
@@ -145,7 +145,8 @@ const PrismaHero = ({
   const cardRadius = useTransform(scrollYProgress, [0, 1], [32, 72]);
   const cardDim = useTransform(scrollYProgress, [0, 0.9], [0, 0.75]);
   const titleY = useTransform(scrollYProgress, [0, 1], ["0%", "-45%"]);
-  const titleBlur = useTransform(scrollYProgress, [0.2, 1], ["blur(0px)", "blur(8px)"]);
+  const titleBlurPx = useTransform(scrollYProgress, [0.2, 1], [0, 8]);
+  const titleBlur = useMotionTemplate`blur(${titleBlurPx}px)`;
   const enter = (delay: number) =>
     reduce
       ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.4, delay: delay * 0.5 } }
