@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react'
 import { DockNav } from '@/components/dock-nav'
 import { Reveal, RollingNumber } from '@/components/motion'
 import { PrismaHero, type HeroNavItem } from '@/components/ui/prisma-hero'
+import { useHeroSnap } from '@/components/use-hero-snap'
 import { instagramUrl, news, nextMatch, recentResult } from '@/data/home'
 
 const navItems: HeroNavItem[] = [
@@ -35,6 +36,7 @@ function PillLink({ href, children }: { href: string; children: React.ReactNode 
 
 export default function App() {
   const won = recentResult.home.score > recentResult.away.score
+  const { away, goNext } = useHeroSnap('top')
 
   return (
     <>
@@ -42,6 +44,8 @@ export default function App() {
 
       <PrismaHero
         id="top"
+        away={away}
+        onCtaClick={goNext}
         title="KGU"
         description="경기대학교 축구부의 경기 일정과 결과, 소식을 한곳에 모아 보는 비공식 팬 사이트입니다."
         ctaLabel="다음 경기 보기"

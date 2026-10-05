@@ -7,11 +7,12 @@
  * - 버튼을 <button> 대신 링크(<a>)로 변경 (페이지 안 이동이므로)
  * - 메뉴 색 변경을 JS 대신 CSS hover로 처리, 키보드 포커스 표시 추가
  * - 별표(*)는 각주로 연결 (비공식 사이트 고지)
- * - 스크롤 반응 추가 (impeccable animate): 내리면 카드가 78%까지 작아지고 모서리가 더 둥글어지며 어두워짐.
- *   큰 글자는 카드보다 느리게 올라가며 흐려져 화면이 뒤로 물러나는 느낌. 동작 줄이기 설정 시 끔
+ * - 첫 화면 넘기기 (사용자 요청, impeccable animate): away가 true가 되면 카드 전체가 위로 살짝 떠오르며
+ *   흐려지고 페이드아웃. 실제 스크롤 이동은 use-hero-snap.ts가 담당. (이전의 스크롤 연동 축소 효과는 제거)
+ * - 버튼 클릭도 같은 넘기기 동작(onCtaClick)으로 연결
  * - 큰 글자 등장 강화: 흐림 + 아래에서 크게 올라옴 (1.2초). 동작 줄이기 설정 시 페이드만
  */
-import { motion, useInView, useMotionTemplate, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
 
@@ -126,6 +127,9 @@ interface PrismaHeroProps {
   videoSrc?: string;
   asteriskHref?: string;
   id?: string;
+  /** true면 첫 화면이 페이드아웃된 상태 (다음 화면으로 넘어감) */
+  away?: boolean;
+  onCtaClick?: () => void;
 }
 
 const PrismaHero = ({
@@ -137,16 +141,10 @@ const PrismaHero = ({
   videoSrc,
   asteriskHref,
   id,
+  away = false,
+  onCtaClick,
 }: PrismaHeroProps) => {
   const reduce = useReducedMotion();
-  const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
-  const cardScale = useTransform(scrollYProgress, [0, 1], [1, 0.78]);
-  const cardRadius = useTransform(scrollYProgress, [0, 1], [32, 72]);
-  const cardDim = useTransform(scrollYProgress, [0, 0.9], [0, 0.75]);
-  const titleY = useTransform(scrollYProgress, [0, 1], ["0%", "-45%"]);
-  const titleBlurPx = useTransform(scrollYProgress, [0.2, 1], [0, 8]);
-  const titleBlur = useMotionTemplate`blur(${titleBlurPx}px)`;
   const enter = (delay: number) =>
     reduce
       ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.4, delay: delay * 0.5 } }
@@ -157,10 +155,18 @@ const PrismaHero = ({
         };
 
   return (
-    <section ref={sectionRef} id={id} className="h-screen min-h-[560px] w-full p-2 md:p-3" aria-label="소개">
+    <section id={id} className="h-screen min-h-[560px] w-full p-2 md:p-3" aria-label="소개">
       <motion.div
-        style={reduce ? undefined : { scale: cardScale, borderRadius: cardRadius }}
-        className="relative h-full w-full origin-top overflow-hidden rounded-2xl bg-panel md:rounded-[2rem]"
+        initial={false}
+        animate={
+          away
+            ? reduce
+              ? { opacity: 0 }
+              : { opacity: 0, y: -60, filter: "blur(10px)" }
+            : { opacity: 1, y: 0, filter: "blur(0px)" }
+        }
+        transition={{ duration: reduce ? 0.3 : away ? 0.55 : 0.9, ease: EASE }}
+        className="relative h-full w-full overflow-hidden rounded-2xl bg-panel md:rounded-[2rem]"
       >
         {/* Background video (권한 확인된 영상만) */}
         {videoSrc && (
@@ -181,15 +187,6 @@ const PrismaHero = ({
         {/* Gradient overlay */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
 
-        {/* 스크롤하면 점점 어두워지는 막 */}
-        {!reduce && (
-          <motion.div
-            aria-hidden="true"
-            style={{ opacity: cardDim }}
-            className="pointer-events-none absolute inset-0 z-10 bg-black"
-          />
-        )}
-
         {/* Navbar */}
         <nav className="absolute left-1/2 top-0 z-20 -translate-x-1/2" aria-label="주요 메뉴">
           <div className="flex items-center gap-3 rounded-b-2xl bg-black px-4 py-2 sm:gap-6 md:gap-12 md:rounded-b-3xl md:px-8 lg:gap-14">
@@ -208,11 +205,11 @@ const PrismaHero = ({
         {/* Hero content */}
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-2 sm:px-6 md:px-10">
           <div className="grid grid-cols-12 items-end gap-4">
-            <motion.div style={reduce ? undefined : { y: titleY, filter: titleBlur }} className="col-span-12 lg:col-span-8">
+            <div className="col-span-12 lg:col-span-8">
               <h1 className="text-[26vw] font-medium leading-[0.85] tracking-[-0.07em] text-cream sm:text-[24vw] md:text-[22vw] lg:text-[20vw] xl:text-[19vw] 2xl:text-[20vw]">
                 <WordsPullUp text={title} showAsterisk asteriskHref={asteriskHref} />
               </h1>
-            </motion.div>
+            </div>
 
             <div className="col-span-12 flex flex-col gap-5 pb-6 lg:col-span-4 lg:pb-10">
               <motion.p
@@ -226,6 +223,12 @@ const PrismaHero = ({
               <motion.a
                 {...enter(0.7)}
                 href={ctaHref}
+                onClick={(e) => {
+                  if (onCtaClick) {
+                    e.preventDefault();
+                    onCtaClick();
+                  }
+                }}
                 className="group inline-flex items-center gap-2 self-start rounded-full bg-primary py-1 pl-5 pr-1 text-sm font-medium text-black transition-all hover:gap-3 sm:text-base"
               >
                 {ctaLabel}
