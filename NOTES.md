@@ -6,7 +6,7 @@
 ## 0. 협업 방식
 
 - 이 저장소(`IIN0Ru/kgu_football`)가 단일 기준입니다. 코드와 이 노트가 최신 상태입니다.
-- **Claude**: 수업 진행, 코드 작성, 이 노트 갱신
+- **Claude**: 수업 진행, 코드 작성, 이 노트 갱신 — **사용자에게 코드·할 일을 넘길 때마다 이 노트도 즉시 갱신**
 - **GPT**: 저장소를 읽고 아래 "검토 요청"에 의견 제시. 의견은 사용자가 Claude에게 전달하거나, 이 파일 하단 `## 7. 검토 기록`에 추가
 - 검토는 매 수업이 아니라 **단계가 끝날 때만** 받습니다 (홈 완성, CSS 완성, 배포 직전)
 
@@ -149,9 +149,104 @@ kgu_football/
 - 첫 커밋: `최근 결과 수정(칼빈대전 3:2)` — 실제 `index.html`의 최근 결과는 `경기대 3 : 2 칼빈대`
 - 겪은 문제: 커밋 메시지를 비워서 커밋이 취소됨, 커밋 후 푸시를 안 해서 깃허브에 반영 안 됨 → 해결
 
+### 🔄 수업 2-1: CSS로 헤더 + 메인 비주얼 꾸미기 (사용자 작업 중)
+
+사용자에게 전달한 할 일:
+
+0. 작업 전 **Sync Changes**(또는 `git pull`)로 최신 받아오기
+1. `css/style.css` 새로 만들기
+2. `index.html` 수정 3곳
+   - `<head>`의 `<title>` 아래: `<link rel="stylesheet" href="css/style.css">`
+   - 로고 링크: `<a href="index.html" class="logo">KGU FOOTBALL</a>`
+   - 첫 번째 섹션: `<section class="hero">`
+3. `style.css` 작성 (아래 코드)
+4. Go Live로 확인 → 커밋 `CSS 추가: 헤더와 메인 비주얼` → Sync Changes
+
+전달한 `css/style.css`:
+
+```css
+/* 1. 색 정의: 여기만 바꾸면 사이트 전체 색이 바뀜 */
+:root {
+  --black: #111111;
+  --white: #ffffff;
+  --orange: #ff6b00;
+}
+
+/* 2. 브라우저 기본 여백 없애기 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Malgun Gothic", sans-serif;
+  color: var(--black);
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 3. 헤더: 검은 바탕, 로고는 왼쪽 메뉴는 오른쪽 */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 40px;
+  background: var(--black);
+  color: var(--white);
+  border-bottom: 4px solid var(--orange);
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+nav {
+  display: flex;
+  gap: 28px;
+}
+
+nav a:hover {
+  color: var(--orange);
+}
+
+/* 4. 메인 비주얼: 흑백 줄무늬 배경 + 큰 제목 */
+.hero {
+  padding: 120px 40px;
+  text-align: center;
+  color: var(--white);
+  background: repeating-linear-gradient(
+    90deg,
+    #111111 0 60px,
+    #2a2a2a 60px 120px
+  );
+}
+
+.hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+}
+
+.hero p {
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--orange);
+}
+```
+
+설명한 개념: `선택자 { 속성: 값; }` 구조, 태그 선택자 vs `.class` 선택자, `:hover`, `display: flex` / `justify-content`, CSS 변수 `var(--이름)`, `repeating-linear-gradient` 줄무늬.
+디자인 메모: 순수 흑백 줄무늬 위에 흰 글씨는 가독성이 떨어져서 메인 비주얼은 검정·진회색 줄무늬로 처리.
+
 ### ⏭️ 다음 예정
 
-- **수업 2**: CSS로 흑백 줄무늬 + 주황 포인트 입히기 (헤더·메뉴 가로 배치, 메인 비주얼, 다음 경기 배너)
+- **수업 2-2**: "다음 경기" 구역을 구단 사이트식 큰 배너로 (주황 포인트), 최근 결과·소식 카드화
 - **수업 3~**: 나머지 페이지 하나씩, 모바일 반응형, 간단한 JS(모바일 메뉴 열기/닫기 등)
 - **마지막**: GitHub Pages 배포
 
@@ -168,6 +263,8 @@ kgu_football/
 ---
 
 ## 6. 진행 원칙 (사용자 선호)
+
+- Claude가 코드·할 일을 넘길 때마다 `NOTES.md`를 바로 갱신
 
 - 불명확하거나 애매한 부분은 **코드 짜기 전에 질문**해서 확실히 한 뒤 진행
 - 설명은 **완전 초보 기준**으로
