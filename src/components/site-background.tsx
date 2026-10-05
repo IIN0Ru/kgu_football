@@ -6,7 +6,10 @@
  */
 import { motion, useReducedMotion } from 'framer-motion'
 
-const EASE = [0.16, 1, 0.3, 1] as const
+// 화면 이동(use-hero-snap.ts)과 같은 곡선·시간: 천천히 시작해 천천히 끝나서
+// 흐려질 때와 선명해질 때가 똑같은 속도로 보이고, 화면 이동과 함께 움직인다
+const EASE = [0.65, 0, 0.35, 1] as const
+const DURATION = 1.0
 
 type Img = SiteBackgroundProps['image']
 
@@ -40,7 +43,7 @@ interface SiteBackgroundProps {
 
 export function SiteBackground({ away, image }: SiteBackgroundProps) {
   const reduce = useReducedMotion()
-  const t = { duration: reduce ? 0.3 : 1.1, ease: EASE }
+  const t = { duration: reduce ? 0.3 : DURATION, ease: EASE }
 
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-ink">
