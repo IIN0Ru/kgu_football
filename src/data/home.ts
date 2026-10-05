@@ -25,3 +25,18 @@ export const news = [
 ]
 
 export const instagramUrl = 'https://www.instagram.com/kgu_football/'
+
+const img = (name: string) => `${import.meta.env.BASE_URL}images/${name}`
+
+/** 첫 화면 배경 사진. 출처: 경기대학교 홈페이지 (출처 표기 조건, 사용자 확인 2026-10-06) */
+export const heroImage = {
+  webpSrcSet: `${img('campus-aerial-1200.webp')} 1200w, ${img('campus-aerial-2000.webp')} 2000w`,
+  jpgSrcSet: `${img('campus-aerial-1200.jpg')} 1200w, ${img('campus-aerial-2000.jpg')} 2000w`,
+  src: img('campus-aerial-2000.jpg'),
+  alt: '경기대학교 캠퍼스와 축구장을 위에서 내려다본 사진',
+}
+
+export const photoCredit = {
+  label: '경기대학교',
+  url: 'https://www.kyonggi.ac.kr/',
+}

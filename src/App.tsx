@@ -3,7 +3,7 @@ import { DockNav } from '@/components/dock-nav'
 import { Reveal, RollingNumber } from '@/components/motion'
 import { PrismaHero, type HeroNavItem } from '@/components/ui/prisma-hero'
 import { useHeroSnap } from '@/components/use-hero-snap'
-import { instagramUrl, news, nextMatch, recentResult } from '@/data/home'
+import { heroImage, instagramUrl, news, nextMatch, photoCredit, recentResult } from '@/data/home'
 
 const navItems: HeroNavItem[] = [
   { label: '다음 경기', href: '#next-match' },
@@ -45,6 +45,7 @@ export default function App() {
       <PrismaHero
         id="top"
         away={away}
+        image={heroImage}
         onCtaClick={goNext}
         title="KGU"
         description="경기대학교 축구부의 경기 일정과 결과, 소식을 한곳에 모아 보는 비공식 팬 사이트입니다."
@@ -156,6 +157,12 @@ export default function App() {
           없습니다.
         </p>
         <p>경기 정보는 공개된 기사와 대회 기록을 참고했습니다.</p>
+        <p className="text-xs text-cream/40">
+          {photoCredit.label}{' '}
+          <a href={photoCredit.url} target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-cream/70">
+            {photoCredit.url}
+          </a>
+        </p>
       </footer>
     </>
   )

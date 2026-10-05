@@ -10,6 +10,7 @@
  * - 첫 화면 넘기기 (사용자 요청, impeccable animate): away가 true가 되면 카드 전체가 위로 살짝 떠오르며
  *   흐려지고 페이드아웃. 실제 스크롤 이동은 use-hero-snap.ts가 담당. (이전의 스크롤 연동 축소 효과는 제거)
  * - 버튼 클릭도 같은 넘기기 동작(onCtaClick)으로 연결
+ * - 배경 사진(image) 추가: 영상 대신 사진을 깔 수 있게. 사진일 땐 글자 대비를 위해 아래쪽 그라데이션을 더 어둡게
  * - 큰 글자 등장 강화: 흐림 + 아래에서 크게 올라옴 (1.2초). 동작 줄이기 설정 시 페이드만
  */
 import { motion, useInView, useReducedMotion } from "framer-motion";
@@ -127,6 +128,13 @@ interface PrismaHeroProps {
   videoSrc?: string;
   asteriskHref?: string;
   id?: string;
+  /** 배경 사진. 사용 권한·출처가 확인된 것만. 영상이 있으면 영상이 우선 */
+  image?: {
+    webpSrcSet: string;
+    jpgSrcSet: string;
+    src: string;
+    alt: string;
+  };
   /** true면 첫 화면이 페이드아웃된 상태 (다음 화면으로 넘어감) */
   away?: boolean;
   onCtaClick?: () => void;
@@ -143,6 +151,7 @@ const PrismaHero = ({
   id,
   away = false,
   onCtaClick,
+  image,
 }: PrismaHeroProps) => {
   const reduce = useReducedMotion();
   const enter = (delay: number) =>
@@ -181,11 +190,31 @@ const PrismaHero = ({
           />
         )}
 
+        {/* Background photo (권한·출처 확인된 사진만) */}
+        {!videoSrc && image && (
+          <picture>
+            <source type="image/webp" srcSet={image.webpSrcSet} sizes="100vw" />
+            <img
+              src={image.src}
+              srcSet={image.jpgSrcSet}
+              sizes="100vw"
+              alt={image.alt}
+              fetchPriority="high"
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover object-[50%_55%]"
+            />
+          </picture>
+        )}
+
         {/* Noise overlay */}
         <div className="noise-overlay pointer-events-none absolute inset-0 opacity-[0.7] mix-blend-overlay" />
 
         {/* Gradient overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
+        <div
+          className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${
+            image && !videoSrc ? "from-black/45 via-black/15 to-black/85" : "from-black/30 via-transparent to-black/60"
+          }`}
+        />
 
         {/* Navbar */}
         <nav className="absolute left-1/2 top-0 z-20 -translate-x-1/2" aria-label="주요 메뉴">
@@ -214,7 +243,7 @@ const PrismaHero = ({
             <div className="col-span-12 flex flex-col gap-5 pb-6 lg:col-span-4 lg:pb-10">
               <motion.p
                 {...enter(0.5)}
-                className="text-sm text-primary/70 md:text-base"
+                className="text-sm text-primary/85 md:text-base"
                 style={{ lineHeight: 1.4 }}
               >
                 {description}
