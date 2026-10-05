@@ -105,10 +105,8 @@ kgu_football/
 
 **확인 결과**
 - `gh-pages` 브랜치 생성 확인
-- Claude 작업 환경에서는 github.io 접속이 막혀 실제 페이지가 열리는지 직접 확인 못 함 → 사용자 확인 필요
-
-**남은 일**
-- 주소가 계속 404이면, 저장소 Settings → Pages → Source를 "Deploy from a branch", 브랜치 `gh-pages` / `(root)`로 지정해야 함
+- 사용자가 https://iin0ru.github.io/kgu_football/ 접속 확인 (사이트 열림)
+- 바뀐 자동 배포 워크플로 첫 실행 성공 (21초). 이전 방식 워크플로가 실패했던 건 Pages가 꺼져 있었기 때문
 
 ### 2026-10-06 #6 — 움직임 추가: impeccable animate (Claude)
 
