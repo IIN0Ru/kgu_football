@@ -83,7 +83,7 @@ export function NextMatchSection({
       {/* 맞대결: 경기대는 홈·원정 어느 쪽이든 크림색 원과 밝은 글자로 강조 */}
       <div className="flex items-center gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <TeamCrest name={match.home} align="start" className="h-14 w-14 text-xl md:h-16 md:w-16 md:text-2xl" />
+          <TeamCrest name={match.home} className="h-14 w-14 text-xl md:h-16 md:w-16 md:text-2xl" />
           <span
             className={`truncate text-2xl font-medium tracking-[-0.03em] md:text-3xl ${
               match.home !== ourTeam ? 'text-cream/70' : ''
@@ -101,7 +101,7 @@ export function NextMatchSection({
           >
             {match.away}
           </span>
-          <TeamCrest name={match.away} align="end" className="h-14 w-14 text-xl md:h-16 md:w-16 md:text-2xl" />
+          <TeamCrest name={match.away} className="h-14 w-14 text-xl md:h-16 md:w-16 md:text-2xl" />
         </div>
       </div>
 
