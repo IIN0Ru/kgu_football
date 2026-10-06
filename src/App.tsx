@@ -52,7 +52,7 @@ export default function App() {
         <Reveal
           id="news"
           aria-labelledby="news-title"
-          className="rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
+          className="rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10"
         >
           <NewsSection items={news} titleId="news-title" moreHref={instagramUrl} />
         </Reveal>
@@ -62,7 +62,7 @@ export default function App() {
           <Reveal
             id="result"
             aria-labelledby="result-title"
-            className="rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
+            className="rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10"
           >
             <ResultSection
               result={recentResult}
@@ -77,7 +77,7 @@ export default function App() {
             id="next-match"
             delay={0.08}
             aria-labelledby="next-match-title"
-            className="rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
+            className="rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10"
           >
             <NextMatchSection match={nextMatch} titleId="next-match-title" ctaHref={instagramUrl} />
           </Reveal>
@@ -87,7 +87,7 @@ export default function App() {
         <Reveal
           id="squad"
           aria-labelledby="squad-title"
-          className="rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
+          className="rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10"
         >
           <RosterSection
             players={roster.players}
@@ -100,17 +100,17 @@ export default function App() {
 
       <footer
         id="notice"
-        className="mx-auto flex max-w-[1440px] flex-col gap-3 px-6 pb-10 pt-8 text-sm text-cream/60 md:px-10"
+        className="mx-auto flex max-w-[1440px] flex-col gap-3 px-6 pb-10 pt-8 text-sm text-fg/60 md:px-10"
       >
-        <p className="text-cream">* 비공식 팬 사이트</p>
+        <p className="text-fg">* 비공식 팬 사이트</p>
         <p>
           이 사이트는 개인 포트폴리오용으로 만든 비공식 팬 사이트이며, 경기대학교 및 경기대학교 축구부와 관련이
           없습니다.
         </p>
         <p>경기 일정·결과는 KUSF 대학스포츠, 선수 명단은 한국대학축구연맹(KUFC) 공개 자료를 참고했습니다.</p>
-        <p className="text-xs text-cream/40">
+        <p className="text-xs text-fg/40">
           {photoCredit.label}{' '}
-          <a href={photoCredit.url} target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-cream/70">
+          <a href={photoCredit.url} target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-fg/70">
             {photoCredit.url}
           </a>
         </p>

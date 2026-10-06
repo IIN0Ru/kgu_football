@@ -82,7 +82,7 @@ export function DockNav({ items, heroId }: DockNavProps) {
           transition={{ duration: 0.45, ease: EASE }}
         >
           <LayoutGroup>
-            <div className="flex items-center gap-1 rounded-b-2xl bg-black p-1.5 md:rounded-b-3xl">
+            <div className="flex items-center gap-1 surface-blur rounded-b-2xl border border-t-0 border-line bg-bar p-1.5 md:rounded-b-3xl">
               {items.map((item) => {
                 const isActive = item.href === `#${active}`
                 return (
@@ -97,13 +97,13 @@ export function DockNav({ items, heroId }: DockNavProps) {
                       }
                     }}
                     className={`relative whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs transition-colors duration-200 sm:px-3 md:px-4 md:text-sm ${
-                      isActive ? 'text-black' : 'text-cream/80 hover:text-cream'
+                      isActive ? 'text-on-accent' : 'text-fg/70 hover:text-fg'
                     }`}
                   >
                     {isActive && (
                       <motion.span
                         layoutId="dock-pill"
-                        className="absolute inset-0 rounded-full bg-cream"
+                        className="absolute inset-0 rounded-full bg-accent"
                         transition={{ duration: reduce ? 0 : 0.4, ease: EASE }}
                       />
                     )}

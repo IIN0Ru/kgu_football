@@ -4,25 +4,91 @@
    디자인 기준: PrismaHero(21st.dev) 감성 — DESIGN.md 참고
    ========================================================= */
 
-@theme {
-  /* 색 */
-  --color-cream: #e1e0cc;          /* 히어로 글자색, 사이트 기본 글자 */
-  --color-ink: #000000;            /* 페이지 배경 */
-  --color-panel: #111110;          /* 카드 배경 */
-  --color-line: rgb(225 224 204 / 0.14);
-  --color-win: #9fd8a8;            /* 승리 표시 */
+/* 밝은 테마 (2026-10-06 어두운 테마에서 전환). 값은 아래 :root 의 변수에서 온다 */
+@theme inline {
+  /* 첫 화면(사진 위) 전용 */
+  --color-cream: #e1e0cc;          /* 히어로 큰 글자·소개, 히어로 버튼 바탕 */
+  --color-ink: #000000;            /* 히어로 버튼 속 원 */
 
-  /* shadcn 호환 이름: 컴포넌트의 bg-primary, text-primary가 크림색을 쓰도록 */
+  /* 사이트 전체 (밝은 테마) */
+  --color-paper: var(--paper);     /* 페이지 바탕 */
+  --color-surface: var(--surface); /* 구역 카드 */
+  --color-bar: var(--bar);         /* 상단 메뉴 바 */
+  --color-fg: var(--fg);           /* 기본 글자 (보조 글자는 fg/60, fg/50) */
+  --color-line: var(--line);       /* 구분선 */
+  --color-accent: var(--accent);   /* 알약·버튼 바탕 (검정) */
+  --color-on-accent: var(--on-accent);
+  --color-crest: var(--crest);     /* 로고 원 바탕 */
+  --color-win: var(--win);         /* 승리 표시 (유일한 유채색) */
+  --color-on-win: var(--on-win);
+
+  /* shadcn 호환 이름 */
   --color-primary: #e1e0cc;
   --color-primary-foreground: #000000;
-  --color-background: #000000;
-  --color-foreground: #e1e0cc;
+  --color-background: var(--paper);
+  --color-foreground: var(--fg);
 
   /* 글꼴 */
   --font-sans: "Pretendard", ui-sans-serif, system-ui, sans-serif;
 
   /* 움직임: 컴포넌트와 같은 곡선 */
   --ease-pull: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 톤 후보 (사용자 선택 대기): paper(크림·종이) / white(흰색 미니멀) / glass(밝은 유리) */
+:root,
+:root[data-tone="paper"] {
+  --paper: #ecebe3;
+  --surface: rgb(248 247 241 / 0.94);
+  --bar: #f8f7f1;
+  --fg: #1b1a17;
+  --line: rgb(27 26 23 / 0.12);
+  --accent: #1b1a17;
+  --on-accent: #f8f7f1;
+  --crest: #ffffff;
+  --win: #2f7a4a;
+  --on-win: #ffffff;
+  --veil: #ecebe3;          /* 스크롤 뒤 사진 위에 덮는 밝은 막 */
+  --veil-opacity: 0.62;
+  --surface-blur: 0px;
+}
+
+:root[data-tone="white"] {
+  --paper: #f6f6f5;
+  --surface: #ffffff;
+  --bar: #ffffff;
+  --fg: #111111;
+  --line: rgb(17 17 17 / 0.1);
+  --accent: #111111;
+  --on-accent: #ffffff;
+  --crest: #ffffff;
+  --win: #237a45;
+  --on-win: #ffffff;
+  --veil: #f6f6f5;
+  --veil-opacity: 0.8;
+  --surface-blur: 0px;
+}
+
+:root[data-tone="glass"] {
+  --paper: #eeeeea;
+  --surface: rgb(255 255 255 / 0.55);
+  --bar: rgb(255 255 255 / 0.75);
+  --fg: #141413;
+  --line: rgb(20 20 19 / 0.12);
+  --accent: #141413;
+  --on-accent: #ffffff;
+  --crest: #ffffff;
+  --win: #237a45;
+  --on-win: #ffffff;
+  --veil: #f4f4f1;
+  --veil-opacity: 0.4;
+  --surface-blur: 18px;
+}
+
+/* 카드·메뉴 바: 유리 톤일 때만 뒤를 흐림 */
+.surface-blur {
+  -webkit-backdrop-filter: blur(var(--surface-blur));
+  backdrop-filter: blur(var(--surface-blur));
 }
 
 @layer base {
@@ -36,7 +102,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-cream);
+    outline: 2px solid var(--color-fg);
     outline-offset: 3px;
   }
 
@@ -56,7 +122,7 @@
    움직임 (impeccable animate)
    --------------------------------------------------------- */
 
-/* 메뉴로 이동해 도착한 구역: 제목 아래로 크림색 줄이 그어졌다 사라짐 */
+/* 메뉴로 이동해 도착한 구역: 제목 아래로 줄이 그어졌다 사라짐 */
 .section-title {
   position: relative;
   width: fit-content;
@@ -70,7 +136,7 @@
   bottom: -0.18em;
   height: 3px;
   border-radius: 999px;
-  background: var(--color-cream);
+  background: var(--color-fg);
   transform: scaleX(0);
   transform-origin: left;
   opacity: 0;
@@ -101,10 +167,10 @@
    브라우저 기본 요소도 사이트 색으로
    --------------------------------------------------------- */
 ::selection {
-  background: var(--color-cream);
-  color: #000;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
 }
 
 html {
-  scrollbar-color: rgb(225 224 204 / 0.25) #000;
+  scrollbar-color: rgb(27 26 23 / 0.25) var(--paper);
 }

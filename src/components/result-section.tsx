@@ -38,7 +38,7 @@ export function ResultSection({
     return (
       <div className="flex flex-col gap-10">
         {title}
-        <p className="border-t border-line pt-6 text-cream/60">아직 이번 시즌 경기 결과가 없어요.</p>
+        <p className="border-t border-line pt-6 text-fg/60">아직 이번 시즌 경기 결과가 없어요.</p>
       </div>
     )
   }
@@ -52,7 +52,7 @@ export function ResultSection({
     <div className="flex h-full flex-col gap-10">
       {title}
       <div className="flex flex-col">
-        <p className="mb-3 text-sm text-cream/60">
+        <p className="mb-3 text-sm text-fg/60">
           {[result.competition, result.date, result.venue].filter(Boolean).join(' · ')}
         </p>
         {[result.home, result.away].map((team, i) => {
@@ -61,11 +61,11 @@ export function ResultSection({
             <div key={team.name} className="flex items-center justify-between border-t border-line py-4">
               <span className="flex items-center gap-3">
                 <TeamCrest name={team.name} className="h-10 w-10 text-base" />
-                <span className={`text-2xl font-medium ${muted ? 'text-cream/50' : ''}`}>{team.name}</span>
+                <span className={`text-2xl font-medium ${muted ? 'text-fg/50' : ''}`}>{team.name}</span>
               </span>
               <span
                 className={`text-6xl font-medium leading-none tracking-[-0.05em] md:text-7xl ${
-                  muted ? 'text-cream/50' : ''
+                  muted ? 'text-fg/50' : ''
                 }`}
               >
                 <RollingNumber value={team.score} delay={0.3 + i * 0.15} />
@@ -73,7 +73,7 @@ export function ResultSection({
             </div>
           )
         })}
-        <p className={`border-t border-line pt-4 text-sm font-medium ${verdict === '승리' ? 'text-win' : 'text-cream/60'}`}>
+        <p className={`border-t border-line pt-4 text-sm font-medium ${verdict === '승리' ? 'text-win' : 'text-fg/60'}`}>
           {verdict}
         </p>
       </div>
@@ -81,10 +81,10 @@ export function ResultSection({
       {/* 시즌 기록 */}
       <div className="mt-auto flex flex-wrap items-end justify-between gap-4 border-t border-line pt-4 text-sm">
         <p className="flex flex-col gap-1">
-          <span className="text-cream/60">이번 시즌 {played}경기</span>
+          <span className="text-fg/60">이번 시즌 {played}경기</span>
           <span className="text-lg font-medium tabular-nums">
             {record.win}승 {record.draw}무 {record.loss}패
-            <span className="ml-3 text-sm font-normal text-cream/50">
+            <span className="ml-3 text-sm font-normal text-fg/50">
               득점 {record.goalsFor} · 실점 {record.goalsAgainst}
             </span>
           </span>
@@ -93,7 +93,7 @@ export function ResultSection({
           href={source.url}
           target="_blank"
           rel="noopener"
-          className="text-cream/60 underline decoration-cream/30 underline-offset-4 transition-colors hover:text-cream"
+          className="text-fg/60 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg"
         >
           출처 {source.label}
         </a>

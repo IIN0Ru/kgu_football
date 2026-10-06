@@ -46,7 +46,7 @@ export function SiteBackground({ away, image }: SiteBackgroundProps) {
   const t = { duration: reduce ? 0.3 : DURATION, ease: EASE }
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-ink">
+    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-paper">
       {/* 선명한 사진 */}
       <Photo image={image} className="absolute inset-0 h-full w-full object-cover object-[50%_55%]" />
 
@@ -67,19 +67,16 @@ export function SiteBackground({ away, image }: SiteBackgroundProps) {
       {/* 노이즈 질감 */}
       <div className="noise-overlay absolute inset-0 opacity-[0.6] mix-blend-overlay" />
 
-      {/* 첫 화면: 위 살짝, 아래 진하게 → 다음 화면: 전체를 고르게 어둡게 */}
+      {/* 첫 화면: 사진을 밝게 두고 글자 대비용으로 위·아래만 살짝 → 다음 화면: 밝은 막을 덮어 사진이 은은하게 남음 */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/15 to-black/85"
+        className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/0 to-black/40"
         initial={false}
         animate={{ opacity: away ? 0 : 1 }}
         transition={t}
       />
-      <motion.div
-        className="absolute inset-0 bg-black"
-        initial={false}
-        animate={{ opacity: away ? 0.6 : 0 }}
-        transition={t}
-      />
+      <motion.div className="absolute inset-0" initial={false} animate={{ opacity: away ? 1 : 0 }} transition={t}>
+        <div className="absolute inset-0 bg-[var(--veil)] opacity-[var(--veil-opacity)]" />
+      </motion.div>
     </div>
   )
 }

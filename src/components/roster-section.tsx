@@ -39,14 +39,14 @@ export function RosterSection({
           >
             선수단
           </h2>
-          <p className="text-sm text-cream/60">2026 시즌 등록 선수 {players.length}명</p>
+          <p className="text-sm text-fg/60">2026 시즌 등록 선수 {players.length}명</p>
         </div>
-        <p className="text-sm text-cream/60">
+        <p className="text-sm text-fg/60">
           <a
             href={source.url}
             target="_blank"
             rel="noopener"
-            className="underline decoration-cream/30 underline-offset-4 transition-colors hover:text-cream hover:decoration-cream"
+            className="underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
           >
             출처 {source.label}
           </a>
@@ -60,14 +60,14 @@ export function RosterSection({
           const group = players.filter((p) => p.position === key)
           return (
             <section key={key} aria-label={label} className="flex flex-col">
-              <h3 className="mb-3 flex items-baseline justify-between text-sm text-cream/60">
+              <h3 className="mb-3 flex items-baseline justify-between text-sm text-fg/60">
                 <span>
-                  {label} <span className="text-cream/40">{key}</span>
+                  {label} <span className="text-fg/40">{key}</span>
                 </span>
                 <span>{group.length}</span>
               </h3>
               {group.length === 0 ? (
-                <p className="border-t border-line py-3 text-cream/50">확인 중</p>
+                <p className="border-t border-line py-3 text-fg/50">확인 중</p>
               ) : (
                 <ul className="border-b border-line">
                   {group.map((p) => (
@@ -75,11 +75,11 @@ export function RosterSection({
                       key={`${p.number}-${p.name}`}
                       className="flex items-baseline gap-4 border-t border-line py-3"
                     >
-                      <span className="w-7 shrink-0 text-right text-sm tabular-nums text-cream/50">
+                      <span className="w-7 shrink-0 text-right text-sm tabular-nums text-fg/50">
                         {p.number ?? '–'}
                       </span>
                       <span className="flex-1 text-lg font-medium">{p.name}</span>
-                      {p.grade && <span className="text-sm text-cream/50">{p.grade}학년</span>}
+                      {p.grade && <span className="text-sm text-fg/50">{p.grade}학년</span>}
                     </li>
                   ))}
                 </ul>

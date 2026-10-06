@@ -43,9 +43,9 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-center gap-3 border-t border-line py-4">
-      <Icon className="h-4 w-4 shrink-0 text-cream/50" aria-hidden="true" />
-      <dt className="w-10 shrink-0 text-sm text-cream/60">{label}</dt>
-      <dd className={`min-w-0 text-base ${value ? '' : 'text-cream/50'}`}>{value ?? '확인 중'}</dd>
+      <Icon className="h-4 w-4 shrink-0 text-fg/50" aria-hidden="true" />
+      <dt className="w-10 shrink-0 text-sm text-fg/60">{label}</dt>
+      <dd className={`min-w-0 text-base ${value ? '' : 'text-fg/50'}`}>{value ?? '확인 중'}</dd>
     </div>
   )
 }
@@ -73,7 +73,7 @@ export function NextMatchSection({
         </h2>
         <span
           className={`rounded-full px-3 py-1 text-sm font-medium ${
-            count?.today ? 'bg-win text-black' : count ? 'bg-cream text-black' : 'border border-line text-cream/70'
+            count?.today ? 'bg-win text-on-win' : count ? 'bg-accent text-on-accent' : 'border border-line text-fg/70'
           }`}
         >
           {count ? count.label : '일정 발표 전'}
@@ -86,17 +86,17 @@ export function NextMatchSection({
           <TeamCrest name={match.home} className="h-14 w-14 text-xl md:h-16 md:w-16 md:text-2xl" />
           <span
             className={`truncate text-2xl font-medium tracking-[-0.03em] md:text-3xl ${
-              match.home !== ourTeam ? 'text-cream/70' : ''
+              match.home !== ourTeam ? 'text-fg/70' : ''
             }`}
           >
             {match.home}
           </span>
         </div>
-        <span className="shrink-0 text-sm text-cream/40">vs</span>
+        <span className="shrink-0 text-sm text-fg/40">vs</span>
         <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
           <span
             className={`truncate text-right text-2xl font-medium tracking-[-0.03em] md:text-3xl ${
-              match.away !== ourTeam ? 'text-cream/70' : ''
+              match.away !== ourTeam ? 'text-fg/70' : ''
             }`}
           >
             {match.away}
@@ -115,11 +115,11 @@ export function NextMatchSection({
         href={ctaHref}
         target="_blank"
         rel="noopener"
-        className="group mt-auto inline-flex items-center gap-2 self-start rounded-full bg-primary py-1 pl-5 pr-1 text-sm font-medium text-black transition-all hover:gap-3 sm:text-base"
+        className="group mt-auto inline-flex items-center gap-2 self-start rounded-full bg-accent py-1 pl-5 pr-1 text-sm font-medium text-on-accent transition-all hover:gap-3 sm:text-base"
       >
         인스타그램에서 일정 확인
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black transition-transform group-hover:scale-110 sm:h-10 sm:w-10">
-          <ArrowUpRight className="h-4 w-4 text-cream" aria-hidden="true" />
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-on-accent transition-transform group-hover:scale-110 sm:h-10 sm:w-10">
+          <ArrowUpRight className="h-4 w-4 text-accent" aria-hidden="true" />
         </span>
       </a>
     </div>

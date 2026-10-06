@@ -22,7 +22,7 @@ export function TeamCrest({ name, className }: { name: string; className?: strin
         aria-label={`${school.name} 홈페이지 (로고 출처, 새 창)`}
         className={cn(
           base,
-          'bg-cream ring-0 ring-cream/60 ring-offset-2 ring-offset-panel transition-[box-shadow,transform] duration-200 hover:scale-105 hover:ring-2 focus-visible:ring-2',
+          'border border-line bg-crest ring-0 ring-fg/40 ring-offset-2 ring-offset-surface transition-[box-shadow,transform] duration-200 hover:scale-105 hover:ring-2 focus-visible:ring-2',
           className,
         )}
       >
@@ -35,7 +35,7 @@ export function TeamCrest({ name, className }: { name: string; className?: strin
   return (
     <span
       aria-hidden="true"
-      className={cn(base, 'font-medium', ours ? 'bg-cream text-black' : 'border border-line text-cream/50', className)}
+      className={cn(base, 'font-medium', ours ? 'bg-accent text-on-accent' : 'border border-line text-fg/50', className)}
     >
       {name.slice(0, 1)}
     </span>

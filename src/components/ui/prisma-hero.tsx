@@ -166,7 +166,7 @@ const PrismaHero = ({
   return (
     <section id={id} className={`h-screen min-h-[560px] w-full ${bare ? "" : "p-2 md:p-3"}`} aria-label="소개">
       <div
-        className={`relative h-full w-full ${bare ? "" : "overflow-hidden rounded-2xl bg-panel md:rounded-[2rem]"}`}
+        className={`relative h-full w-full ${bare ? "" : "overflow-hidden rounded-2xl bg-ink md:rounded-[2rem]"}`}
       >
         {/* Background video (권한 확인된 영상만) */}
         {videoSrc && (
@@ -209,12 +209,12 @@ const PrismaHero = ({
 
         {/* Navbar */}
         <nav className="absolute left-1/2 top-0 z-20 -translate-x-1/2" aria-label="주요 메뉴">
-          <div className="flex items-center gap-3 rounded-b-2xl bg-black px-4 py-2 sm:gap-6 md:gap-12 md:rounded-b-3xl md:px-8 lg:gap-14">
+          <div className="flex items-center gap-3 surface-blur rounded-b-2xl border border-t-0 border-line bg-bar px-4 py-2 sm:gap-6 md:gap-12 md:rounded-b-3xl md:px-8 lg:gap-14">
             {navItems.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
-                className="whitespace-nowrap text-[11px] text-cream/80 transition-colors hover:text-cream sm:text-xs md:text-sm"
+                className="whitespace-nowrap text-[11px] text-fg/70 transition-colors hover:text-fg sm:text-xs md:text-sm"
               >
                 {item.label}
               </a>
