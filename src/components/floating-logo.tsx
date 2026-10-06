@@ -45,6 +45,7 @@ export function FloatingLogo({
   alt,
   heroId,
   asteriskHref,
+  end = 'float',
 }: {
   /** 사진 위(첫 화면)용: 글자 크림색 */
   src: string
@@ -53,6 +54,8 @@ export function FloatingLogo({
   alt: string
   heroId: string
   asteriskHref?: string
+  /** [시안 비교용] 도착 모양: float(그대로) / backed(작은 받침) / bar(위 바 안) / hide(메뉴 속 로고로 넘기고 사라짐) */
+  end?: 'float' | 'backed' | 'bar' | 'hide'
 }) {
   const reduce = useReducedMotion()
   const [box, setBox] = useState<Box | null>(null)
@@ -60,12 +63,15 @@ export function FloatingLogo({
   useEffect(() => {
     const update = () => {
       const hero = document.getElementById(heroId)
-      setBox(measure(hero?.offsetHeight ?? window.innerHeight))
+      const m = measure(hero?.offsetHeight ?? window.innerHeight)
+      if (end === 'bar') { m.y1 = 6; m.w1 = window.innerWidth >= 768 ? 64 : 46; m.x1 = window.innerWidth >= 768 ? 20 : 12 }
+      if (end === 'backed') { m.y1 = 10; m.x1 = window.innerWidth >= 768 ? 22 : 14 }
+      setBox(m)
     }
     update()
     window.addEventListener('resize', update)
     return () => window.removeEventListener('resize', update)
-  }, [heroId])
+  }, [heroId, end])
 
   const { scrollY } = useScroll()
   const h = box?.heroH ?? 1
@@ -75,6 +81,8 @@ export function FloatingLogo({
   const width = useTransform(progress, (p) => (box ? box.w0 + (box.w1 - box.w0) * p : 0))
   // 밝은 배경으로 갈수록 크림색 글자 → 원본 검은 글자로 바꿔 보여줌 (크림색은 밝은 배경에서 안 보임)
   const darkOpacity = useTransform(progress, [0.45, 0.9], [0, 1])
+  const wholeOpacity = useTransform(progress, [0.75, 0.98], [1, end === 'hide' ? 0 : 1])
+  const backOpacity = useTransform(progress, [0.7, 1], [0, 1])
   const asteriskOpacity = useTransform(progress, [0, 0.35], [1, 0])
   const asteriskEvents = useTransform(progress, (p) => (p > 0.3 ? 'none' : 'auto'))
   const shadowOpacity = useTransform(progress, [0, 1], [0.35, 0])
@@ -83,7 +91,15 @@ export function FloatingLogo({
   if (!box) return null
 
   return (
-    <motion.div className="fixed left-0 top-0 z-40" style={{ x, y, width }}>
+    <>
+    {end === 'backed' && (
+      <motion.div
+        aria-hidden="true"
+        style={{ opacity: backOpacity, width: box.w1 + 24, height: box.w1 * RATIO + 20 }}
+        className="surface-blur pointer-events-none fixed left-[10px] top-0 z-30 rounded-b-2xl border border-t-0 border-line bg-bar md:left-[10px]"
+      />
+    )}
+    <motion.div className="fixed left-0 top-0 z-[60]" style={{ x, y, width, opacity: wholeOpacity }}>
       <motion.div
         initial={reduce ? { opacity: 0 } : { y: '30%', opacity: 0, filter: 'blur(12px)' }}
         animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
@@ -122,5 +138,6 @@ export function FloatingLogo({
         )}
       </motion.div>
     </motion.div>
+    </>
   )
 }

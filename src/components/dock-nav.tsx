@@ -8,13 +8,19 @@ import type { HeroNavItem } from '@/components/ui/prisma-hero'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
+export type NavLayout = 'tab' | 'bar' | 'vertical'
+
 interface DockNavProps {
   items: HeroNavItem[]
+  /** [시안 비교용] 메뉴 모양: tab(가운데 탭) / bar(위 전체 바) / vertical(왼쪽 세로 탭) */
+  layout?: NavLayout
+  /** 메뉴 안에 넣을 로고 (tab 왼쪽 끝 / vertical 맨 위) */
+  logo?: { src: string; alt: string }
   /** 이 id의 요소(히어로)가 화면에서 사라지면 메뉴가 나타남 */
   heroId: string
 }
 
-export function DockNav({ items, heroId }: DockNavProps) {
+export function DockNav({ items, heroId, layout = 'tab', logo }: DockNavProps) {
   const reduce = useReducedMotion()
   const [visible, setVisible] = useState(false)
   const [active, setActive] = useState<string | null>(null)
@@ -70,47 +76,76 @@ export function DockNav({ items, heroId }: DockNavProps) {
     }
   }, [items])
 
+  const links = items.map((item) => {
+    const isActive = item.href === `#${active}`
+    return (
+      <a
+        key={item.label}
+        href={item.href}
+        aria-current={isActive ? 'location' : undefined}
+        onClick={() => {
+          if (item.href.startsWith('#')) {
+            setActive(item.href.slice(1))
+            lockUntil.current = performance.now() + 1200
+          }
+        }}
+        className={`relative whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs transition-colors duration-200 sm:px-3 md:px-4 md:text-sm ${
+          isActive ? 'text-on-accent' : 'text-fg/70 hover:text-fg'
+        } ${layout === 'vertical' ? 'text-left' : ''}`}
+      >
+        {isActive && (
+          <motion.span
+            layoutId="dock-pill"
+            className="absolute inset-0 rounded-full bg-accent"
+            transition={{ duration: reduce ? 0 : 0.4, ease: EASE }}
+          />
+        )}
+        <span className="relative">{item.label}</span>
+      </a>
+    )
+  })
+  const logoEl = logo && (
+    <a
+      href="#top"
+      onClick={(e) => {
+        e.preventDefault()
+        window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
+      }}
+      aria-label={`${logo.alt} — 맨 위로`}
+      className={layout === 'vertical' ? 'mb-2 block px-2 pt-1' : 'mr-1 block pl-1.5'}
+    >
+      <img src={logo.src} alt={logo.alt} className={layout === 'vertical' ? 'h-auto w-24' : 'h-7 w-auto md:h-8'} />
+    </a>
+  )
+
+  const shell =
+    layout === 'bar'
+      ? 'fixed inset-x-0 top-0 z-50'
+      : layout === 'vertical'
+        ? 'fixed left-2 top-2 z-50 md:left-3 md:top-3'
+        : 'fixed left-1/2 top-0 z-50 -translate-x-1/2'
+  const box =
+    layout === 'bar'
+      ? 'surface-blur flex h-14 items-center justify-center gap-1 border-b border-line bg-bar px-3'
+      : layout === 'vertical'
+        ? 'surface-blur flex flex-col items-stretch gap-1 rounded-2xl border border-line bg-bar p-2'
+        : 'surface-blur flex items-center gap-1 rounded-b-2xl border border-t-0 border-line bg-bar p-1.5 md:rounded-b-3xl'
+
   return (
     <AnimatePresence>
       {visible && (
         <motion.nav
           aria-label="빠른 이동"
-          className="fixed left-1/2 top-0 z-50 -translate-x-1/2"
-          initial={reduce ? { opacity: 0 } : { y: '-100%' }}
-          animate={reduce ? { opacity: 1 } : { y: 0 }}
-          exit={reduce ? { opacity: 0 } : { y: '-100%' }}
+          className={shell}
+          initial={reduce ? { opacity: 0 } : layout === 'vertical' ? { x: '-120%' } : { y: '-100%' }}
+          animate={reduce ? { opacity: 1 } : layout === 'vertical' ? { x: 0 } : { y: 0 }}
+          exit={reduce ? { opacity: 0 } : layout === 'vertical' ? { x: '-120%' } : { y: '-100%' }}
           transition={{ duration: 0.45, ease: EASE }}
         >
           <LayoutGroup>
-            <div className="flex items-center gap-1 surface-blur rounded-b-2xl border border-t-0 border-line bg-bar p-1.5 md:rounded-b-3xl">
-              {items.map((item) => {
-                const isActive = item.href === `#${active}`
-                return (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    aria-current={isActive ? 'location' : undefined}
-                    onClick={() => {
-                      if (item.href.startsWith('#')) {
-                        setActive(item.href.slice(1))
-                        lockUntil.current = performance.now() + 1200
-                      }
-                    }}
-                    className={`relative whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs transition-colors duration-200 sm:px-3 md:px-4 md:text-sm ${
-                      isActive ? 'text-on-accent' : 'text-fg/70 hover:text-fg'
-                    }`}
-                  >
-                    {isActive && (
-                      <motion.span
-                        layoutId="dock-pill"
-                        className="absolute inset-0 rounded-full bg-accent"
-                        transition={{ duration: reduce ? 0 : 0.4, ease: EASE }}
-                      />
-                    )}
-                    <span className="relative">{item.label}</span>
-                  </a>
-                )
-              })}
+            <div className={box}>
+              {logoEl}
+              {links}
             </div>
           </LayoutGroup>
         </motion.nav>
