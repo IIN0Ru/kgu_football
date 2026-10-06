@@ -1,13 +1,13 @@
 /**
  * 최근 결과
- * - 대회·날짜·장소 한 줄 + 가장 최근 경기를 이전 경기와 같은 한 줄 구성으로 크게
- *   (날짜 · 상대 로고·이름 · 홈/원정 · 점수(경기대 먼저, 전광판처럼 굴러 올라감) · 결과). 사용자 요청: 위아래 두 줄보다 한눈에 읽히게
- * - 승리/무승부/패배 자동 판정 (승리만 초록), 시즌 기록과 출처
- * - 그 아래 이전 4경기를 작은 줄로: 날짜 · 상대 로고·이름 · 홈/원정 · 점수(경기대 먼저) · 승/무/패
+ * - 전광판처럼 한 줄: 홈 이름 · 홈 로고 · 점수 · 원정 로고 · 원정 이름 (가운데 정렬, 사용자 요청 2026-10-07)
+ * - 승리/무승부/패배 표시 없음 (사용자 요청으로 뺌). 점수는 홈 먼저
+ * - 위: 대회·날짜·장소 한 줄 + 가장 최근 경기를 크게(점수가 전광판처럼 굴러 올라감)
+ * - 아래: 이전 4경기를 작은 줄로 (왼쪽에 작은 날짜) → 시즌 기록과 출처는 그대로
  */
 import { RollingNumber } from '@/components/motion'
 import { TeamCrest } from '@/components/team-crest'
-import { ourTeam, type PastMatch, type seasonRecord as SeasonRecordValue } from '@/data/home'
+import type { PastMatch, seasonRecord as SeasonRecordValue } from '@/data/home'
 
 type Team = { name: string; score: number }
 export interface RecentResult {
@@ -47,77 +47,38 @@ export function ResultSection({
     )
   }
 
-  const ours = result.home.name === ourTeam ? result.home.score : result.away.score
-  const theirs = result.home.name === ourTeam ? result.away.score : result.home.score
-  const verdict = ours > theirs ? '승리' : ours < theirs ? '패배' : '무승부'
-  const opponent = result.home.name === ourTeam ? result.away.name : result.home.name
-  const side = result.home.name === ourTeam ? '홈' : '원정'
   const played = record.win + record.draw + record.loss
 
   return (
     <div className="flex h-full flex-col gap-10">
       {title}
+
       <div className="flex flex-col">
+        {/* 가장 최근 경기: 크게 */}
         <p className="mb-3 text-sm text-fg/60">
           {[result.competition, result.date, result.venue].filter(Boolean).join(' · ')}
         </p>
-        {/* 가장 최근 경기: 아래 이전 경기와 같은 한 줄 구성, 크기만 크게 */}
-        <div className="flex items-center gap-3 border-y border-line py-5 md:gap-4">
-          <span className="hidden w-12 shrink-0 text-base tabular-nums text-fg/50 sm:block">{result.shortDate}</span>
-          <TeamCrest name={opponent} className="h-12 w-12 text-lg md:h-14 md:w-14" />
-          <span className="min-w-0 flex-1">
-            <span className="block truncate text-2xl font-medium tracking-[-0.03em] md:text-3xl">{opponent}</span>
-            <span className="text-sm text-fg/50">{side}</span>
-          </span>
-          <span className="shrink-0 text-5xl font-medium leading-none tracking-[-0.05em] tabular-nums md:text-6xl">
-            <RollingNumber value={ours} delay={0.3} />
-            <span className="mx-1.5 text-fg/40 md:mx-2">:</span>
-            <span className="text-fg/50">
-              <RollingNumber value={theirs} delay={0.45} />
-            </span>
-          </span>
-          <span
-            className={`flex h-9 shrink-0 items-center justify-center rounded-full px-3 text-sm font-medium ${
-              verdict === '승리' ? 'bg-win text-on-win' : 'border border-line text-fg/60'
-            }`}
-          >
-            {verdict}
-          </span>
-        </div>
-      </div>
+        <ScoreLine
+          home={result.home}
+          away={result.away}
+          large
+          animate
+        />
 
-      {/* 이전 경기 */}
-      {earlier.length > 0 && (
-        <div className="flex flex-col">
-          <h3 className="mb-2 text-sm text-fg/60">이전 경기</h3>
-          <ul>
-            {earlier.map((m) => {
-              const v = m.ours > m.theirs ? '승' : m.ours < m.theirs ? '패' : '무'
-              return (
-                <li key={`${m.date}-${m.opponent}`} className="flex items-center gap-3 border-t border-line py-3">
-                  <span className="w-10 shrink-0 text-sm tabular-nums text-fg/50">{m.date}</span>
-                  <TeamCrest name={m.opponent} className="h-7 w-7 text-xs" />
-                  <span className="min-w-0 flex-1 truncate text-base font-medium">
-                    {m.opponent}
-                    <span className="ml-2 text-xs font-normal text-fg/50">{m.side}</span>
-                  </span>
-                  <span className="text-base font-medium tabular-nums">
-                    {m.ours} : {m.theirs}
-                  </span>
-                  <span
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
-                      v === '승' ? 'bg-win text-on-win' : 'border border-line text-fg/60'
-                    }`}
-                    aria-label={v === '승' ? '승리' : v === '패' ? '패배' : '무승부'}
-                  >
-                    {v}
-                  </span>
+        {/* 이전 경기 */}
+        {earlier.length > 0 && (
+          <>
+            <h3 className="mb-1 mt-8 text-sm text-fg/60">이전 경기</h3>
+            <ul>
+              {earlier.map((m) => (
+                <li key={`${m.date}-${m.home.name}-${m.away.name}`} className="border-t border-line first:border-t-0">
+                  <ScoreLine home={m.home} away={m.away} date={m.date} />
                 </li>
-              )
-            })}
-          </ul>
-        </div>
-      )}
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
 
       {/* 시즌 기록 */}
       <div className="mt-auto flex flex-wrap items-end justify-between gap-4 border-t border-line pt-4 text-sm">
@@ -139,6 +100,42 @@ export function ResultSection({
           출처 {source.label}
         </a>
       </div>
+    </div>
+  )
+}
+
+/** 전광판 한 줄: 홈 이름 · 홈 로고 · 점수 · 원정 로고 · 원정 이름 (가운데 정렬, 승패 표시 없음) */
+function ScoreLine({
+  home,
+  away,
+  date,
+  large,
+  animate,
+}: {
+  home: Team
+  away: Team
+  date?: string
+  large?: boolean
+  animate?: boolean
+}) {
+  const name = `min-w-0 flex-1 truncate font-medium ${large ? 'text-base sm:text-xl md:text-2xl' : 'text-sm sm:text-base'}`
+  const crest = large ? 'h-10 w-10 text-base sm:h-12 sm:w-12 md:h-14 md:w-14' : 'h-8 w-8 text-sm sm:h-9 sm:w-9'
+  return (
+    <div className={`relative flex items-center gap-2 sm:gap-3 md:gap-4 ${large ? 'py-5' : 'py-3'}`}>
+      {date && <span className="absolute left-0 text-xs tabular-nums text-fg/40">{date}</span>}
+      <span className={`${name} text-right ${date ? 'pl-10' : ''}`}>{home.name}</span>
+      <TeamCrest name={home.name} className={crest} />
+      <span
+        className={`shrink-0 text-center font-medium tabular-nums tracking-[-0.03em] ${
+          large ? 'w-20 text-3xl sm:w-28 sm:text-4xl md:w-32 md:text-5xl' : 'w-14 text-lg sm:w-16 sm:text-xl'
+        }`}
+      >
+        {animate ? <RollingNumber value={home.score} delay={0.3} /> : home.score}
+        <span className="mx-1.5 text-fg/40">:</span>
+        {animate ? <RollingNumber value={away.score} delay={0.45} /> : away.score}
+      </span>
+      <TeamCrest name={away.name} className={crest} />
+      <span className={`${name} text-left`}>{away.name}</span>
     </div>
   )
 }
