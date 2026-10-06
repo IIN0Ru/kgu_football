@@ -95,6 +95,18 @@ kgu_football/
 
 > 최신이 위. 각 항목: 무엇을 바꿨는지 / 왜 / 확인 결과 / 남은 일.
 
+### 2026-10-06 #25 — 소식 자동 수집 준비 (작업 중) (Claude)
+
+**왜**: 사용자 "뉴스·소식은 링크트리(linktr.ee/kgu_turtles)와 축구부 블로그(blog.naver.com/orangeturtles)에서 가져오면 편할 것 같다"
+
+**조사**
+- 링크트리: 인터뷰 5개(fliphtml5 매거진), 인스타그램 @kgu_turtles, 유튜브 @KGU_TURTLES, 블로그 링크. robots.txt 가 일반 봇 전부 금지(`User-agent: * Disallow: /`) → 자동 수집 안 하고 수동으로 넣음
+- 네이버 블로그: 구독용 RSS(rss.blog.naver.com/orangeturtles.xml) 있음. 작업 환경·브라우저에서는 네이버 접속이 막혀 있어 GitHub Actions 에서 직접 확인
+
+**사용자 결정**: 인스타그램은 @kgu_football 유지 / 블로그 자동 + 인터뷰 수동 / 블로그 글은 제목·날짜·요약 + 대표 사진
+
+**지금까지**: `scripts/fetch-news.mjs`(robots 확인 → RSS → 최신 6개, 대표 사진은 작은 크기로 public/news/), `.github/workflows/update-news.yml`(매일 07:00), 빈 `src/data/news.json`. 화면 연결은 다음 항목에서
+
 ### 2026-10-06 #24 — 가장 최근 경기도 한 줄로 (Claude)
 
 **왜**: 사용자 "가장 최근 경기도 이전 경기처럼 나타나되 크기만 키워줘. 위에 경기대, 밑에 칼빈대 3·2 하면 가독성이 너무 떨어짐"
