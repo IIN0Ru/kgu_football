@@ -44,7 +44,7 @@ export default function App() {
 
   return (
     <>
-      <SiteBackground away={away} image={heroImage} />
+      <SiteBackground away={away} image={heroImage} introId="intro" />
       <DockNav items={navItems} heroId="top" logo={{ id: 'dock-logo' }} />
       <FloatingLogo
         src={heroLogo.src}

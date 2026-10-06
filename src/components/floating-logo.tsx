@@ -6,7 +6,7 @@
  * - 처음 열 때는 첫 화면 큰 글자와 같은 등장 연출(흐림 → 선명, 아래에서 올라옴)
  * - 첫 화면(사진 위)에서는 글자가 크림색인 판, 밝은 화면으로 올라가면서 원본(검은 글자) 판으로 서서히 바뀜
  * - 각주 `*`(비공식 사이트 안내)는 첫 화면에서만 보이고 올라가면서 사라짐
- * - 0페이지(intro-banner)가 위에 있으면 로고는 히어로와 함께 스크롤되어 올라오고, 히어로를 넘길 때 탭으로 이동 (2026-10-07)
+ * - 0페이지(intro-banner)가 위에 있으면 로고는 히어로 자리에서 배너가 사라지는 동안 서서히 나타나고, 히어로를 넘길 때 탭으로 이동 (2026-10-07)
  * - 동작 줄이기 설정: 등장은 짧은 페이드만. 스크롤에 따른 이동은 스크롤 그 자체라 유지
  */
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
@@ -105,9 +105,12 @@ export function FloatingLogo({
   // 히어로 위에 0페이지가 있으면: 0페이지에서는 로고가 히어로와 함께 아래에서 올라오고(below),
   // 히어로를 지나가는 동안 메뉴 탭으로 이동 (progress)
   const progress = useTransform(scrollY, [top, top + h], [0, 1], { clamp: true })
-  const below = useTransform(scrollY, (v) => Math.max(0, top - v))
+  // 0페이지에서는 로고가 히어로 자리에 미리 있다가, 배너가 사라지는 동안(넘기기 후반) 나타남
+  // (예전: 히어로와 함께 아래에서 밀려 올라옴 → 두 화면 경계가 드러나 보여 바꿈)
+  const appear = useTransform(scrollY, [top * 0.55, top], [top > 0 ? 0 : 1, 1], { clamp: true })
   const x = useTransform(progress, (p) => (box ? box.x0 + (box.x1 - box.x0) * p : 0))
-  const y = useTransform([progress, below], ([p, b]: number[]) => (box ? box.y0 + (box.y1 - box.y0) * p + b : 0))
+  const logoEvents = useTransform(appear, (o) => (o < 0.5 ? 'none' : 'auto'))
+  const y = useTransform(progress, (p) => (box ? box.y0 + (box.y1 - box.y0) * p : 0))
   const width = useTransform(progress, (p) => (box ? box.w0 + (box.w1 - box.w0) * p : 0))
   // 밝은 배경으로 갈수록 크림색 글자 → 원본 검은 글자로 바꿔 보여줌 (크림색은 밝은 배경에서 안 보임)
   const darkOpacity = useTransform(progress, [0.45, 0.9], [0, 1])
@@ -119,7 +122,7 @@ export function FloatingLogo({
   if (!box) return null
 
   return (
-    <motion.div className="fixed left-0 top-0 z-[60]" style={{ x, y, width }}>
+    <motion.div className="fixed left-0 top-0 z-[60]" style={{ x, y, width, opacity: appear, pointerEvents: logoEvents }}>
       <motion.div
         initial={reduce ? { opacity: 0 } : { y: '30%', opacity: 0, filter: 'blur(12px)' }}
         animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
