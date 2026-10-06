@@ -12,6 +12,7 @@
  * - 배경 사진(image) 추가: 카드 안에 사진을 깔 수 있게
  * - bare 모드 추가: 카드 배경·모서리·덮개 없이 글자와 메뉴만. 사이트 전체 고정 배경(site-background.tsx) 위에 얹을 때 사용
  * - 큰 글자 등장 강화: 흐림 + 아래에서 크게 올라옴 (1.2초). 동작 줄이기 설정 시 페이드만
+ * - 밝은 테마: 상단 메뉴를 검은 탭 → 밝은 반투명 탭(검은 글자)으로. 밝아진 사진 위 소개 글에 그림자 추가
  */
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -234,8 +235,8 @@ const PrismaHero = ({
             <div className="col-span-12 flex flex-col gap-5 pb-6 lg:col-span-4 lg:pb-10">
               <motion.p
                 {...enter(0.5)}
-                className="text-sm text-primary/85 md:text-base"
-                style={{ lineHeight: 1.4 }}
+                className="text-sm font-medium text-cream md:text-base"
+                style={{ lineHeight: 1.4, textShadow: '0 1px 2px rgb(0 0 0 / 0.85), 0 0 12px rgb(0 0 0 / 0.7), 0 0 32px rgb(0 0 0 / 0.5)' }}
               >
                 {description}
               </motion.p>

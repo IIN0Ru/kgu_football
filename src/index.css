@@ -35,43 +35,10 @@
   --ease-pull: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 톤 후보 (사용자 선택 대기): paper(크림·종이) / white(흰색 미니멀) / glass(밝은 유리) */
-:root,
-:root[data-tone="paper"] {
-  --paper: #ecebe3;
-  --surface: rgb(248 247 241 / 0.94);
-  --bar: #f8f7f1;
-  --fg: #1b1a17;
-  --line: rgb(27 26 23 / 0.12);
-  --accent: #1b1a17;
-  --on-accent: #f8f7f1;
-  --crest: #ffffff;
-  --win: #2f7a4a;
-  --on-win: #ffffff;
-  --veil: #ecebe3;          /* 스크롤 뒤 사진 위에 덮는 밝은 막 */
-  --veil-opacity: 0.62;
-  --surface-blur: 0px;
-}
-
-:root[data-tone="white"] {
-  --paper: #f6f6f5;
-  --surface: #ffffff;
-  --bar: #ffffff;
-  --fg: #111111;
-  --line: rgb(17 17 17 / 0.1);
-  --accent: #111111;
-  --on-accent: #ffffff;
-  --crest: #ffffff;
-  --win: #237a45;
-  --on-win: #ffffff;
-  --veil: #f6f6f5;
-  --veil-opacity: 0.8;
-  --surface-blur: 0px;
-}
-
-:root[data-tone="glass"] {
-  --paper: #eeeeea;
-  --surface: rgb(255 255 255 / 0.55);
+:root {
+  /* 밝은 유리 톤 (사용자 선택 2026-10-06, 시안 3개 중 3번) */
+  --paper: #eeeeea;                    /* 사진 로딩 전 바탕 */
+  --surface: rgb(255 255 255 / 0.55);  /* 반투명 카드: 뒤의 흐린 사진 색이 비침 */
   --bar: rgb(255 255 255 / 0.75);
   --fg: #141413;
   --line: rgb(20 20 19 / 0.12);
@@ -80,12 +47,12 @@
   --crest: #ffffff;
   --win: #237a45;
   --on-win: #ffffff;
-  --veil: #f4f4f1;
+  --veil: #f4f4f1;          /* 스크롤 뒤 흐린 사진 위에 덮는 밝은 막 */
   --veil-opacity: 0.4;
-  --surface-blur: 18px;
+  --surface-blur: 18px;     /* 카드·메뉴 바 뒤를 흐림 */
 }
 
-/* 카드·메뉴 바: 유리 톤일 때만 뒤를 흐림 */
+/* 카드·메뉴 바: 뒤를 흐려서 반투명이어도 글자가 읽히게 */
 .surface-blur {
   -webkit-backdrop-filter: blur(var(--surface-blur));
   backdrop-filter: blur(var(--surface-blur));
@@ -172,5 +139,5 @@
 }
 
 html {
-  scrollbar-color: rgb(27 26 23 / 0.25) var(--paper);
+  scrollbar-color: rgb(20 20 19 / 0.25) var(--paper);
 }

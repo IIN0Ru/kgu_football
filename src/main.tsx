@@ -8,10 +8,6 @@ import App from './App.tsx'
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
 if (!location.hash) window.scrollTo(0, 0)
 
-// [임시] 톤 비교용: 주소 뒤 ?tone=paper|white|glass
-const tone = new URLSearchParams(location.search).get('tone')
-if (tone) document.documentElement.dataset.tone = tone
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
