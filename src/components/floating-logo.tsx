@@ -46,15 +46,17 @@ function slotBox(targetId: string): Pick<Box, 'x1' | 'y1' | 'w1'> | null {
   for (let el: HTMLElement | null = slot; el && el !== nav; el = el.offsetParent as HTMLElement | null) {
     left += el.offsetLeft
   }
-  // 로고 자리는 스크롤에 따라 넓어지므로 "다 넓어졌을 때" 기준으로 계산 (자리 폭 = 로고 폭 + 좌우 여백 10px)
-  const full = Number(slot.dataset.full ?? 66)
+  // 로고 자리는 스크롤에 따라 넓어지므로 "다 넓어졌을 때" 기준으로 계산
+  // (자리 폭 = 로고 폭 + 여백. 로고는 자리 왼쪽에 바짝 붙여 오른쪽 메뉴와 간격을 넓힘, 2026-10-07)
+  const full = Number(slot.dataset.full ?? 70)
+  const md = window.innerWidth >= 768
   const navFull = nav.offsetWidth - slot.offsetWidth + full
   const navLeft = (window.innerWidth - navFull) / 2
-  const w1 = full - 10
+  const w1 = md ? 56 : 40
   const box = nav.querySelector('div') as HTMLElement | null
   const innerH = box ? box.offsetHeight : 48
   // 탭은 화면 맨 위(0)에 붙어 있으므로 탭 높이 안에서 세로 가운데
-  return { x1: navLeft + left + 6, y1: Math.max(0, (innerH - w1 * RATIO) / 2), w1 }
+  return { x1: navLeft + left + 2, y1: Math.max(0, (innerH - w1 * RATIO) / 2), w1 }
 }
 
 export function FloatingLogo({

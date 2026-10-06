@@ -94,7 +94,7 @@ export function DockNav({ items, logo, heroId }: DockNavProps) {
   const { scrollY } = useScroll()
   const [full, setFull] = useState(66)
   useEffect(() => {
-    const f = () => setFull(window.innerWidth >= 768 ? 56 + 10 : 40 + 10)
+    const f = () => setFull(window.innerWidth >= 768 ? 56 + 14 : 40 + 12)
     f()
     window.addEventListener('resize', f)
     return () => window.removeEventListener('resize', f)
@@ -120,7 +120,7 @@ export function DockNav({ items, logo, heroId }: DockNavProps) {
       className="fixed left-1/2 top-0 z-50 -translate-x-1/2"
     >
       <LayoutGroup>
-        <div className="surface-blur flex items-center gap-1 rounded-b-2xl border border-t-0 border-line bg-bar p-1.5 md:rounded-b-3xl">
+        <div className="surface-blur flex items-center gap-1 rounded-b-2xl border border-t-0 border-line bg-bar px-1.5 py-2.5 md:rounded-b-3xl md:py-3">
           {logoEl}
           {links}
         </div>
