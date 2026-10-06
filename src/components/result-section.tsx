@@ -5,6 +5,7 @@
  * - 승리/무승부/패배 자동 판정 (승리만 초록), 시즌 기록과 출처
  */
 import { RollingNumber } from '@/components/motion'
+import { TeamCrest } from '@/components/team-crest'
 import { ourTeam, type seasonRecord as SeasonRecordValue } from '@/data/home'
 
 type Team = { name: string; score: number }
@@ -57,8 +58,11 @@ export function ResultSection({
         {[result.home, result.away].map((team, i) => {
           const muted = team.name !== ourTeam
           return (
-            <div key={team.name} className="flex items-baseline justify-between border-t border-line py-4">
-              <span className={`text-2xl font-medium ${muted ? 'text-cream/50' : ''}`}>{team.name}</span>
+            <div key={team.name} className="flex items-center justify-between border-t border-line py-4">
+              <span className="flex items-center gap-3">
+                <TeamCrest name={team.name} className="h-10 w-10 text-base" />
+                <span className={`text-2xl font-medium ${muted ? 'text-cream/50' : ''}`}>{team.name}</span>
+              </span>
               <span
                 className={`text-6xl font-medium leading-none tracking-[-0.05em] md:text-7xl ${
                   muted ? 'text-cream/50' : ''

@@ -1,11 +1,12 @@
 /**
  * 다음 경기 (impeccable polish)
- * - 두 팀을 이니셜 원(학교 로고 대신)과 이름으로 마주 세움
+ * - 두 팀을 학교 로고 원(출처 표기, team-crest.tsx)과 이름으로 마주 세움
  * - 상태 알약: 일정이 있으면 D-day, 당일이면 '오늘 경기', 없으면 '일정 발표 전'
  * - 일시·장소·대회를 아이콘과 함께 정리. 모르는 값은 '확인 중'으로 (지어내지 않음)
  */
 import { ArrowUpRight, CalendarDays, MapPin, Trophy } from 'lucide-react'
 import { ourTeam, type NextMatch } from '@/data/home'
+import { TeamCrest } from '@/components/team-crest'
 
 function dDay(kickoff: string): { label: string; today: boolean } | null {
   const t = new Date(kickoff)
@@ -29,19 +30,6 @@ function formatKickoff(kickoff: string) {
     hour12: false,
     timeZone: 'Asia/Seoul',
   }).format(t)
-}
-
-function Crest({ name, muted }: { name: string; muted?: boolean }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-xl font-medium md:h-16 md:w-16 md:text-2xl ${
-        muted ? 'border border-line text-cream/50' : 'bg-cream text-black'
-      }`}
-    >
-      {name.slice(0, 1)}
-    </span>
-  )
 }
 
 function InfoRow({
@@ -95,7 +83,7 @@ export function NextMatchSection({
       {/* 맞대결: 경기대는 홈·원정 어느 쪽이든 크림색 원과 밝은 글자로 강조 */}
       <div className="flex items-center gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <Crest name={match.home} muted={match.home !== ourTeam} />
+          <TeamCrest name={match.home} className="h-14 w-14 text-xl md:h-16 md:w-16 md:text-2xl" />
           <span
             className={`truncate text-2xl font-medium tracking-[-0.03em] md:text-3xl ${
               match.home !== ourTeam ? 'text-cream/70' : ''
@@ -113,7 +101,7 @@ export function NextMatchSection({
           >
             {match.away}
           </span>
-          <Crest name={match.away} muted={match.away !== ourTeam} />
+          <TeamCrest name={match.away} className="h-14 w-14 text-xl md:h-16 md:w-16 md:text-2xl" />
         </div>
       </div>
 

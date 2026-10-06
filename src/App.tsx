@@ -18,6 +18,7 @@ import {
   roster,
   seasonRecord,
 } from '@/data/home'
+import { schools } from '@/data/teams'
 
 const navItems: HeroNavItem[] = [
   { label: '소식', href: '#news' },
@@ -107,7 +108,18 @@ export default function App() {
           이 사이트는 개인 포트폴리오용으로 만든 비공식 팬 사이트이며, 경기대학교 및 경기대학교 축구부와 관련이
           없습니다.
         </p>
-        <p>경기 정보는 공개된 기사와 대회 기록을 참고했습니다.</p>
+        <p>경기 일정·결과는 KUSF 대학스포츠, 선수 명단은 한국대학축구연맹(KUFC) 공개 자료를 참고했습니다.</p>
+        <p className="text-xs leading-relaxed text-cream/40">
+          학교 로고 출처:{' '}
+          {schools.map((s, i) => (
+            <span key={s.short}>
+              {i > 0 && ' · '}
+              <a href={s.url} target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-cream/70">
+                {s.name}
+              </a>
+            </span>
+          ))}
+        </p>
         <p className="text-xs text-cream/40">
           {photoCredit.label}{' '}
           <a href={photoCredit.url} target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-cream/70">

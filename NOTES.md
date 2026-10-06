@@ -95,6 +95,35 @@ kgu_football/
 
 > 최신이 위. 각 항목: 무엇을 바꿨는지 / 왜 / 확인 결과 / 남은 일.
 
+### 2026-10-06 #16 — 학교 로고 + 출처 표기 (Claude)
+
+**왜**: 사용자 요청 "로고를 넣고 로고에 출처를 넣어서 미감과 출처 둘 다 해결". 사용자가 4권역 상대 학교 모두 출처만 남기면 로고 사용 가능함을 확인 (CLAUDE.md의 "학교 로고 안 씀" 규칙을 이 조건으로 바꿈)
+
+**결정 (사용자)**: 각 학교 공식 홈페이지에서 받기 / 출처는 로고에 마우스 올리면 + 푸터 목록 / 출처 주소는 학교 공식 홈페이지 / 칼빈대는 작은 로고라도 사용
+
+**로고 출처** (`public/logos/`, 모두 2026-10-06 받음)
+| 학교 | 받은 곳 | 처리 |
+|---|---|---|
+| 경기대 | UI 페이지 kyonggi.ac.kr/www/contents.do?key=5093 의 `key5093_img01_.svg` | 원본 SVG 그대로 |
+| 홍익대 | 심벌마크 페이지 hongik.ac.kr/kr/introduction/school-mark.do 의 `img-symbol@2x.png` | 256px WebP |
+| 중앙대 | UI 페이지 cau.ac.kr/cms/FR_CON/index.do?MENU_ID=230 의 `ui1_a_1.png` (심볼 CAU) | 흰 배경 투명, 160px WebP |
+| 성균관대 | 심볼마크 페이지 skku.edu/skku/about/symbol/symbol_01.do 의 JPG 다운로드(`jpg_1.zip` → SymbolMark.jpg) | 흰 배경 투명, 128px WebP |
+| 용인대 | UI 페이지 yongin.ac.kr/cmn/sym/mnu/mpm/101050100/htmlMenuView.do 의 `simbol.png` | 색상표 빼고 심볼만, 128px WebP |
+| 동원대 | 상징(UI) 페이지 tw.ac.kr/contents/contents.do?ciIdx=70&menuId=905 의 `ci_img1.png` | 96px WebP |
+| 여주대 | CI 페이지 info.yit.ac.kr/ko/cms/CM_CN01_CON/index.do?MENU_SN=1924 의 `symbol1_b.png` | 크기 표시 빼고 심볼만, 96px WebP |
+| 칼빈대 | UI 페이지 없음 → 홈페이지 calvin.ac.kr 상단 `h_logo.png` | 심볼 부분만(46×45 PNG, 작음) |
+
+- 받는 방법: Claude 내장 브라우저로 각 학교 페이지를 열어 이미지를 읽고 잘라냄 (작업 환경에서는 학교 사이트 접속이 막혀 있음). 로고 모양·색은 바꾸지 않음
+- 파일 합계 약 29KB
+
+**화면**
+- `src/data/teams.ts` (학교 이름·로고·공식 홈페이지), `src/components/team-crest.tsx` (크림색 원 + 로고, title "출처 ○○대학교", 로고 없는 팀은 이니셜)
+- 다음 경기 맞대결 원, 최근 결과 팀 이름 옆에 로고. 어두운 배경에서 남색·검정 로고가 보이도록 전부 크림색 원 위에 둠 → 경기대/상대 구분은 이름 글자 밝기로
+- 푸터: "학교 로고 출처: 경기대학교 · 동원대학교 · …" 각 공식 홈페이지 링크. 경기 정보 출처 문구도 KUSF·KUFC로 정확히 고침
+- DESIGN.md 팀 표시 기준, CLAUDE.md 로고 규칙 갱신
+
+**확인**: `npm run build` 통과, 1440px·390px 화면 캡처로 로고·푸터 확인
+
 ### 2026-10-06 #15 — 데이터 파일 분리 + 선수 명단 주 1회 자동 업데이트 + 선수단 구역 (Claude)
 
 **사용자 결정 (#14의 질문)**
