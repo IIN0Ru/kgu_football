@@ -16,10 +16,10 @@
   --color-bar: var(--bar);         /* 상단 메뉴 바 */
   --color-fg: var(--fg);           /* 기본 글자 (보조 글자는 fg/60, fg/50) */
   --color-line: var(--line);       /* 구분선 */
-  --color-accent: var(--accent);   /* 알약·버튼 바탕 (검정) */
+  --color-accent: var(--accent);   /* 포인트 빨강: 지금 보는 메뉴, D-day 알약, 머리말 (유니폼 KGU 글자·소매 색) */
   --color-on-accent: var(--on-accent);
   --color-crest: var(--crest);     /* 로고 원 바탕 */
-  --color-win: var(--win);         /* 승리 표시 (유일한 유채색) */
+  --color-win: var(--win);         /* 오늘 경기 알약 (포인트 빨강과 같은 색) */
   --color-on-win: var(--on-win);
 
   /* shadcn 호환 이름 */
@@ -30,6 +30,9 @@
 
   /* 글꼴 */
   --font-sans: "Pretendard", ui-sans-serif, system-ui, sans-serif;
+  /* 구역 제목: 굵은 한글 스포츠 글꼴 / 점수·등번호·영문 머리말: 좁고 굵은 숫자 글꼴 (시안 C, 2026-10-07) */
+  --font-display: "Black Han Sans", "Pretendard", sans-serif;
+  --font-num: "Anton", "Pretendard", sans-serif;
 
   /* 움직임: 컴포넌트와 같은 곡선 */
   --ease-pull: cubic-bezier(0.16, 1, 0.3, 1);
@@ -42,10 +45,10 @@
   --bar: rgb(255 255 255 / 0.75);
   --fg: #141413;
   --line: rgb(20 20 19 / 0.12);
-  --accent: #141413;
+  --accent: #d6201a;   /* 유니폼 빨강 (2026-10-07 검정 → 빨강, 시안 C) */
   --on-accent: #ffffff;
   --crest: #ffffff;
-  --win: #237a45;
+  --win: #d6201a;
   --on-win: #ffffff;
   --veil: #f4f4f1;          /* 스크롤 뒤 흐린 사진 위에 덮는 밝은 막 */
   --veil-opacity: 0.4;
@@ -93,11 +96,22 @@
    움직임 (impeccable animate)
    --------------------------------------------------------- */
 
-/* 메뉴로 이동해 도착한 구역: 제목 아래로 줄이 그어졌다 사라짐 */
+/* 구역 제목: 검은고딕 (굵기는 글꼴 자체가 굵어서 400) */
 .section-title {
   position: relative;
   width: fit-content;
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
+
+/* 거북 등껍질 무늬: 사이트 전체 배경 위에 흰 육각형 선 (축구부 별명 터틀스, 시안 C) */
+.shell-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z M28 64 L28 97' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
+  background-size: 56px 97px;
+}
+
+/* 메뉴로 이동해 도착한 구역: 제목 아래로 줄이 그어졌다 사라짐 */
 
 .section-title::after {
   content: "";

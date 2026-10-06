@@ -4,6 +4,7 @@
  * - 공개 항목은 이름·번호·포지션·학년뿐 (사진·생년월·키·몸무게·출신교는 쓰지 않음, 사용자 결정)
  * - 출처와 마지막 갱신일을 함께 표시 (KUFC, 주 1회 자동 갱신)
  */
+import { Eyebrow } from '@/components/eyebrow'
 import type { Player, Position } from '@/data/home'
 
 const GROUPS: { key: Position; label: string }[] = [
@@ -33,9 +34,10 @@ export function RosterSection({
     <div className="flex flex-col gap-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-3">
+          <Eyebrow>Squad 2026</Eyebrow>
           <h2
             id={titleId}
-            className="section-title text-4xl font-medium leading-[0.95] tracking-[-0.04em] md:text-6xl"
+            className="section-title text-4xl leading-[0.95] md:text-6xl"
           >
             선수단
           </h2>
@@ -75,7 +77,7 @@ export function RosterSection({
                       key={`${p.number}-${p.name}`}
                       className="flex items-baseline gap-4 border-t border-line py-3"
                     >
-                      <span className="w-7 shrink-0 text-right text-sm tabular-nums text-fg/50">
+                      <span className="w-7 shrink-0 text-right font-num text-base tabular-nums text-fg/50">
                         {p.number ?? '–'}
                       </span>
                       <span className="flex-1 text-lg font-medium">{p.name}</span>

@@ -5,6 +5,7 @@
  * - 위: 대회·날짜·장소 한 줄 + 가장 최근 경기를 크게 (점수 굴러 올라가는 모션은 사용자 요청으로 뺌)
  * - 아래: 이전 4경기를 작은 줄로 (왼쪽에 작은 날짜) → 시즌 기록과 출처는 그대로
  */
+import { Eyebrow } from '@/components/eyebrow'
 import { TeamCrest } from '@/components/team-crest'
 import type { PastMatch, seasonRecord as SeasonRecordValue } from '@/data/home'
 
@@ -32,9 +33,12 @@ export function ResultSection({
   titleId: string
 }) {
   const title = (
-    <h2 id={titleId} className="section-title text-4xl font-medium leading-[0.95] tracking-[-0.04em] md:text-6xl">
-      최근 결과
-    </h2>
+    <div className="flex flex-col gap-3">
+      <Eyebrow>Results</Eyebrow>
+      <h2 id={titleId} className="section-title text-4xl leading-[0.95] md:text-6xl">
+        최근 결과
+      </h2>
+    </div>
   )
 
   if (!result) {
@@ -82,7 +86,7 @@ export function ResultSection({
       <div className="mt-auto flex flex-wrap items-end justify-between gap-4 border-t border-line pt-4 text-sm">
         <p className="flex flex-col gap-1">
           <span className="text-fg/60">이번 시즌 {played}경기</span>
-          <span className="text-lg font-medium tabular-nums">
+          <span className="font-num text-xl tabular-nums tracking-[0.02em]">
             {record.win}승 {record.draw}무 {record.loss}패
             <span className="ml-3 text-sm font-normal text-fg/50">
               득점 {record.goalsFor} · 실점 {record.goalsAgainst}
@@ -122,8 +126,8 @@ function ScoreLine({
       <span className={`${name} text-right ${date ? 'pl-10' : ''}`}>{home.name}</span>
       <TeamCrest name={home.name} className={crest} />
       <span
-        className={`shrink-0 text-center font-medium tabular-nums tracking-[-0.03em] ${
-          large ? 'w-20 text-3xl sm:w-28 sm:text-4xl md:w-32 md:text-5xl' : 'w-14 text-lg sm:w-16 sm:text-xl'
+        className={`shrink-0 text-center font-num tabular-nums tracking-[0.01em] ${
+          large ? 'w-20 text-4xl sm:w-28 sm:text-5xl md:w-32 md:text-6xl' : 'w-14 text-xl sm:w-16 sm:text-2xl'
         }`}
       >
         {home.score}

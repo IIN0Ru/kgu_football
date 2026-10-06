@@ -5,6 +5,7 @@
  * - 바깥 링크는 새 창 + 화살표 방향(↗)으로 구분
  * - 사진 없음 (사용자 결정). 소식이 없으면 빈 상태 안내
  */
+import { Eyebrow } from '@/components/eyebrow'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { NewsItem } from '@/data/home'
 
@@ -90,12 +91,15 @@ export function NewsSection({
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h2
-          id={titleId}
-          className="section-title text-4xl font-medium leading-[0.95] tracking-[-0.04em] md:text-6xl"
-        >
-          최신 소식
-        </h2>
+        <div className="flex flex-col gap-3">
+          <Eyebrow>KGU Turtles · News</Eyebrow>
+          <h2
+            id={titleId}
+            className="section-title text-4xl leading-[0.95] md:text-6xl"
+          >
+            최신 소식
+          </h2>
+        </div>
       </div>
 
       {!lead && magazine.length === 0 ? (

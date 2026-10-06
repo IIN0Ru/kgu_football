@@ -2,6 +2,7 @@
  * 사이트 전체 뒤에 고정된 배경 사진.
  * - 첫 화면: 선명한 사진 + 아래쪽 어둡게 (KGU 글자 대비)
  * - 다음 화면(away): 흐린 사진이 서서히 겹쳐지고 전체가 어두워짐. 사진은 뒤에 흐릿하게 남음
+ * - 사진은 채도를 60% 뺀 흑백에 가까운 톤 + 거북 등껍질(육각형) 무늬 (시안 C, 2026-10-07)
  * 성능: 매 프레임 blur를 계산하지 않도록, 미리 흐리게 만든 사진 한 장을 겹쳐 투명도만 바꾼다.
  */
 import { motion, useReducedMotion } from 'framer-motion'
@@ -48,7 +49,7 @@ export function SiteBackground({ away, image }: SiteBackgroundProps) {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-paper">
       {/* 선명한 사진 */}
-      <Photo image={image} className="absolute inset-0 h-full w-full object-cover object-[50%_55%]" />
+      <Photo image={image} className="absolute inset-0 h-full w-full object-cover object-[50%_55%] grayscale-[0.6]" />
 
       {/* 미리 흐리게 만든 사진: 다음 화면에서 겹쳐짐 */}
       <motion.div
@@ -60,12 +61,15 @@ export function SiteBackground({ away, image }: SiteBackgroundProps) {
         <Photo
           image={image}
           decorative
-          className="absolute inset-0 h-full w-full scale-125 object-cover object-[50%_55%] blur-[16px]"
+          className="absolute inset-0 h-full w-full scale-125 object-cover object-[50%_55%] blur-[16px] grayscale-[0.6]"
         />
       </motion.div>
 
       {/* 노이즈 질감 */}
       <div className="noise-overlay absolute inset-0 opacity-[0.6] mix-blend-overlay" />
+
+      {/* 거북 등껍질 무늬 (축구부 별명 터틀스) */}
+      <div className="shell-pattern absolute inset-0 opacity-[0.22]" />
 
       {/* 첫 화면: 사진을 밝게 두고 글자 대비용으로 위·아래만 살짝 → 다음 화면: 밝은 막을 덮어 사진이 은은하게 남음 */}
       <motion.div

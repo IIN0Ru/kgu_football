@@ -259,3 +259,12 @@ export const photoCredit = {
   label: '경기대학교',
   url: 'https://www.kyonggi.ac.kr/',
 }
+
+/** 0페이지(맨 처음 화면) 배너: 경기대학교 축구부 블로그 머리 배너 그대로 (사용자 전달 2026-10-07, 축구부 허락 받음 — 사용자 확인).
+ *  원본이 가로 962px 이라 더 큰 원본을 구하면 파일만 교체. 출처는 푸터 맨 아래 사진 출처 옆에 링크로 */
+export const introBanner = {
+  webp: img('kgu-banner.webp'),
+  jpg: img('kgu-banner.jpg'),
+  alt: '경기대학교 축구부 블로그 배너 — Keep GOING Up, 2025 Season, Since 1991 Kyonggi univ. football team',
+  credit: { label: '경기대학교 축구부 블로그', url: 'https://blog.naver.com/orangeturtles' },
+}

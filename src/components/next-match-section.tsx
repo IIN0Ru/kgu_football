@@ -5,6 +5,7 @@
  * - 일시·장소·대회를 아이콘과 함께 정리. 모르는 값은 '확인 중'으로 (지어내지 않음)
  * - 아래에 '이후 경기' 최대 3개 작은 줄 (날짜 · 상대 로고·이름 · 홈/원정 · 시각)
  */
+import { Eyebrow } from '@/components/eyebrow'
 import { CalendarDays, MapPin, Trophy } from 'lucide-react'
 import { ourTeam, type LaterMatch, type NextMatch } from '@/data/home'
 import { TeamCrest } from '@/components/team-crest'
@@ -66,12 +67,15 @@ export function NextMatchSection({
   return (
     <div className="flex h-full flex-col gap-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h2
-          id={titleId}
-          className="section-title text-4xl font-medium leading-[0.95] tracking-[-0.04em] md:text-6xl"
-        >
-          다음 경기
-        </h2>
+        <div className="flex flex-col gap-3">
+          <Eyebrow>Next match</Eyebrow>
+          <h2
+            id={titleId}
+            className="section-title text-4xl leading-[0.95] md:text-6xl"
+          >
+            다음 경기
+          </h2>
+        </div>
         <span
           className={`rounded-full px-3 py-1 text-sm font-medium ${
             count?.today ? 'bg-win text-on-win' : count ? 'bg-accent text-on-accent' : 'border border-line text-fg/70'

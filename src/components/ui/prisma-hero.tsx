@@ -15,6 +15,7 @@
  * - 큰 글자 대신 로고(logo)를 쓸 수 있게: 이때 히어로에는 화면 읽기용 제목만 두고, 로고 그림은 floating-logo.tsx 가 그림
  * - 소개 글·버튼을 선택 항목으로 (사이트에서는 사용자 요청으로 둘 다 뺌, KGU만 남김)
  * - 메뉴(navItems)를 선택 항목으로: 사이트에서는 히어로 안 메뉴를 빼고 dock-nav 하나를 처음부터 고정 (메뉴가 올라갔다 다시 내려오는 부자연스러움 제거)
+ * - 테두리만 있는 큰 영문 글자(outlineWord, 사이트에서는 TURTLES)를 오른쪽 아래(모바일은 오른쪽 위)에 깔 수 있게 (시안 C)
  * - 밝은 테마: 상단 메뉴를 검은 탭 → 밝은 반투명 탭(검은 글자)으로. 밝아진 사진 위 소개 글에 그림자 추가
  */
 import { motion, useInView, useReducedMotion } from "framer-motion";
@@ -147,6 +148,8 @@ interface PrismaHeroProps {
   /** 카드 배경·모서리·덮개 없이 글자와 메뉴만 (뒤에 고정 배경이 있을 때) */
   bare?: boolean;
   onCtaClick?: () => void;
+  /** 테두리만 있는 큰 영문 장식 글자 (예: 축구부 별명) */
+  outlineWord?: string;
 }
 
 const PrismaHero = ({
@@ -162,6 +165,7 @@ const PrismaHero = ({
   bare = false,
   onCtaClick,
   image,
+  outlineWord,
 }: PrismaHeroProps) => {
   const reduce = useReducedMotion();
   const enter = (delay: number) =>
@@ -232,6 +236,19 @@ const PrismaHero = ({
             ))}
           </div>
         </nav>
+        )}
+
+        {/* 테두리만 있는 큰 장식 글자 (화면 읽기 프로그램에는 숨김) */}
+        {outlineWord && (
+          <motion.span
+            aria-hidden="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: reduce ? 0.4 : 1.2, delay: 0.5, ease: EASE }}
+            className="pointer-events-none absolute right-4 top-20 select-none font-num text-[24vw] leading-[0.8] tracking-[0.01em] text-transparent [-webkit-text-stroke:1.5px_rgb(225_224_204/0.95)] md:-bottom-[2vw] md:right-6 md:top-auto md:text-[17vw] md:[-webkit-text-stroke:2px_rgb(225_224_204/0.95)]"
+          >
+            {outlineWord}
+          </motion.span>
         )}
 
         {/* Hero content */}

@@ -100,8 +100,10 @@ export function DockNav({ items, logo, heroId }: DockNavProps) {
     return () => window.removeEventListener('resize', f)
   }, [])
   const slotWidth = useTransform(scrollY, (y) => {
-    const h = document.getElementById(heroId ?? '')?.offsetHeight ?? window.innerHeight
-    return Math.min(1, Math.max(0, y / h)) * full
+    const hero = document.getElementById(heroId ?? '')
+    const h = hero?.offsetHeight ?? window.innerHeight
+    const top = hero?.offsetTop ?? 0 // 위에 0페이지가 있으면 그만큼 뒤에서 시작
+    return Math.min(1, Math.max(0, (y - top) / h)) * full
   })
   const logoEl = logo && (
     <motion.span
