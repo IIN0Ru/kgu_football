@@ -73,6 +73,28 @@ export const recentResult = last
     }
   : null
 
+/** 최근 결과 아래 작은 목록: 가장 최근 경기를 뺀 그 이전 4경기 (최신순) */
+export interface PastMatch {
+  date: string
+  opponent: string
+  side: '홈' | '원정'
+  ours: number
+  theirs: number
+}
+export const earlierResults: PastMatch[] = played
+  .slice(-5, -1)
+  .reverse()
+  .map((m) => {
+    const home = m.home === ourTeam
+    return {
+      date: `${Number(m.date.slice(5, 7))}.${Number(m.date.slice(8))}`,
+      opponent: home ? m.away : m.home,
+      side: home ? '홈' : '원정',
+      ours: (home ? m.homeScore : m.awayScore) as number,
+      theirs: (home ? m.awayScore : m.homeScore) as number,
+    }
+  })
+
 /** 시즌 기록 (경기대 기준) */
 export const seasonRecord = played.reduce(
   (r, m) => {

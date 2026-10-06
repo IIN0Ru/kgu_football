@@ -3,10 +3,11 @@
  * - 대회·날짜·장소 한 줄, 두 팀 점수(전광판처럼 굴러 올라감)
  * - 경기대가 홈이든 원정이든 경기대 쪽을 밝게, 상대는 한 단계 낮춤
  * - 승리/무승부/패배 자동 판정 (승리만 초록), 시즌 기록과 출처
+ * - 그 아래 이전 4경기를 작은 줄로: 날짜 · 상대 로고·이름 · 홈/원정 · 점수(경기대 먼저) · 승/무/패
  */
 import { RollingNumber } from '@/components/motion'
 import { TeamCrest } from '@/components/team-crest'
-import { ourTeam, type seasonRecord as SeasonRecordValue } from '@/data/home'
+import { ourTeam, type PastMatch, type seasonRecord as SeasonRecordValue } from '@/data/home'
 
 type Team = { name: string; score: number }
 export interface RecentResult {
@@ -19,11 +20,13 @@ export interface RecentResult {
 
 export function ResultSection({
   result,
+  earlier,
   record,
   source,
   titleId,
 }: {
   result: RecentResult | null
+  earlier: PastMatch[]
   record: typeof SeasonRecordValue
   source: { label: string; url: string }
   titleId: string
@@ -77,6 +80,39 @@ export function ResultSection({
           {verdict}
         </p>
       </div>
+
+      {/* 이전 경기 */}
+      {earlier.length > 0 && (
+        <div className="flex flex-col">
+          <h3 className="mb-2 text-sm text-fg/60">이전 경기</h3>
+          <ul>
+            {earlier.map((m) => {
+              const v = m.ours > m.theirs ? '승' : m.ours < m.theirs ? '패' : '무'
+              return (
+                <li key={`${m.date}-${m.opponent}`} className="flex items-center gap-3 border-t border-line py-3">
+                  <span className="w-10 shrink-0 text-sm tabular-nums text-fg/50">{m.date}</span>
+                  <TeamCrest name={m.opponent} className="h-7 w-7 text-xs" />
+                  <span className="min-w-0 flex-1 truncate text-base font-medium">
+                    {m.opponent}
+                    <span className="ml-2 text-xs font-normal text-fg/50">{m.side}</span>
+                  </span>
+                  <span className="text-base font-medium tabular-nums">
+                    {m.ours} : {m.theirs}
+                  </span>
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
+                      v === '승' ? 'bg-win text-on-win' : 'border border-line text-fg/60'
+                    }`}
+                    aria-label={v === '승' ? '승리' : v === '패' ? '패배' : '무승부'}
+                  >
+                    {v}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      )}
 
       {/* 시즌 기록 */}
       <div className="mt-auto flex flex-wrap items-end justify-between gap-4 border-t border-line pt-4 text-sm">

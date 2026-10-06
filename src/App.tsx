@@ -15,6 +15,7 @@ import {
   nextMatch,
   photoCredit,
   recentResult,
+  earlierResults,
   roster,
   seasonRecord,
 } from '@/data/home'
@@ -66,6 +67,7 @@ export default function App() {
           >
             <ResultSection
               result={recentResult}
+              earlier={earlierResults}
               record={seasonRecord}
               source={matchSource}
               titleId="result-title"
