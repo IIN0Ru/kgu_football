@@ -5,8 +5,21 @@
  * - 휴대폰은 화면이 좁아 배너를 170%로 키워 가운데 "Keep GOING Up"이 읽히게 (양옆 글씨는 잘림)
  * - 아래 가운데 SCROLL 안내. 출처는 화면에 적지 않고 푸터 맨 아래에 링크로 (사용자 요청)
  * - 한 번 넘기면 KGU 로고 화면(히어로)으로 — use-hero-snap.ts
+ *
+ * 움직임 (사용자가 후보 8개 중 1·4·7·8 선택, 2026-10-07)
+ * 1. 질주 등장: 배너가 왼쪽에서 가로로 흐린 잔상으로 들어와 0.9초 만에 선명하게 멈춤 (흐린 판은 미리 만든 그림)
+ * 4. 필름 질감: 거친 질감이 필름처럼 계속 미세하게 움직임
+ * 7. SCROLL 아래 짧은 선이 계속 흘러내림
+ * 8. 뚫고 지나가기: 넘기는 동안 배너가 커지고 흐려지며 천천히 따라 올라감 → 그 사이로 로고 화면이 올라옴
+ * - 동작 줄이기 설정: 짧은 페이드만 (흐림·이동·확대·질감 움직임 없음)
  */
-import { motion, useReducedMotion } from 'framer-motion'
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from 'framer-motion'
+import { useRef, useState } from 'react'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
@@ -15,41 +28,102 @@ export function IntroBanner({
   banner,
 }: {
   id: string
-  banner: { webp: string; jpg: string; alt: string }
+  banner: { webp: string; jpg: string; streak: string; alt: string }
 }) {
   const reduce = useReducedMotion()
+  const ref = useRef<HTMLElement>(null)
+  // 배너 그림이 다 받아진 뒤에 등장을 시작 (느린 회선에서 빈 화면 동안 등장이 끝나버리지 않게)
+  const [loaded, setLoaded] = useState(false)
+
+  // 1. 질주 등장: 미리 가로로 흐리게 만든 배너(kgu-banner-streak)를 겹쳐 함께 들어오다가 사라짐
+  //    (매 프레임 흐림을 계산하지 않고 위치·투명도만 바꿔 휴대폰에서도 부드럽게)
+  // 8. 뚫고 지나가기: 0페이지를 지나가는 정도(0 → 1)에 맞춰 커지고 흐려지고 천천히 따라 올라감
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  const scale = useTransform(scrollYProgress, [0, 1], [1, reduce ? 1 : 1.35])
+  const lag = useTransform(scrollYProgress, [0, 1], ['0%', reduce ? '0%' : '45%'])
+  const fade = useTransform(scrollYProgress, [0, 1], [1, reduce ? 1 : 0.25])
+  const blur = useTransform(scrollYProgress, (p) => (reduce ? 'none' : `blur(${p * 14}px)`))
+
   return (
-    <section id={id} aria-label="축구부 배너" className="relative h-screen min-h-[560px] w-full overflow-hidden bg-ink">
-      {/* 위아래 빈 곳 채우기: 같은 배너를 흐리게 */}
+    <section
+      ref={ref}
+      id={id}
+      aria-label="축구부 배너"
+      className="relative h-screen min-h-[560px] w-full overflow-hidden bg-ink"
+    >
+      <motion.div className="absolute inset-0" style={{ scale, y: lag, opacity: fade, filter: blur }}>
+        {/* 위아래 빈 곳 채우기: 같은 배너를 흐리게 */}
+        <div
+          aria-hidden="true"
+          className="absolute -inset-10 bg-cover bg-center blur-[28px] grayscale brightness-75"
+          style={{ backgroundImage: `url(${banner.jpg})` }}
+        />
+        <motion.picture
+          initial={reduce ? { opacity: 0 } : { opacity: 0, x: '-14%' }}
+          animate={loaded ? { opacity: 1, x: '0%' } : undefined}
+          transition={{
+            duration: reduce ? 0.4 : 0.9,
+            delay: reduce ? 0 : 0.1,
+            ease: EASE,
+            opacity: { duration: reduce ? 0.4 : 0.5, delay: reduce ? 0 : 0.35 },
+          }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <source type="image/webp" srcSet={banner.webp} />
+          <img
+            src={banner.jpg}
+            alt={banner.alt}
+            fetchPriority="high"
+            decoding="async"
+            ref={(el) => {
+              if (el?.complete) setLoaded(true)
+            }}
+            onLoad={() => setLoaded(true)}
+            className="h-auto w-[170%] max-w-none shrink-0 [mask-image:linear-gradient(to_bottom,transparent,#000_12%,#000_88%,transparent)] md:w-full"
+          />
+        </motion.picture>
+        {!reduce && (
+          <motion.div
+            aria-hidden="true"
+            initial={{ opacity: 0, x: '-14%' }}
+            animate={loaded ? { opacity: [1, 1, 0], x: '0%' } : undefined}
+            transition={{ duration: 0.9, delay: 0.1, ease: EASE, opacity: { duration: 0.9, delay: 0.1, times: [0, 0.35, 1] } }}
+            className="pointer-events-none absolute inset-0 flex items-center justify-center"
+          >
+            <img
+              src={banner.streak}
+              alt=""
+              className="h-auto w-[170%] max-w-none shrink-0 scale-x-110 [mask-image:linear-gradient(to_bottom,transparent,#000_12%,#000_88%,transparent)] md:w-full"
+            />
+          </motion.div>
+        )}
+      </motion.div>
+
+      {/* 4. 필름 질감: 노이즈를 조금씩 옮겨 계속 살아 움직이게 */}
       <div
         aria-hidden="true"
-        className="absolute -inset-10 bg-cover bg-center blur-[28px] grayscale brightness-75"
-        style={{ backgroundImage: `url(${banner.jpg})` }}
+        className={`noise-overlay pointer-events-none absolute -inset-[20%] opacity-[0.55] mix-blend-overlay ${
+          reduce ? '' : 'animate-[film-grain_0.8s_steps(6)_infinite]'
+        }`}
       />
-      <motion.picture
-        initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 1.04 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: reduce ? 0.4 : 1.4, ease: EASE }}
-        className="absolute inset-0 flex items-center justify-center"
-      >
-        <source type="image/webp" srcSet={banner.webp} />
-        <img
-          src={banner.jpg}
-          alt={banner.alt}
-          fetchPriority="high"
-          decoding="async"
-          className="h-auto w-[170%] max-w-none shrink-0 [mask-image:linear-gradient(to_bottom,transparent,#000_12%,#000_88%,transparent)] md:w-full"
-        />
-      </motion.picture>
-      <motion.span
+
+      {/* 7. SCROLL + 흘러내리는 선 */}
+      <motion.div
         aria-hidden="true"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: reduce ? 0 : 1.2 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 font-num text-sm tracking-[0.3em] text-white/70"
+        animate={loaded ? { opacity: 1 } : undefined}
+        transition={{ duration: 0.8, delay: reduce ? 0 : 1.1 }}
+        className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3"
       >
-        SCROLL
-      </motion.span>
+        <span className="font-num text-sm tracking-[0.3em] text-cream/80">SCROLL</span>
+        <span className="relative h-10 w-px overflow-hidden bg-cream/20">
+          <span
+            className={`absolute inset-x-0 top-0 h-1/2 bg-cream ${
+              reduce ? '' : 'animate-[scroll-drip_1.6s_cubic-bezier(0.65,0,0.35,1)_infinite]'
+            }`}
+          />
+        </span>
+      </motion.div>
     </section>
   )
 }

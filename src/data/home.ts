@@ -265,6 +265,8 @@ export const photoCredit = {
 export const introBanner = {
   webp: img('kgu-banner.webp'),
   jpg: img('kgu-banner.jpg'),
+  /** 질주 등장용: 같은 배너를 가로로만 흐리게 만든 판 (Claude 가 원본에서 만듦) */
+  streak: img('kgu-banner-streak.webp'),
   alt: '경기대학교 축구부 블로그 배너 — Keep GOING Up, 2025 Season, Since 1991 Kyonggi univ. football team',
   credit: { label: '경기대학교 축구부 블로그', url: 'https://blog.naver.com/orangeturtles' },
 }
