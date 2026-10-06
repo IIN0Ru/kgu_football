@@ -1,0 +1,35 @@
+{
+  "source": {
+    "label": "한국대학축구연맹(KUFC)",
+    "url": "https://kufc.or.kr/teams/universities/cmpudexpx00055hfsejxuykvu"
+  },
+  "updatedAt": "2026-10-06",
+  "players": [
+    { "number": 3, "name": "박준원", "position": "DF", "grade": 2 },
+    { "number": 4, "name": "이남호", "position": "DF", "grade": 1 },
+    { "number": 5, "name": "황장연", "position": "DF", "grade": 3 },
+    { "number": 6, "name": "조현준", "position": "DF", "grade": 3 },
+    { "number": 7, "name": "조민석", "position": "FW", "grade": 4 },
+    { "number": 8, "name": "최지호", "position": "DF", "grade": 3 },
+    { "number": 9, "name": "유태호", "position": "FW", "grade": 1 },
+    { "number": 10, "name": "갈정민", "position": "FW", "grade": 4 },
+    { "number": 11, "name": "나하준", "position": "FW", "grade": 4 },
+    { "number": 12, "name": "김태현", "position": "FW", "grade": 3 },
+    { "number": 13, "name": "김태형", "position": "MF", "grade": 1 },
+    { "number": 14, "name": "정하민", "position": "MF", "grade": 2 },
+    { "number": 15, "name": "고민성", "position": "FW", "grade": 1 },
+    { "number": 16, "name": "권기원", "position": "FW", "grade": 2 },
+    { "number": 17, "name": "황병석", "position": "FW", "grade": 2 },
+    { "number": 18, "name": "한경호", "position": "FW", "grade": 2 },
+    { "number": 19, "name": "성중현", "position": "DF", "grade": 2 },
+    { "number": 20, "name": "권오성", "position": "MF", "grade": 2 },
+    { "number": 21, "name": "최진수", "position": "GK", "grade": 1 },
+    { "number": 22, "name": "김기완", "position": "FW", "grade": 2 },
+    { "number": 23, "name": "서민준", "position": "FW", "grade": 1 },
+    { "number": 25, "name": "김건우", "position": "MF", "grade": 1 },
+    { "number": 27, "name": "손석주", "position": "DF", "grade": 2 },
+    { "number": 30, "name": "김휘경", "position": "DF", "grade": 1 },
+    { "number": 33, "name": "김태현", "position": "MF", "grade": 1 },
+    { "number": 77, "name": "민선재", "position": "DF", "grade": 1 }
+  ]
+}

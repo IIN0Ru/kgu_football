@@ -4,6 +4,9 @@
  * 나중에 서버(API)로 바꿀 때 이 파일만 교체하면 되도록 화면 코드와 분리.
  */
 
+import season from './matches.json'
+import rosterData from './roster.json'
+
 export interface NextMatch {
   competition: string
   home: string
@@ -19,27 +22,83 @@ export interface NextMatch {
 /** 우리 학교 표시 이름. 맞대결에서 이 팀을 강조(크림색 원)한다 */
 export const ourTeam = '경기대'
 
-/** 출처: KUSF 대학스포츠 U리그 경기 일정 (2026 U리그 4권역, 2026-10-06 수동 확인) */
-export const matchSource = {
-  label: 'KUSF 대학스포츠',
-  url: 'https://www.kusf.or.kr/league/league_schedule.html?e_code=45&l_year=2026&l_code=271&t_code=1704',
+/**
+ * 경기 일정·결과: src/data/matches.json (출처 KUSF, 반자동 — 경기가 끝나면 이 파일만 고친다).
+ * KUSF robots.txt 가 자동 수집을 막고 있어 사람이 확인해 넣는다 (사용자 결정 2026-10-06).
+ * '다음 경기'·'최근 결과'·시즌 기록은 방문자가 페이지를 연 시각을 기준으로 아래에서 계산된다.
+ */
+export interface SeasonMatch {
+  date: string
+  time: string | null
+  venue: string | null
+  home: string
+  away: string
+  homeScore: number | null
+  awayScore: number | null
 }
 
-export const nextMatch: NextMatch = {
-  competition: 'KUSF 대학축구 U리그 4권역',
-  home: '홍익대',
-  away: '경기대',
-  kickoff: '2026-10-09T11:00:00+09:00',
-  venue: '화성비봉습지공원축구장',
-  side: '원정',
+export const matchSource = season.source
+const matches = season.matches as SeasonMatch[]
+const kickoffOf = (m: SeasonMatch) => `${m.date}T${m.time ?? '00:00'}:00+09:00`
+const played = matches.filter((m) => m.homeScore !== null && m.awayScore !== null)
+
+function toNextMatch(m: SeasonMatch | undefined): NextMatch {
+  if (!m) return { competition: season.competition, home: ourTeam, away: '확인 중', kickoff: null, venue: null, side: null }
+  return {
+    competition: season.competition,
+    home: m.home,
+    away: m.away,
+    kickoff: m.time ? kickoffOf(m) : null,
+    venue: m.venue,
+    side: m.home === ourTeam ? '홈' : '원정',
+  }
 }
 
-export const recentResult = {
-  competition: 'KUSF 대학축구 U리그 4권역',
-  date: '9월 18일 (금)',
-  venue: '경기대운동장',
-  home: { name: '경기대', score: 3 },
-  away: { name: '칼빈대', score: 2 },
+/** 점수가 아직 없고, 시작 시각이 지금부터 2시간 전 이후인 첫 경기 (경기 중에도 '오늘 경기'로 보이게) */
+export const nextMatch = toNextMatch(
+  matches.find((m) => m.homeScore === null && new Date(kickoffOf(m)).getTime() > Date.now() - 2 * 3_600_000),
+)
+
+const last = played[played.length - 1]
+const weekday = (d: string) => new Intl.DateTimeFormat('ko-KR', { weekday: 'short', timeZone: 'Asia/Seoul' }).format(new Date(`${d}T12:00:00+09:00`))
+
+/** 점수가 들어간 마지막 경기. 없으면 null */
+export const recentResult = last
+  ? {
+      competition: season.competition,
+      date: `${Number(last.date.slice(5, 7))}월 ${Number(last.date.slice(8))}일 (${weekday(last.date)})`,
+      venue: last.venue,
+      home: { name: last.home, score: last.homeScore as number },
+      away: { name: last.away, score: last.awayScore as number },
+    }
+  : null
+
+/** 시즌 기록 (경기대 기준) */
+export const seasonRecord = played.reduce(
+  (r, m) => {
+    const [ours, theirs] = m.home === ourTeam ? [m.homeScore!, m.awayScore!] : [m.awayScore!, m.homeScore!]
+    if (ours > theirs) r.win++
+    else if (ours < theirs) r.loss++
+    else r.draw++
+    r.goalsFor += ours
+    r.goalsAgainst += theirs
+    return r
+  },
+  { win: 0, draw: 0, loss: 0, goalsFor: 0, goalsAgainst: 0 },
+)
+
+/** 선수 명단: src/data/roster.json (KUFC 공개 페이지에서 주 1회 자동 갱신, 이름·번호·포지션·학년만) */
+export type Position = 'GK' | 'DF' | 'MF' | 'FW'
+export interface Player {
+  number: number | null
+  name: string
+  position: Position
+  grade: number | null
+}
+export const roster = {
+  source: rosterData.source,
+  updatedAt: rosterData.updatedAt,
+  players: rosterData.players as Player[],
 }
 
 export interface NewsItem {

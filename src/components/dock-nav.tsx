@@ -96,7 +96,7 @@ export function DockNav({ items, heroId }: DockNavProps) {
                         lockUntil.current = performance.now() + 1200
                       }
                     }}
-                    className={`relative whitespace-nowrap rounded-full px-3 py-1.5 text-xs transition-colors duration-200 md:px-4 md:text-sm ${
+                    className={`relative whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs transition-colors duration-200 sm:px-3 md:px-4 md:text-sm ${
                       isActive ? 'text-black' : 'text-cream/80 hover:text-cream'
                     }`}
                   >

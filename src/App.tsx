@@ -1,6 +1,8 @@
 import { DockNav } from '@/components/dock-nav'
 import { SiteBackground } from '@/components/site-background'
-import { Reveal, RollingNumber } from '@/components/motion'
+import { Reveal } from '@/components/motion'
+import { ResultSection } from '@/components/result-section'
+import { RosterSection } from '@/components/roster-section'
 import { NewsSection } from '@/components/news-section'
 import { NextMatchSection } from '@/components/next-match-section'
 import { PrismaHero, type HeroNavItem } from '@/components/ui/prisma-hero'
@@ -11,32 +13,21 @@ import {
   matchSource,
   news,
   nextMatch,
-  ourTeam,
   photoCredit,
   recentResult,
+  roster,
+  seasonRecord,
 } from '@/data/home'
 
 const navItems: HeroNavItem[] = [
   { label: '소식', href: '#news' },
   { label: '최근 결과', href: '#result' },
   { label: '다음 경기', href: '#next-match' },
+  { label: '선수단', href: '#squad' },
   { label: '인스타그램', href: instagramUrl },
 ]
 
-function SectionTitle({ id, children }: { id: string; children: React.ReactNode }) {
-  return (
-    <h2 id={id} className="section-title text-4xl font-medium leading-[0.95] tracking-[-0.04em] md:text-6xl">
-      {children}
-    </h2>
-  )
-}
-
 export default function App() {
-  const [ours, theirs] =
-    recentResult.home.name === ourTeam
-      ? [recentResult.home.score, recentResult.away.score]
-      : [recentResult.away.score, recentResult.home.score]
-  const result = ours > theirs ? '승리' : ours < theirs ? '패배' : '무승부'
   const { away, goNext } = useHeroSnap('top')
 
   return (
@@ -71,43 +62,14 @@ export default function App() {
           <Reveal
             id="result"
             aria-labelledby="result-title"
-            className="flex flex-col gap-10 rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
+            className="rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
           >
-            <SectionTitle id="result-title">최근 결과</SectionTitle>
-            <div className="flex flex-col">
-              <p className="mb-3 text-sm text-cream/60">
-                {[recentResult.competition, recentResult.date, recentResult.venue].join(' · ')}
-              </p>
-              {[recentResult.home, recentResult.away].map((team, i) => {
-                const muted = team.name !== ourTeam
-                return (
-                  <div
-                    key={team.name}
-                    className="flex items-baseline justify-between border-t border-line py-4"
-                  >
-                    <span className={`text-2xl font-medium ${muted ? 'text-cream/50' : ''}`}>{team.name}</span>
-                    <span
-                      className={`text-6xl font-medium leading-none tracking-[-0.05em] md:text-7xl ${
-                        muted ? 'text-cream/50' : ''
-                      }`}
-                    >
-                      <RollingNumber value={team.score} delay={0.3 + i * 0.15} />
-                    </span>
-                  </div>
-                )
-              })}
-              <div className="flex items-center justify-between gap-4 border-t border-line pt-4 text-sm">
-                <span className={`font-medium ${result === '승리' ? 'text-win' : 'text-cream/60'}`}>{result}</span>
-                <a
-                  href={matchSource.url}
-                  target="_blank"
-                  rel="noopener"
-                  className="text-cream/60 underline decoration-cream/30 underline-offset-4 transition-colors hover:text-cream"
-                >
-                  출처 {matchSource.label}
-                </a>
-              </div>
-            </div>
+            <ResultSection
+              result={recentResult}
+              record={seasonRecord}
+              source={matchSource}
+              titleId="result-title"
+            />
           </Reveal>
 
           {/* 다음 경기 */}
@@ -120,6 +82,20 @@ export default function App() {
             <NextMatchSection match={nextMatch} titleId="next-match-title" ctaHref={instagramUrl} />
           </Reveal>
         </div>
+
+        {/* 선수단 (전체 폭) */}
+        <Reveal
+          id="squad"
+          aria-labelledby="squad-title"
+          className="rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
+        >
+          <RosterSection
+            players={roster.players}
+            source={roster.source}
+            updatedAt={roster.updatedAt}
+            titleId="squad-title"
+          />
+        </Reveal>
       </main>
 
       <footer

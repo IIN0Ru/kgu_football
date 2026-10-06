@@ -1,0 +1,38 @@
+# 매주 월요일 새벽 3시(한국 시간)에 KUFC 공개 페이지에서 선수 명단을 다시 받아온다.
+# 바뀐 게 있을 때만 커밋하고 배포 워크플로를 실행한다. 손으로 돌리려면 Actions 탭 → Run workflow
+name: 선수 명단 업데이트
+
+on:
+  schedule:
+    - cron: '0 18 * * 0' # UTC 일요일 18:00 = 한국 월요일 03:00
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  roster:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 명단 받아오기
+        run: node scripts/fetch-roster.mjs
+      - name: 바뀌었으면 커밋하고 배포
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet src/data/roster.json; then
+            echo "변경 없음"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add src/data/roster.json
+          git commit -m "선수 명단 자동 업데이트 (KUFC)"
+          git push
+          # 봇이 한 push 는 다른 워크플로를 깨우지 않으므로 배포를 직접 실행
+          gh workflow run deploy.yml --ref main
