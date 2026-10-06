@@ -18,6 +18,7 @@ import {
   youtubeUrl,
   youtubeLatestEmbed,
   nextMatch,
+  laterMatches,
   photoCredit,
   recentResult,
   earlierResults,
@@ -90,7 +91,7 @@ export default function App() {
             aria-labelledby="next-match-title"
             className="rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10"
           >
-            <NextMatchSection match={nextMatch} titleId="next-match-title" />
+            <NextMatchSection match={nextMatch} later={laterMatches} titleId="next-match-title" />
           </Reveal>
         </div>
 

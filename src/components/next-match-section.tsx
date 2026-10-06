@@ -3,9 +3,10 @@
  * - 두 팀을 학교 로고 원(출처 표기, team-crest.tsx)과 이름으로 마주 세움
  * - 상태 알약: 일정이 있으면 D-day, 당일이면 '오늘 경기', 없으면 '일정 발표 전'
  * - 일시·장소·대회를 아이콘과 함께 정리. 모르는 값은 '확인 중'으로 (지어내지 않음)
+ * - 아래에 '이후 경기' 최대 3개 작은 줄 (날짜 · 상대 로고·이름 · 홈/원정 · 시각)
  */
 import { CalendarDays, MapPin, Trophy } from 'lucide-react'
-import { ourTeam, type NextMatch } from '@/data/home'
+import { ourTeam, type LaterMatch, type NextMatch } from '@/data/home'
 import { TeamCrest } from '@/components/team-crest'
 
 function dDay(kickoff: string): { label: string; today: boolean } | null {
@@ -52,9 +53,11 @@ function InfoRow({
 
 export function NextMatchSection({
   match,
+  later = [],
   titleId,
 }: {
   match: NextMatch
+  later?: LaterMatch[]
   titleId: string
 }) {
   const count = match.kickoff ? dDay(match.kickoff) : null
@@ -109,6 +112,26 @@ export function NextMatchSection({
         <InfoRow icon={Trophy} label="대회" value={match.competition} />
       </dl>
 
+
+      {/* 이후 경기 */}
+      {later.length > 0 && (
+        <div className="mt-auto flex flex-col">
+          <h3 className="mb-2 text-sm text-fg/60">이후 경기</h3>
+          <ul>
+            {later.map((m) => (
+              <li key={`${m.date}-${m.opponent}`} className="flex items-center gap-3 border-t border-line py-3">
+                <span className="w-10 shrink-0 text-sm tabular-nums text-fg/50">{m.date}</span>
+                <TeamCrest name={m.opponent} className="h-7 w-7 text-xs" />
+                <span className="min-w-0 flex-1 truncate text-base font-medium">
+                  {m.opponent}
+                  <span className="ml-2 text-xs font-normal text-fg/50">{m.side}</span>
+                </span>
+                <span className="shrink-0 text-sm tabular-nums text-fg/60">{m.time ?? '시간 확인 중'}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }

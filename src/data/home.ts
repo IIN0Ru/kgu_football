@@ -55,9 +55,29 @@ function toNextMatch(m: SeasonMatch | undefined): NextMatch {
 }
 
 /** 점수가 아직 없고, 시작 시각이 지금부터 2시간 전 이후인 첫 경기 (경기 중에도 '오늘 경기'로 보이게) */
-export const nextMatch = toNextMatch(
-  matches.find((m) => m.homeScore === null && new Date(kickoffOf(m)).getTime() > Date.now() - 2 * 3_600_000),
+const upcoming = matches.filter(
+  (m) => m.homeScore === null && new Date(kickoffOf(m)).getTime() > Date.now() - 2 * 3_600_000,
 )
+export const nextMatch = toNextMatch(upcoming[0])
+
+/** 다음 경기 카드 아래 작은 목록: 그다음 경기들 (최대 3개, 날짜순) */
+export interface LaterMatch {
+  date: string
+  time: string | null
+  opponent: string
+  side: '홈' | '원정'
+  venue: string | null
+}
+export const laterMatches: LaterMatch[] = upcoming.slice(1, 4).map((m) => {
+  const home = m.home === ourTeam
+  return {
+    date: `${Number(m.date.slice(5, 7))}.${Number(m.date.slice(8))}`,
+    time: m.time,
+    opponent: home ? m.away : m.home,
+    side: home ? '홈' : '원정',
+    venue: m.venue,
+  }
+})
 
 const last = played[played.length - 1]
 const weekday = (d: string) => new Intl.DateTimeFormat('ko-KR', { weekday: 'short', timeZone: 'Asia/Seoul' }).format(new Date(`${d}T12:00:00+09:00`))
