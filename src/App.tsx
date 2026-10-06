@@ -13,6 +13,8 @@ import {
   matchSource,
   news,
   blogUrl,
+  magazine,
+  magazineUrl,
   nextMatch,
   photoCredit,
   recentResult,
@@ -56,7 +58,14 @@ export default function App() {
           aria-labelledby="news-title"
           className="rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10"
         >
-          <NewsSection items={news} titleId="news-title" moreHref={instagramUrl} blogHref={blogUrl} />
+          <NewsSection
+            blog={news}
+            magazine={magazine}
+            titleId="news-title"
+            moreHref={instagramUrl}
+            blogHref={blogUrl}
+            magazineHref={magazineUrl}
+          />
         </Reveal>
 
         <div className="grid gap-2 md:gap-3 lg:grid-cols-2">

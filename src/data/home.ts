@@ -193,6 +193,22 @@ export const news: NewsItem[] = [
   },
 ]
 
+/**
+ * 매거진: 축구부 인터뷰 매거진 (링크트리 linktr.ee/kgu_turtles 에 올라온 순서, 2026-10-06 확인)
+ * - 링크트리 robots.txt 가 자동 수집을 막아 사람이 옮겨 넣음. 날짜·요약은 공개 정보가 없어 비움. 사진 없음
+ */
+const issue = (id: string) => `https://online.fliphtml5.com/qsilo/${id}/`
+
+export const magazine: NewsItem[] = [
+  { title: '권오성 인터뷰', category: '인터뷰', source: '축구부 매거진', href: issue('svrh') },
+  { title: '장재원 인터뷰', category: '인터뷰', source: '축구부 매거진', href: issue('itlw') },
+  { title: '새내기 인터뷰', category: '인터뷰', source: '축구부 매거진', href: issue('nqez') },
+  { title: '보이지 않는 끈으로 연결된, 경기대의 베스트 듀오', category: '인터뷰', source: '축구부 매거진', href: issue('unrd') },
+  { title: '룸메이트 고발장: 기숙사 TMI 토크', category: '인터뷰', source: '축구부 매거진', href: issue('xirc') },
+]
+
+export const magazineUrl = 'https://linktr.ee/kgu_turtles'
+
 /** 축구부 채널 (링크트리 기준) */
 export const blogUrl = 'https://blog.naver.com/orangeturtles'
 
