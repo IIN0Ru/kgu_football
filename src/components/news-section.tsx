@@ -4,7 +4,7 @@
  * - 줄 전체가 링크, 마우스 올리면 줄이 살짝 밝아지고 화살표 원이 크림색으로 채워짐
  * - 바깥 링크는 새 창 + 화살표 방향(↗)으로 구분
  * - 소식이 없으면 빈 상태 안내
- * - 대표 사진(매거진 표지)이 있으면: 대표 소식은 왼쪽에 크게, 목록은 줄 앞에 작게. 사진은 세로 3:4 비율
+ * - 대표 사진이 있으면 대표 소식 왼쪽에 크게, 목록 줄 앞에 작게 (지금 소식에는 사진을 넣지 않음, 사용자 결정)
  */
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { NewsItem } from '@/data/home'
@@ -21,7 +21,8 @@ function linkProps(href: string) {
 }
 
 function Meta({ item }: { item: NewsItem }) {
-  const parts = [item.category, item.source, item.date].filter(Boolean)
+  const date = item.date?.replace(/^(\d{4})-(\d{2})-(\d{2})$/, (_, y, m, d) => `${y}.${Number(m)}.${Number(d)}`)
+  const parts = [item.category, item.source, date].filter(Boolean)
   return <p className="text-sm text-fg/60">{parts.join(' · ')}</p>
 }
 

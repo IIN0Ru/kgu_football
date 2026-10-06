@@ -135,27 +135,62 @@ export interface NewsItem {
   /** 출처 이름 (기사 매체, 인스타그램 등) */
   source?: string
   href: string
-  /** 대표 사진 주소 (원본 위치에서 그대로 불러옴) */
+  /** 대표 사진 주소 (지금은 쓰지 않음, 사용자 결정 2026-10-06) */
   image?: string
 }
 
 /**
- * 최신 소식: 축구부 매거진 인터뷰 (링크트리 linktr.ee/kgu_turtles 에 올라온 순서 그대로, 2026-10-06 수동 확인)
- * - 링크트리·네이버 블로그 RSS 모두 robots.txt 가 자동 수집을 막아서 사람이 확인해 넣음 (NOTES #25)
- * - 게시 날짜·요약은 공개된 정보가 없어 비움 (지어내지 않음)
- * - 사진: 각 매거진의 표지 미리보기 이미지(fliphtml5 og:image)를 원래 주소 그대로 불러옴. 파일을 복사하지 않음 (사용자 결정: 대표 사진 표시)
+ * 최신 소식: 경기대 축구부 네이버 블로그(blog.naver.com/orangeturtles)의 [KGU series] 인터뷰 최신 5개
+ * - 블로그 RSS는 robots.txt 가 자동 수집을 막고 작업 환경에서도 네이버 접속이 막혀 있어,
+ *   사용자가 준 글 주소 + 글 화면 캡처를 보고 사람이 옮겨 넣음 (2026-10-06, NOTES #26)
+ * - 요약은 각 글 첫 소개 문단의 앞 문장을 그대로 옮김. 첫 문단이 캡처에 없는 글은 비움
+ * - 사진은 넣지 않음 (사용자 결정)
+ * - 새 글이 올라오면 맨 위에 추가하고 맨 아래를 지움 (5개 유지)
  */
-const magazine = (id: string) => ({
-  href: `https://online.fliphtml5.com/qsilo/${id}/`,
-  image: `https://online.fliphtml5.com/qsilo/${id}/files/shot.jpg?v=2`,
-})
+const blogPost = (logNo: string) => `https://blog.naver.com/orangeturtles/${logNo}`
 
 export const news: NewsItem[] = [
-  { title: '권오성 인터뷰', category: '인터뷰', source: '축구부 매거진', ...magazine('svrh') },
-  { title: '장재원 인터뷰', category: '인터뷰', source: '축구부 매거진', ...magazine('itlw') },
-  { title: '새내기 인터뷰', category: '인터뷰', source: '축구부 매거진', ...magazine('nqez') },
-  { title: '보이지 않는 끈으로 연결된, 경기대의 베스트 듀오', category: '인터뷰', source: '축구부 매거진', ...magazine('unrd') },
-  { title: '룸메이트 고발장: 기숙사 TMI 토크', category: '인터뷰', source: '축구부 매거진', ...magazine('xirc') },
+  {
+    title: '[KGU series 12] 가야대전 멀티골의 주인공! 경기대학교 서민준 선수 단독 인터뷰',
+    summary:
+      '이번 제21회 1·2학년 대학축구연맹전 황가람기에서 경기대 축구부의 스코어보드를 가장 뜨겁게 달군 인물, 바로 1학년 서민준 선수입니다.',
+    category: '인터뷰',
+    source: '축구부 블로그',
+    date: '2026-10-06',
+    href: blogPost('224432818144'),
+  },
+  {
+    title: '[KGU series 11] U리그 4권역 최다 득점팀, 캡틴 갈정민의 당찬 포부',
+    category: '인터뷰',
+    source: '축구부 블로그',
+    date: '2026-06-09',
+    href: blogPost('224310428052'),
+  },
+  {
+    title: '[KGU series 10] 득점왕의 탄생, 경기대의 새로운 심장, 유태호 선수',
+    summary: "2026년, 경기대학교 축구부의 전방에 새로운 활력을 불어넣은 '무서운 신예'가 등장했습니다.",
+    category: '인터뷰',
+    source: '축구부 블로그',
+    date: '2026-03-30',
+    href: blogPost('224234051023'),
+  },
+  {
+    title: "[KGU series 9] '동시 득점왕' 타이틀을 넘어 국가대표를 꿈꾸다, 김기완 선수",
+    summary: '2026년의 시작을 알리는 무대에서 경기대학교 축구부는 가장 날카로운 창을 발견했습니다.',
+    category: '인터뷰',
+    source: '축구부 블로그',
+    date: '2026-03-21',
+    href: blogPost('224224694941'),
+  },
+  {
+    title: '[KGU series 8] 2026시즌 경기대학교 축구부 캡틴, 갈정민 선수',
+    summary:
+      '2026년 새 시즌을 앞둔 경기대학교 축구부에게 이번 동계 대회 새로운 리더십과 팀의 결속력을 다지는 중요한 변환점이었습니다.',
+    category: '인터뷰',
+    source: '축구부 블로그',
+    date: '2026-03-16',
+    href: blogPost('224217933083'),
+  },
 ]
 
 /** 축구부 채널 (링크트리 기준) */
