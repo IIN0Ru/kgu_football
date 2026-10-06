@@ -2,10 +2,9 @@
  * 최근 결과
  * - 전광판처럼 한 줄: 홈 이름 · 홈 로고 · 점수 · 원정 로고 · 원정 이름 (가운데 정렬, 사용자 요청 2026-10-07)
  * - 승리/무승부/패배 표시 없음 (사용자 요청으로 뺌). 점수는 홈 먼저
- * - 위: 대회·날짜·장소 한 줄 + 가장 최근 경기를 크게(점수가 전광판처럼 굴러 올라감)
+ * - 위: 대회·날짜·장소 한 줄 + 가장 최근 경기를 크게 (점수 굴러 올라가는 모션은 사용자 요청으로 뺌)
  * - 아래: 이전 4경기를 작은 줄로 (왼쪽에 작은 날짜) → 시즌 기록과 출처는 그대로
  */
-import { RollingNumber } from '@/components/motion'
 import { TeamCrest } from '@/components/team-crest'
 import type { PastMatch, seasonRecord as SeasonRecordValue } from '@/data/home'
 
@@ -62,7 +61,6 @@ export function ResultSection({
           home={result.home}
           away={result.away}
           large
-          animate
         />
 
         {/* 이전 경기 */}
@@ -110,13 +108,11 @@ function ScoreLine({
   away,
   date,
   large,
-  animate,
 }: {
   home: Team
   away: Team
   date?: string
   large?: boolean
-  animate?: boolean
 }) {
   const name = `min-w-0 flex-1 truncate font-medium ${large ? 'text-base sm:text-xl md:text-2xl' : 'text-sm sm:text-base'}`
   const crest = large ? 'h-10 w-10 text-base sm:h-12 sm:w-12 md:h-14 md:w-14' : 'h-8 w-8 text-sm sm:h-9 sm:w-9'
@@ -130,9 +126,9 @@ function ScoreLine({
           large ? 'w-20 text-3xl sm:w-28 sm:text-4xl md:w-32 md:text-5xl' : 'w-14 text-lg sm:w-16 sm:text-xl'
         }`}
       >
-        {animate ? <RollingNumber value={home.score} delay={0.3} /> : home.score}
+        {home.score}
         <span className="mx-1.5 text-fg/40">:</span>
-        {animate ? <RollingNumber value={away.score} delay={0.45} /> : away.score}
+        {away.score}
       </span>
       <TeamCrest name={away.name} className={crest} />
       <span className={`${name} text-left`}>{away.name}</span>
