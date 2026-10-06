@@ -1,6 +1,6 @@
 /**
  * 최신 소식 (impeccable polish)
- * - 두 칸: 왼쪽 "블로그"(가장 최근 글 크게 + 나머지 목록), 오른쪽 "매거진"(목록). 사용자 요청 2026-10-06
+ * - 두 칸: 왼쪽 "블로그"(가장 최근 글 크게 + 나머지 목록), 오른쪽 "유튜브 최신 영상"(공식 퍼가기 플레이어) + "매거진"(목록). 사용자 요청 2026-10-06
  * - 줄 전체가 링크, 마우스 올리면 줄이 살짝 밝아지고 화살표 원이 검정으로 채워짐
  * - 바깥 링크는 새 창 + 화살표 방향(↗)으로 구분
  * - 사진 없음 (사용자 결정). 소식이 없으면 빈 상태 안내
@@ -75,6 +75,7 @@ export function NewsSection({
   blogHref,
   magazineHref,
   youtubeHref,
+  youtubeEmbed,
 }: {
   blog: NewsItem[]
   magazine: NewsItem[]
@@ -84,6 +85,8 @@ export function NewsSection({
   blogHref?: string
   magazineHref?: string
   youtubeHref?: string
+  /** 유튜브 최신 영상 퍼가기 주소 */
+  youtubeEmbed?: string
 }) {
   const [lead, ...rest] = blog
 
@@ -96,22 +99,12 @@ export function NewsSection({
         >
           최신 소식
         </h2>
-        <span className="flex gap-4">
-          {youtubeHref && (
-            <a
-              {...linkProps(youtubeHref)}
-              className="text-sm text-fg/70 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
-            >
-              유튜브
-            </a>
-          )}
-          <a
-            {...linkProps(moreHref)}
-            className="text-sm text-fg/70 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
-          >
-            인스타그램
-          </a>
-        </span>
+        <a
+          {...linkProps(moreHref)}
+          className="text-sm text-fg/70 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
+        >
+          인스타그램에서 더 보기
+        </a>
       </div>
 
       {!lead && magazine.length === 0 ? (
@@ -152,17 +145,35 @@ export function NewsSection({
             )}
           </section>
 
-          {/* 오른쪽: 매거진 */}
-          {magazine.length > 0 && (
-            <section aria-label="매거진" className="flex flex-col lg:col-span-5">
-              <ColumnHead label="매거진" href={magazineHref} />
-              <ul>
-                {magazine.map((item) => (
-                  <Row key={item.href} item={item} />
-                ))}
-              </ul>
-            </section>
-          )}
+          {/* 오른쪽: 유튜브 최신 영상 + 매거진 */}
+          <div className="flex flex-col gap-12 lg:col-span-5">
+            {youtubeEmbed && (
+              <section aria-label="유튜브 최신 영상" className="flex flex-col">
+                <ColumnHead label="유튜브 최신 영상" href={youtubeHref} />
+                <div className="overflow-hidden rounded-2xl border border-line bg-ink">
+                  <iframe
+                    src={youtubeEmbed}
+                    title="경기대학교 축구부 유튜브 최신 영상"
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    className="aspect-video w-full"
+                  />
+                </div>
+              </section>
+            )}
+            {magazine.length > 0 && (
+              <section aria-label="매거진" className="flex flex-col">
+                <ColumnHead label="매거진" href={magazineHref} />
+                <ul>
+                  {magazine.map((item) => (
+                    <Row key={item.href} item={item} />
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
         </div>
       )}
     </div>

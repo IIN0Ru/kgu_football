@@ -209,8 +209,14 @@ export const magazine: NewsItem[] = [
 
 export const magazineUrl = 'https://linktr.ee/kgu_turtles'
 
-/** 축구부 유튜브 채널 (사용자 전달 2026-10-06) */
+/**
+ * 축구부 유튜브 채널 (사용자 전달 2026-10-06). 채널 ID는 채널 페이지 canonical 주소로 확인
+ * 최신 영상: 유튜브 공식 퍼가기(embed)로 채널의 "업로드" 재생목록(UC… → UU…)을 띄움.
+ * 첫 영상이 항상 가장 최근 업로드라 새 영상이 올라오면 자동으로 바뀜 (수집 아님, 유튜브 플레이어가 직접 불러옴)
+ */
 export const youtubeUrl = 'https://www.youtube.com/@KGU_TURTLES'
+const youtubeChannelId = 'UC4aARbVyxSRphfzcgx59BsQ'
+export const youtubeLatestEmbed = `https://www.youtube-nocookie.com/embed/videoseries?list=UU${youtubeChannelId.slice(2)}&rel=0`
 
 /** 축구부 채널 (링크트리 기준) */
 export const blogUrl = 'https://blog.naver.com/orangeturtles'

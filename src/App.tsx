@@ -16,6 +16,7 @@ import {
   magazine,
   magazineUrl,
   youtubeUrl,
+  youtubeLatestEmbed,
   nextMatch,
   photoCredit,
   recentResult,
@@ -67,6 +68,7 @@ export default function App() {
             blogHref={blogUrl}
             magazineHref={magazineUrl}
             youtubeHref={youtubeUrl}
+            youtubeEmbed={youtubeLatestEmbed}
           />
         </Reveal>
 
