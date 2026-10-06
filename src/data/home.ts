@@ -16,17 +16,28 @@ export interface NextMatch {
   side: '홈' | '원정' | null
 }
 
+/** 우리 학교 표시 이름. 맞대결에서 이 팀을 강조(크림색 원)한다 */
+export const ourTeam = '경기대'
+
+/** 출처: KUSF 대학스포츠 U리그 경기 일정 (2026 U리그 4권역, 2026-10-06 수동 확인) */
+export const matchSource = {
+  label: 'KUSF 대학스포츠',
+  url: 'https://www.kusf.or.kr/league/league_schedule.html?e_code=45&l_year=2026&l_code=271&t_code=1704',
+}
+
 export const nextMatch: NextMatch = {
-  competition: 'U리그',
-  home: '경기대',
-  away: '상대팀',
-  kickoff: null,
-  venue: null,
-  side: null,
+  competition: 'KUSF 대학축구 U리그 4권역',
+  home: '홍익대',
+  away: '경기대',
+  kickoff: '2026-10-09T11:00:00+09:00',
+  venue: '화성비봉습지공원축구장',
+  side: '원정',
 }
 
 export const recentResult = {
-  competition: 'U리그',
+  competition: 'KUSF 대학축구 U리그 4권역',
+  date: '9월 18일 (금)',
+  venue: '경기대운동장',
   home: { name: '경기대', score: 3 },
   away: { name: '칼빈대', score: 2 },
 }

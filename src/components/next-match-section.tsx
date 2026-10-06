@@ -5,7 +5,7 @@
  * - 일시·장소·대회를 아이콘과 함께 정리. 모르는 값은 '확인 중'으로 (지어내지 않음)
  */
 import { ArrowUpRight, CalendarDays, MapPin, Trophy } from 'lucide-react'
-import type { NextMatch } from '@/data/home'
+import { ourTeam, type NextMatch } from '@/data/home'
 
 function dDay(kickoff: string): { label: string; today: boolean } | null {
   const t = new Date(kickoff)
@@ -92,18 +92,28 @@ export function NextMatchSection({
         </span>
       </div>
 
-      {/* 맞대결 */}
+      {/* 맞대결: 경기대는 홈·원정 어느 쪽이든 크림색 원과 밝은 글자로 강조 */}
       <div className="flex items-center gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <Crest name={match.home} />
-          <span className="truncate text-2xl font-medium tracking-[-0.03em] md:text-3xl">{match.home}</span>
+          <Crest name={match.home} muted={match.home !== ourTeam} />
+          <span
+            className={`truncate text-2xl font-medium tracking-[-0.03em] md:text-3xl ${
+              match.home !== ourTeam ? 'text-cream/70' : ''
+            }`}
+          >
+            {match.home}
+          </span>
         </div>
         <span className="shrink-0 text-sm text-cream/40">vs</span>
         <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
-          <span className="truncate text-right text-2xl font-medium tracking-[-0.03em] text-cream/70 md:text-3xl">
+          <span
+            className={`truncate text-right text-2xl font-medium tracking-[-0.03em] md:text-3xl ${
+              match.away !== ourTeam ? 'text-cream/70' : ''
+            }`}
+          >
             {match.away}
           </span>
-          <Crest name={match.away} muted />
+          <Crest name={match.away} muted={match.away !== ourTeam} />
         </div>
       </div>
 

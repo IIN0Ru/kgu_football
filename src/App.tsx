@@ -5,7 +5,16 @@ import { NewsSection } from '@/components/news-section'
 import { NextMatchSection } from '@/components/next-match-section'
 import { PrismaHero, type HeroNavItem } from '@/components/ui/prisma-hero'
 import { useHeroSnap } from '@/components/use-hero-snap'
-import { heroImage, instagramUrl, news, nextMatch, photoCredit, recentResult } from '@/data/home'
+import {
+  heroImage,
+  instagramUrl,
+  matchSource,
+  news,
+  nextMatch,
+  ourTeam,
+  photoCredit,
+  recentResult,
+} from '@/data/home'
 
 const navItems: HeroNavItem[] = [
   { label: '소식', href: '#news' },
@@ -23,7 +32,11 @@ function SectionTitle({ id, children }: { id: string; children: React.ReactNode 
 }
 
 export default function App() {
-  const won = recentResult.home.score > recentResult.away.score
+  const [ours, theirs] =
+    recentResult.home.name === ourTeam
+      ? [recentResult.home.score, recentResult.away.score]
+      : [recentResult.away.score, recentResult.home.score]
+  const result = ours > theirs ? '승리' : ours < theirs ? '패배' : '무승부'
   const { away, goNext } = useHeroSnap('top')
 
   return (
@@ -62,27 +75,38 @@ export default function App() {
           >
             <SectionTitle id="result-title">최근 결과</SectionTitle>
             <div className="flex flex-col">
-              <p className="mb-3 text-sm text-cream/60">{recentResult.competition}</p>
-              {[recentResult.home, recentResult.away].map((team, i) => (
-                <div
-                  key={team.name}
-                  className="flex items-baseline justify-between border-t border-line py-4"
-                >
-                  <span className={`text-2xl font-medium ${i === 1 ? 'text-cream/50' : ''}`}>
-                    {team.name}
-                  </span>
-                  <span
-                    className={`text-6xl font-medium leading-none tracking-[-0.05em] md:text-7xl ${
-                      i === 1 ? 'text-cream/50' : ''
-                    }`}
-                  >
-                    <RollingNumber value={team.score} delay={0.3 + i * 0.15} />
-                  </span>
-                </div>
-              ))}
-              <p className={`border-t border-line pt-4 text-sm font-medium ${won ? 'text-win' : 'text-cream/60'}`}>
-                {won ? '승리' : '경기 종료'}
+              <p className="mb-3 text-sm text-cream/60">
+                {[recentResult.competition, recentResult.date, recentResult.venue].join(' · ')}
               </p>
+              {[recentResult.home, recentResult.away].map((team, i) => {
+                const muted = team.name !== ourTeam
+                return (
+                  <div
+                    key={team.name}
+                    className="flex items-baseline justify-between border-t border-line py-4"
+                  >
+                    <span className={`text-2xl font-medium ${muted ? 'text-cream/50' : ''}`}>{team.name}</span>
+                    <span
+                      className={`text-6xl font-medium leading-none tracking-[-0.05em] md:text-7xl ${
+                        muted ? 'text-cream/50' : ''
+                      }`}
+                    >
+                      <RollingNumber value={team.score} delay={0.3 + i * 0.15} />
+                    </span>
+                  </div>
+                )
+              })}
+              <div className="flex items-center justify-between gap-4 border-t border-line pt-4 text-sm">
+                <span className={`font-medium ${result === '승리' ? 'text-win' : 'text-cream/60'}`}>{result}</span>
+                <a
+                  href={matchSource.url}
+                  target="_blank"
+                  rel="noopener"
+                  className="text-cream/60 underline decoration-cream/30 underline-offset-4 transition-colors hover:text-cream"
+                >
+                  출처 {matchSource.label}
+                </a>
+              </div>
             </div>
           </Reveal>
 
