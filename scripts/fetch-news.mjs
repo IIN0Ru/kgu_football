@@ -75,8 +75,9 @@ const sized = (url) => url.replace(/([?&])type=[^&]*/, '$1type=w400')
 
 async function main() {
   const robots = await fetch('https://rss.blog.naver.com/robots.txt', { headers: { 'user-agent': UA } })
-  if (robots.ok && isDisallowed(await robots.text(), `/${BLOG_ID}.xml`)) {
-    throw new Error('rss.blog.naver.com robots.txt 가 이 RSS 수집을 막고 있어 중단')
+  const robotsText = robots.ok ? await robots.text() : ''
+  if (isDisallowed(robotsText, `/${BLOG_ID}.xml`)) {
+    throw new Error(`rss.blog.naver.com robots.txt 가 이 RSS 수집을 막고 있어 중단 [robots: ${robotsText.replace(/\s+/g, ' ').slice(0, 300)}]`)
   }
 
   const res = await fetch(FEED, { headers: { 'user-agent': UA } })
