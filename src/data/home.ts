@@ -4,12 +4,25 @@
  * 나중에 서버(API)로 바꿀 때 이 파일만 교체하면 되도록 화면 코드와 분리.
  */
 
-export const nextMatch = {
+export interface NextMatch {
+  competition: string
+  home: string
+  away: string
+  /** 경기 시작 시각 (ISO, 예: '2026-10-18T15:00:00+09:00'). 모르면 null → "일정 발표 전" 표시 */
+  kickoff: string | null
+  /** 경기장 이름. 모르면 null */
+  venue: string | null
+  /** 경기대 기준 홈/원정. 모르면 null */
+  side: '홈' | '원정' | null
+}
+
+export const nextMatch: NextMatch = {
   competition: 'U리그',
   home: '경기대',
   away: '상대팀',
-  date: '일정 확인 중',
-  venue: '장소 확인 중',
+  kickoff: null,
+  venue: null,
+  side: null,
 }
 
 export const recentResult = {
@@ -18,10 +31,30 @@ export const recentResult = {
   away: { name: '칼빈대', score: 2 },
 }
 
-export const news = [
-  { title: '소식 제목 1 (예시)', href: '#news' },
-  { title: '소식 제목 2 (예시)', href: '#news' },
-  { title: '소식 제목 3 (예시)', href: '#news' },
+export interface NewsItem {
+  title: string
+  /** 짧은 요약 (첫 번째 소식만 크게 보여줄 때 사용) */
+  summary?: string
+  /** 분류: 경기 / 선수단 / 공지 등 */
+  category: string
+  /** 게시일 (YYYY-MM-DD). 모르면 생략 */
+  date?: string
+  /** 출처 이름 (기사 매체, 인스타그램 등) */
+  source?: string
+  href: string
+}
+
+/** 실제 기사가 들어오기 전까지 예시. 링크는 축구부 인스타그램으로 */
+export const news: NewsItem[] = [
+  {
+    title: '소식 제목 1 (예시)',
+    summary: '실제 기사나 공지가 정해지면 이 자리에 두세 줄 요약이 들어갑니다. (예시)',
+    category: '경기',
+    source: '예시',
+    href: 'https://www.instagram.com/kgu_football/',
+  },
+  { title: '소식 제목 2 (예시)', category: '선수단', source: '예시', href: 'https://www.instagram.com/kgu_football/' },
+  { title: '소식 제목 3 (예시)', category: '공지', source: '예시', href: 'https://www.instagram.com/kgu_football/' },
 ]
 
 export const instagramUrl = 'https://www.instagram.com/kgu_football/'

@@ -3,7 +3,7 @@
  * 지금 보고 있는 구역 아래로 크림색 알약이 미끄러져 이동한다 (같은 메뉴가 계속 이어진다는 느낌).
  */
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { HeroNavItem } from '@/components/ui/prisma-hero'
 
 const EASE = [0.16, 1, 0.3, 1] as const
@@ -30,20 +30,44 @@ export function DockNav({ items, heroId }: DockNavProps) {
     return () => io.disconnect()
   }, [heroId])
 
-  // 지금 화면 가운데에 있는 구역 찾기
+  // 지금 보고 있는 구역: 화면 위쪽 1/3 지점을 이미 지난 구역 중 마지막 것
+  // (같은 줄에 나란히 놓인 구역은 왼쪽 것 우선, 마지막 구역이 기준선에 못 닿은 채 맨 아래면 마지막 구역)
+  // 메뉴를 눌렀을 땐 누른 구역을 바로 표시하고 이동이 끝날 때까지 유지
+  const lockUntil = useRef(0)
   useEffect(() => {
     const ids = items.filter((i) => i.href.startsWith('#')).map((i) => i.href.slice(1))
-    const sections = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el)
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) setActive(e.target.id)
-        })
-      },
-      { rootMargin: '-45% 0px -45% 0px' },
-    )
-    sections.forEach((s) => io.observe(s))
-    return () => io.disconnect()
+    let raf = 0
+    const update = () => {
+      raf = 0
+      if (performance.now() < lockUntil.current) return
+      const line = window.innerHeight * 0.33
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4
+      let current: string | null = null
+      let currentTop = -Infinity
+      for (const id of ids) {
+        const el = document.getElementById(id)
+        if (!el) continue
+        const top = Math.round(el.getBoundingClientRect().top)
+        if (top <= line && top > currentTop) {
+          current = id
+          currentTop = top
+        }
+      }
+      const last = ids.length ? document.getElementById(ids[ids.length - 1]) : null
+      if (atBottom && last && last.getBoundingClientRect().top > line) current = ids[ids.length - 1]
+      setActive(current)
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
   }, [items])
 
   return (
@@ -66,6 +90,12 @@ export function DockNav({ items, heroId }: DockNavProps) {
                     key={item.label}
                     href={item.href}
                     aria-current={isActive ? 'location' : undefined}
+                    onClick={() => {
+                      if (item.href.startsWith('#')) {
+                        setActive(item.href.slice(1))
+                        lockUntil.current = performance.now() + 1200
+                      }
+                    }}
                     className={`relative whitespace-nowrap rounded-full px-3 py-1.5 text-xs transition-colors duration-200 md:px-4 md:text-sm ${
                       isActive ? 'text-black' : 'text-cream/80 hover:text-cream'
                     }`}

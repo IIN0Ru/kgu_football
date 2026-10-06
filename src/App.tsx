@@ -1,15 +1,16 @@
-import { ArrowRight } from 'lucide-react'
 import { DockNav } from '@/components/dock-nav'
 import { SiteBackground } from '@/components/site-background'
 import { Reveal, RollingNumber } from '@/components/motion'
+import { NewsSection } from '@/components/news-section'
+import { NextMatchSection } from '@/components/next-match-section'
 import { PrismaHero, type HeroNavItem } from '@/components/ui/prisma-hero'
 import { useHeroSnap } from '@/components/use-hero-snap'
 import { heroImage, instagramUrl, news, nextMatch, photoCredit, recentResult } from '@/data/home'
 
 const navItems: HeroNavItem[] = [
-  { label: '다음 경기', href: '#next-match' },
-  { label: '최근 결과', href: '#result' },
   { label: '소식', href: '#news' },
+  { label: '최근 결과', href: '#result' },
+  { label: '다음 경기', href: '#next-match' },
   { label: '인스타그램', href: instagramUrl },
 ]
 
@@ -18,20 +19,6 @@ function SectionTitle({ id, children }: { id: string; children: React.ReactNode 
     <h2 id={id} className="section-title text-4xl font-medium leading-[0.95] tracking-[-0.04em] md:text-6xl">
       {children}
     </h2>
-  )
-}
-
-function PillLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <a
-      href={href}
-      className="group inline-flex items-center gap-2 self-start rounded-full bg-primary py-1 pl-5 pr-1 text-sm font-medium text-black transition-all hover:gap-3 sm:text-base"
-    >
-      {children}
-      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black transition-transform group-hover:scale-110 sm:h-10 sm:w-10">
-        <ArrowRight className="h-4 w-4 text-cream" aria-hidden="true" />
-      </span>
-    </a>
   )
 }
 
@@ -50,41 +37,20 @@ export default function App() {
         onCtaClick={goNext}
         title="KGU"
         description="경기대학교 축구부의 경기 일정과 결과, 소식을 한곳에 모아 보는 비공식 팬 사이트입니다."
-        ctaLabel="다음 경기 보기"
-        ctaHref="#next-match"
+        ctaLabel="최신 소식 보기"
+        ctaHref="#news"
         navItems={navItems}
         asteriskHref="#notice"
       />
 
-      <main className="mx-auto flex max-w-[1440px] flex-col gap-2 p-2 md:gap-3 md:p-3">
-        {/* 다음 경기 */}
+      <main className="mx-auto flex max-w-[1440px] flex-col gap-2 p-2 pt-14 md:gap-3 md:p-3 md:pt-16">
+        {/* 최신 소식 (맨 위, 전체 폭) */}
         <Reveal
-          id="next-match"
-          aria-labelledby="next-match-title"
-          className="flex flex-col gap-10 rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
+          id="news"
+          aria-labelledby="news-title"
+          className="rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
         >
-          <SectionTitle id="next-match-title">다음 경기</SectionTitle>
-          <div className="grid grid-cols-12 items-end gap-6">
-            <div className="col-span-12 flex flex-col gap-3 lg:col-span-8">
-              <p className="text-sm text-cream/60">{nextMatch.competition}</p>
-              <p className="text-3xl font-medium tracking-[-0.03em] md:text-5xl">
-                {nextMatch.home} <span className="text-cream/40">vs</span> {nextMatch.away}
-              </p>
-              <dl className="flex flex-wrap gap-x-8 gap-y-1 text-sm">
-                <div className="flex gap-2">
-                  <dt className="text-cream/60">일시</dt>
-                  <dd>{nextMatch.date}</dd>
-                </div>
-                <div className="flex gap-2">
-                  <dt className="text-cream/60">장소</dt>
-                  <dd>{nextMatch.venue}</dd>
-                </div>
-              </dl>
-            </div>
-            <div className="col-span-12 flex lg:col-span-4 lg:justify-end">
-              <PillLink href={instagramUrl}>축구부 소식 확인</PillLink>
-            </div>
-          </div>
+          <NewsSection items={news} titleId="news-title" moreHref={instagramUrl} />
         </Reveal>
 
         <div className="grid gap-2 md:gap-3 lg:grid-cols-2">
@@ -120,30 +86,14 @@ export default function App() {
             </div>
           </Reveal>
 
-          {/* 최신 소식 */}
+          {/* 다음 경기 */}
           <Reveal
-            id="news"
+            id="next-match"
             delay={0.08}
-            aria-labelledby="news-title"
-            className="flex flex-col gap-10 rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
+            aria-labelledby="next-match-title"
+            className="rounded-2xl bg-panel/70 p-6 md:rounded-[2rem] md:p-10"
           >
-            <SectionTitle id="news-title">최신 소식</SectionTitle>
-            <ul className="flex flex-col">
-              {news.map((item) => (
-                <li key={item.title} className="border-t border-line last:border-b">
-                  <a
-                    href={item.href}
-                    className="group flex items-center justify-between py-5 text-lg font-medium transition-colors hover:text-cream/70"
-                  >
-                    {item.title}
-                    <ArrowRight
-                      className="h-5 w-5 transition-transform group-hover:translate-x-1"
-                      aria-hidden="true"
-                    />
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <NextMatchSection match={nextMatch} titleId="next-match-title" ctaHref={instagramUrl} />
           </Reveal>
         </div>
       </main>
