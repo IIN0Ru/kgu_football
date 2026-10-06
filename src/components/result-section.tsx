@@ -60,7 +60,7 @@ export function ResultSection({
           return (
             <div key={team.name} className="flex items-center justify-between border-t border-line py-4">
               <span className="flex items-center gap-3">
-                <TeamCrest name={team.name} className="h-10 w-10 text-base" />
+                <TeamCrest name={team.name} align="start" className="h-10 w-10 text-base" />
                 <span className={`text-2xl font-medium ${muted ? 'text-cream/50' : ''}`}>{team.name}</span>
               </span>
               <span
