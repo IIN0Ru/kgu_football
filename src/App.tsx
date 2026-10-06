@@ -1,6 +1,5 @@
 import { DockNav } from '@/components/dock-nav'
 import { FloatingLogo } from '@/components/floating-logo'
-import { IntroBanner } from '@/components/intro-banner'
 import { SiteBackground } from '@/components/site-background'
 import { Reveal } from '@/components/motion'
 import { ResultSection } from '@/components/result-section'
@@ -11,7 +10,6 @@ import { PrismaHero, type HeroNavItem } from '@/components/ui/prisma-hero'
 import { useHeroSnap } from '@/components/use-hero-snap'
 import {
   heroImage,
-  introBanner,
   heroLogo,
   matchSource,
   news,
@@ -36,15 +34,15 @@ const navItems: HeroNavItem[] = [
   { label: '선수단', href: '#squad' },
 ]
 
-// 맨 위 전체 화면 순서: 0페이지 배너 → KGU 로고(히어로) → 카드들
-const SNAP_SCREENS = ['intro', 'top']
+// 맨 위 전체 화면: KGU 로고(히어로) → 카드들 (0페이지 배너는 2026-10-07 사용자 요청으로 삭제)
+const SNAP_SCREENS = ['top']
 
 export default function App() {
   const { away } = useHeroSnap(SNAP_SCREENS)
 
   return (
     <>
-      <SiteBackground away={away} image={heroImage} introId="intro" />
+      <SiteBackground away={away} image={heroImage} />
       <DockNav items={navItems} heroId="top" logo={{ id: 'dock-logo' }} />
       <FloatingLogo
         src={heroLogo.src}
@@ -55,8 +53,6 @@ export default function App() {
         targetId="dock-logo"
       />
 
-      <IntroBanner id="intro" banner={introBanner} />
-
       <PrismaHero
         id="top"
         bare
@@ -64,6 +60,7 @@ export default function App() {
         logo={heroLogo}
         asteriskHref="#notice"
         outlineWord="TURTLES"
+        scrollHint
       />
 
       <main className="mx-auto flex max-w-[1440px] flex-col gap-2 p-2 pt-14 md:gap-3 md:p-3 md:pt-16">
@@ -140,15 +137,6 @@ export default function App() {
           {photoCredit.label}{' '}
           <a href={photoCredit.url} target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-fg/70">
             {photoCredit.url}
-          </a>
-          {' · '}배너{' '}
-          <a
-            href={introBanner.credit.url}
-            target="_blank"
-            rel="noopener"
-            className="underline underline-offset-2 hover:text-fg/70"
-          >
-            {introBanner.credit.label}
           </a>
         </p>
       </footer>

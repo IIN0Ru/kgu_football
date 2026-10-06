@@ -5,8 +5,7 @@
  * - 사진은 채도를 60% 뺀 흑백에 가까운 톤 + 거북 등껍질(육각형) 무늬 (시안 C, 2026-10-07)
  * 성능: 매 프레임 blur를 계산하지 않도록, 미리 흐리게 만든 사진 한 장을 겹쳐 투명도만 바꾼다.
  */
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 
 // 화면 이동(use-hero-snap.ts)과 같은 곡선·시간: 천천히 시작해 천천히 끝나서
 // 흐려질 때와 선명해질 때가 똑같은 속도로 보이고, 화면 이동과 함께 움직인다
@@ -35,8 +34,6 @@ function Photo({ image, className, decorative }: { image: Img; className: string
 
 interface SiteBackgroundProps {
   away: boolean
-  /** 0페이지 id: 0페이지를 지나는 동안 사진이 살짝 크게 시작해 제자리로 줄어듦 (뚫고 들어가는 느낌) */
-  introId?: string
   image: {
     webpSrcSet: string
     jpgSrcSet: string
@@ -45,27 +42,15 @@ interface SiteBackgroundProps {
   }
 }
 
-export function SiteBackground({ away, image, introId }: SiteBackgroundProps) {
+export function SiteBackground({ away, image }: SiteBackgroundProps) {
   const reduce = useReducedMotion()
   const t = { duration: reduce ? 0.3 : DURATION, ease: EASE }
 
-  // 0페이지 → 히어로: 사진이 1.12배에서 1배로 (0페이지 높이만큼 스크롤하는 동안)
-  const [introH, setIntroH] = useState(0)
-  useEffect(() => {
-    const m = () => setIntroH(introId ? (document.getElementById(introId)?.offsetHeight ?? 0) : 0)
-    m()
-    window.addEventListener('resize', m)
-    return () => window.removeEventListener('resize', m)
-  }, [introId])
-  const { scrollY } = useScroll()
-  const zoom = useTransform(scrollY, [0, Math.max(1, introH)], [introH && !reduce ? 1.12 : 1, 1], { clamp: true })
 
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-paper">
       {/* 선명한 사진 */}
-      <motion.div className="absolute inset-0" style={{ scale: zoom }}>
-        <Photo image={image} className="absolute inset-0 h-full w-full object-cover object-[50%_55%] grayscale-[0.6]" />
-      </motion.div>
+      <Photo image={image} className="absolute inset-0 h-full w-full object-cover object-[50%_55%] grayscale-[0.6]" />
 
       {/* 미리 흐리게 만든 사진: 다음 화면에서 겹쳐짐 */}
       <motion.div

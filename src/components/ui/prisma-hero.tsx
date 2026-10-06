@@ -16,6 +16,7 @@
  * - 소개 글·버튼을 선택 항목으로 (사이트에서는 사용자 요청으로 둘 다 뺌, KGU만 남김)
  * - 메뉴(navItems)를 선택 항목으로: 사이트에서는 히어로 안 메뉴를 빼고 dock-nav 하나를 처음부터 고정 (메뉴가 올라갔다 다시 내려오는 부자연스러움 제거)
  * - 테두리만 있는 큰 영문 글자(outlineWord, 사이트에서는 TURTLES)를 오른쪽 아래(모바일은 오른쪽 위)에 깔 수 있게 (시안 C)
+ * - SCROLL 안내(scrollHint): SCROLL 글자 + 아래로 계속 흘러내리는 짧은 선. 데스크톱은 로고와 TURTLES 사이, 휴대폰은 오른쪽 아래 (2026-10-07)
  * - 밝은 테마: 상단 메뉴를 검은 탭 → 밝은 반투명 탭(검은 글자)으로. 밝아진 사진 위 소개 글에 그림자 추가
  */
 import { motion, useInView, useReducedMotion } from "framer-motion";
@@ -150,6 +151,8 @@ interface PrismaHeroProps {
   onCtaClick?: () => void;
   /** 테두리만 있는 큰 영문 장식 글자 (예: 축구부 별명) */
   outlineWord?: string;
+  /** 아래 가운데 SCROLL 안내와 흘러내리는 선 */
+  scrollHint?: boolean;
 }
 
 const PrismaHero = ({
@@ -166,6 +169,7 @@ const PrismaHero = ({
   onCtaClick,
   image,
   outlineWord,
+  scrollHint = false,
 }: PrismaHeroProps) => {
   const reduce = useReducedMotion();
   const enter = (delay: number) =>
@@ -249,6 +253,29 @@ const PrismaHero = ({
           >
             {outlineWord}
           </motion.span>
+        )}
+
+        {/* SCROLL 안내: 글자 + 흘러내리는 선.
+            가운데 아래는 데스크톱에서 TURTLES, 휴대폰에서 로고와 겹쳐서 → 데스크톱은 로고와 TURTLES 사이(화면 폭 40%), 휴대폰은 오른쪽 아래 */}
+        {scrollHint && (
+          <motion.div
+            aria-hidden="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: reduce ? 0 : 1.4 }}
+            className="pointer-events-none absolute bottom-6 right-5 z-10 flex flex-col items-center gap-3 [filter:drop-shadow(0_1px_6px_rgb(0_0_0/0.55))] md:bottom-10 md:left-[40vw] md:right-auto"
+          >
+            <span className="font-num text-base tracking-[0.3em] text-cream">
+              SCROLL
+            </span>
+            <span className="relative h-14 w-0.5 overflow-hidden rounded-full bg-cream/35">
+              <span
+                className={`absolute inset-x-0 top-0 h-1/2 bg-cream ${
+                  reduce ? "" : "animate-[scroll-drip_1.6s_cubic-bezier(0.65,0,0.35,1)_infinite]"
+                }`}
+              />
+            </span>
+          </motion.div>
         )}
 
         {/* Hero content */}
