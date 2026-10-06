@@ -4,9 +4,15 @@
  * - 줄 전체가 링크, 마우스 올리면 줄이 살짝 밝아지고 화살표 원이 크림색으로 채워짐
  * - 바깥 링크는 새 창 + 화살표 방향(↗)으로 구분
  * - 소식이 없으면 빈 상태 안내
+ * - 대표 사진(매거진 표지)이 있으면: 대표 소식은 왼쪽에 크게, 목록은 줄 앞에 작게. 사진은 세로 3:4 비율
  */
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { NewsItem } from '@/data/home'
+
+/** 원본 사이트에서 사진을 못 불러오면 빈 상자 대신 사진 칸을 숨김 */
+const hideBrokenImage = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  e.currentTarget.style.display = 'none'
+}
 
 const isExternal = (href: string) => /^https?:\/\//.test(href)
 
@@ -37,10 +43,12 @@ export function NewsSection({
   items,
   titleId,
   moreHref,
+  blogHref,
 }: {
   items: NewsItem[]
   titleId: string
   moreHref: string
+  blogHref?: string
 }) {
   const [lead, ...rest] = items
 
@@ -53,12 +61,22 @@ export function NewsSection({
         >
           최신 소식
         </h2>
-        <a
-          {...linkProps(moreHref)}
-          className="text-sm text-fg/70 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
-        >
-          인스타그램에서 더 보기
-        </a>
+        <span className="flex gap-4">
+          {blogHref && (
+            <a
+              {...linkProps(blogHref)}
+              className="text-sm text-fg/70 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
+            >
+              블로그
+            </a>
+          )}
+          <a
+            {...linkProps(moreHref)}
+            className="text-sm text-fg/70 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
+          >
+            인스타그램에서 더 보기
+          </a>
+        </span>
       </div>
 
       {!lead ? (
@@ -73,12 +91,23 @@ export function NewsSection({
             {...linkProps(lead.href)}
             className="group -mx-3 flex flex-col justify-between gap-8 rounded-2xl p-3 transition-colors duration-300 hover:bg-fg/[0.04] lg:col-span-7"
           >
+            <div className="flex flex-col gap-6 sm:flex-row">
+            {lead.image && (
+              <img
+                src={lead.image}
+                alt=""
+                loading="lazy"
+                onError={hideBrokenImage}
+                className="aspect-[3/4] w-40 shrink-0 rounded-xl border border-line bg-crest object-cover transition-transform duration-500 ease-[var(--ease-pull)] group-hover:scale-[1.02] md:w-52"
+              />
+            )}
             <div className="flex flex-col gap-4">
               <Meta item={lead} />
               <p className="text-3xl font-medium leading-[1.15] tracking-[-0.03em] md:text-[2.75rem]">
                 {lead.title}
               </p>
               {lead.summary && <p className="max-w-[46ch] text-base leading-relaxed text-fg/70">{lead.summary}</p>}
+            </div>
             </div>
             <ArrowDot external={isExternal(lead.href)} large />
           </a>
@@ -92,7 +121,16 @@ export function NewsSection({
                     {...linkProps(item.href)}
                     className="group -mx-3 flex items-center justify-between gap-6 rounded-xl px-3 py-5 transition-colors duration-300 hover:bg-fg/[0.04]"
                   >
-                    <span className="flex min-w-0 flex-col gap-1">
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt=""
+                        loading="lazy"
+                onError={hideBrokenImage}
+                        className="aspect-[3/4] w-12 shrink-0 rounded-md border border-line bg-crest object-cover"
+                      />
+                    )}
+                    <span className="flex min-w-0 flex-1 flex-col gap-1">
                       <span className="text-lg font-medium leading-snug">{item.title}</span>
                       <Meta item={item} />
                     </span>

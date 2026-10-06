@@ -95,17 +95,27 @@ kgu_football/
 
 > 최신이 위. 각 항목: 무엇을 바꿨는지 / 왜 / 확인 결과 / 남은 일.
 
-### 2026-10-06 #25 — 소식 자동 수집 준비 (작업 중) (Claude)
+### 2026-10-06 #25 — 최신 소식: 축구부 매거진 인터뷰 5개 (Claude)
 
 **왜**: 사용자 "뉴스·소식은 링크트리(linktr.ee/kgu_turtles)와 축구부 블로그(blog.naver.com/orangeturtles)에서 가져오면 편할 것 같다"
 
-**조사**
-- 링크트리: 인터뷰 5개(fliphtml5 매거진), 인스타그램 @kgu_turtles, 유튜브 @KGU_TURTLES, 블로그 링크. robots.txt 가 일반 봇 전부 금지(`User-agent: * Disallow: /`) → 자동 수집 안 하고 수동으로 넣음
-- 네이버 블로그: 구독용 RSS(rss.blog.naver.com/orangeturtles.xml) 있음. 작업 환경·브라우저에서는 네이버 접속이 막혀 있어 GitHub Actions 에서 직접 확인
+**사용자 결정**: 인스타그램은 @kgu_football 유지(링크트리에는 @kgu_turtles로 나옴) / 블로그 자동 + 인터뷰 수동 / 제목·날짜·요약 + 대표 사진
 
-**사용자 결정**: 인스타그램은 @kgu_football 유지 / 블로그 자동 + 인터뷰 수동 / 블로그 글은 제목·날짜·요약 + 대표 사진
+**자동 수집 시도 → 중단**
+- 링크트리 robots.txt: `User-agent: * Disallow: /` → 자동 수집 안 함
+- 네이버 블로그 RSS: 수집 스크립트와 매일 실행 워크플로를 만들어 GitHub Actions에서 돌려 봄 → `rss.blog.naver.com/robots.txt` 가 "Block everything for every crawler"(`User-agent: * Disallow: /`)라 스크립트가 스스로 멈춤. 스크립트·워크플로는 삭제 (한 번도 RSS 본문을 받지 않음)
+- 작업 환경·브라우저 모두 네이버 접속이 막혀 있어 블로그 글은 직접 확인 불가
 
-**지금까지**: `scripts/fetch-news.mjs`(robots 확인 → RSS → 최신 6개, 대표 사진은 작은 크기로 public/news/), `.github/workflows/update-news.yml`(매일 07:00), 빈 `src/data/news.json`. 화면 연결은 다음 항목에서
+**넣은 것** (`home.ts` `news`, "(예시)" 3개 대체)
+- 링크트리에 올라온 순서대로 인터뷰 5개: 권오성 인터뷰 / 장재원 인터뷰 / 새내기 인터뷰 / 보이지 않는 끈으로 연결된, 경기대의 베스트 듀오 / 룸메이트 고발장: 기숙사 TMI 토크. 링크는 각 fliphtml5 매거진
+- 날짜·요약은 공개된 정보가 없어 비움 (지어내지 않음)
+- 대표 사진: 각 매거진 표지 미리보기(`/files/shot.jpg`, 375×480)를 원래 주소 그대로 불러옴. 파일 복사 안 함. 못 불러오면 사진 칸 숨김
+- 소식 머리에 "블로그" 링크 추가
+
+**화면** (`news-section.tsx`): 대표 소식은 왼쪽에 세로 3:4 사진 + 제목, 목록은 줄 앞에 작은 사진
+**규칙 변경**: CLAUDE.md 선수 사진 규칙 → "직접 올리지 않고 축구부 공개 글의 대표 사진만 원래 주소로, 원문 링크와 함께". 자동 수집은 robots 허용 곳만. DESIGN.md 소식 구성 갱신
+
+**확인**: `npm run build` 통과, 1440px·390px 배치 캡처(작업 환경에선 fliphtml5 사진이 막혀 빈 칸), 배포 후 실제 사이트에서 사진 확인
 
 ### 2026-10-06 #24 — 가장 최근 경기도 한 줄로 (Claude)
 

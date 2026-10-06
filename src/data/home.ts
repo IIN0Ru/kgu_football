@@ -135,20 +135,31 @@ export interface NewsItem {
   /** 출처 이름 (기사 매체, 인스타그램 등) */
   source?: string
   href: string
+  /** 대표 사진 주소 (원본 위치에서 그대로 불러옴) */
+  image?: string
 }
 
-/** 실제 기사가 들어오기 전까지 예시. 링크는 축구부 인스타그램으로 */
+/**
+ * 최신 소식: 축구부 매거진 인터뷰 (링크트리 linktr.ee/kgu_turtles 에 올라온 순서 그대로, 2026-10-06 수동 확인)
+ * - 링크트리·네이버 블로그 RSS 모두 robots.txt 가 자동 수집을 막아서 사람이 확인해 넣음 (NOTES #25)
+ * - 게시 날짜·요약은 공개된 정보가 없어 비움 (지어내지 않음)
+ * - 사진: 각 매거진의 표지 미리보기 이미지(fliphtml5 og:image)를 원래 주소 그대로 불러옴. 파일을 복사하지 않음 (사용자 결정: 대표 사진 표시)
+ */
+const magazine = (id: string) => ({
+  href: `https://online.fliphtml5.com/qsilo/${id}/`,
+  image: `https://online.fliphtml5.com/qsilo/${id}/files/shot.jpg?v=2`,
+})
+
 export const news: NewsItem[] = [
-  {
-    title: '소식 제목 1 (예시)',
-    summary: '실제 기사나 공지가 정해지면 이 자리에 두세 줄 요약이 들어갑니다. (예시)',
-    category: '경기',
-    source: '예시',
-    href: 'https://www.instagram.com/kgu_football/',
-  },
-  { title: '소식 제목 2 (예시)', category: '선수단', source: '예시', href: 'https://www.instagram.com/kgu_football/' },
-  { title: '소식 제목 3 (예시)', category: '공지', source: '예시', href: 'https://www.instagram.com/kgu_football/' },
+  { title: '권오성 인터뷰', category: '인터뷰', source: '축구부 매거진', ...magazine('svrh') },
+  { title: '장재원 인터뷰', category: '인터뷰', source: '축구부 매거진', ...magazine('itlw') },
+  { title: '새내기 인터뷰', category: '인터뷰', source: '축구부 매거진', ...magazine('nqez') },
+  { title: '보이지 않는 끈으로 연결된, 경기대의 베스트 듀오', category: '인터뷰', source: '축구부 매거진', ...magazine('unrd') },
+  { title: '룸메이트 고발장: 기숙사 TMI 토크', category: '인터뷰', source: '축구부 매거진', ...magazine('xirc') },
 ]
+
+/** 축구부 채널 (링크트리 기준) */
+export const blogUrl = 'https://blog.naver.com/orangeturtles'
 
 export const instagramUrl = 'https://www.instagram.com/kgu_football/'
 
