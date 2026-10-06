@@ -40,7 +40,7 @@ export default function App() {
   return (
     <>
       <SiteBackground away={away} image={heroImage} />
-      <DockNav items={navItems} heroId="top" logo={{ src: heroLogo.darkSrc, alt: heroLogo.alt, id: 'dock-logo' }} />
+      <DockNav items={navItems} heroId="top" logo={{ id: 'dock-logo' }} />
       <FloatingLogo
         src={heroLogo.src}
         darkSrc={heroLogo.darkSrc}
@@ -55,7 +55,6 @@ export default function App() {
         bare
         title="KGU"
         logo={heroLogo}
-        navItems={navItems}
         asteriskHref="#notice"
       />
 

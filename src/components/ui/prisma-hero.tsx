@@ -14,6 +14,7 @@
  * - 큰 글자 등장 강화: 흐림 + 아래에서 크게 올라옴 (1.2초). 동작 줄이기 설정 시 페이드만
  * - 큰 글자 대신 로고(logo)를 쓸 수 있게: 이때 히어로에는 화면 읽기용 제목만 두고, 로고 그림은 floating-logo.tsx 가 그림
  * - 소개 글·버튼을 선택 항목으로 (사이트에서는 사용자 요청으로 둘 다 뺌, KGU만 남김)
+ * - 메뉴(navItems)를 선택 항목으로: 사이트에서는 히어로 안 메뉴를 빼고 dock-nav 하나를 처음부터 고정 (메뉴가 올라갔다 다시 내려오는 부자연스러움 제거)
  * - 밝은 테마: 상단 메뉴를 검은 탭 → 밝은 반투명 탭(검은 글자)으로. 밝아진 사진 위 소개 글에 그림자 추가
  */
 import { motion, useInView, useReducedMotion } from "framer-motion";
@@ -130,7 +131,8 @@ interface PrismaHeroProps {
   /** 없으면 버튼을 그리지 않음 */
   ctaLabel?: string;
   ctaHref?: string;
-  navItems: HeroNavItem[];
+  /** 비우면 히어로 안 메뉴를 그리지 않음 (사이트에서는 dock-nav 하나가 처음부터 고정) */
+  navItems?: HeroNavItem[];
   /** 배경 영상 주소. 사용 권한이 확인된 영상만 넣는다. 없으면 어두운 배경 */
   videoSrc?: string;
   asteriskHref?: string;
@@ -216,6 +218,7 @@ const PrismaHero = ({
         />}
 
         {/* Navbar */}
+        {navItems && navItems.length > 0 && (
         <nav className="absolute left-1/2 top-0 z-20 -translate-x-1/2" aria-label="주요 메뉴">
           <div className="flex items-center gap-3 surface-blur rounded-b-2xl border border-t-0 border-line bg-bar px-4 py-2 sm:gap-6 md:gap-12 md:rounded-b-3xl md:px-8 lg:gap-14">
             {navItems.map((item) => (
@@ -229,6 +232,7 @@ const PrismaHero = ({
             ))}
           </div>
         </nav>
+        )}
 
         {/* Hero content */}
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-2 sm:px-6 md:px-10">

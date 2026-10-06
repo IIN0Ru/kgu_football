@@ -1,7 +1,7 @@
 /**
  * 첫 화면의 경기대 로고 → 스크롤하면 줄어들며 위쪽 메뉴 탭 안의 로고 자리로 날아가 겹쳐지는 로고 (사용자 요청 2026-10-07, 시안 3번)
  * - 화면에 고정된 로고 하나를 스크롤 위치에 맞춰 옮기고 줄임: 맨 위에서는 첫 화면 왼쪽 아래(큰 크기),
- *   첫 화면 높이만큼 내려가면 메뉴 탭 안 로고 자리(`targetId`)와 같은 위치·크기. 도착할 즈음 사라지고 탭 안 로고가 그 자리를 이어받음
+ *   첫 화면 높이만큼 내려가면 늘 고정된 메뉴 탭 안 로고 자리(`targetId`)에 꼭 맞게 들어가 그대로 머묾 (누르면 맨 위로)
  * - 첫 화면 넘기기(1초 미끄러짐)와 같이 움직여서 양방향이 자연스러움
  * - 처음 열 때는 첫 화면 큰 글자와 같은 등장 연출(흐림 → 선명, 아래에서 올라옴)
  * - 첫 화면(사진 위)에서는 글자가 크림색인 판, 밝은 화면으로 올라가면서 원본(검은 글자) 판으로 서서히 바뀜
@@ -37,19 +37,24 @@ function measure(heroH: number): Box {
   return { heroH, x0, y0, w0, x1: x0, y1: 8, w1: md ? 56 : 40 }
 }
 
-/** 메뉴 탭 안 로고 자리: 탭은 화면 가운데 위에 붙어 있으므로 transform(숨김 상태)과 상관없이 offset 값으로 계산 */
+/** 메뉴 탭 안 로고 자리: 탭은 화면 가운데 위에 고정 → offset 값으로 계산 */
 function slotBox(targetId: string): Pick<Box, 'x1' | 'y1' | 'w1'> | null {
   const slot = document.getElementById(targetId)
   const nav = slot?.closest('nav') as HTMLElement | null
   if (!slot || !nav) return null
   let left = 0
-  let top = 0
   for (let el: HTMLElement | null = slot; el && el !== nav; el = el.offsetParent as HTMLElement | null) {
     left += el.offsetLeft
-    top += el.offsetTop
   }
-  const navLeft = (window.innerWidth - nav.offsetWidth) / 2
-  return { x1: navLeft + left, y1: top, w1: slot.offsetWidth }
+  // 로고 자리는 스크롤에 따라 넓어지므로 "다 넓어졌을 때" 기준으로 계산 (자리 폭 = 로고 폭 + 좌우 여백 10px)
+  const full = Number(slot.dataset.full ?? 66)
+  const navFull = nav.offsetWidth - slot.offsetWidth + full
+  const navLeft = (window.innerWidth - navFull) / 2
+  const w1 = full - 10
+  const box = nav.querySelector('div') as HTMLElement | null
+  const innerH = box ? box.offsetHeight : 48
+  // 탭은 화면 맨 위(0)에 붙어 있으므로 탭 높이 안에서 세로 가운데
+  return { x1: navLeft + left + 6, y1: Math.max(0, (innerH - w1 * RATIO) / 2), w1 }
 }
 
 export function FloatingLogo({
@@ -98,9 +103,6 @@ export function FloatingLogo({
   const width = useTransform(progress, (p) => (box ? box.w0 + (box.w1 - box.w0) * p : 0))
   // 밝은 배경으로 갈수록 크림색 글자 → 원본 검은 글자로 바꿔 보여줌 (크림색은 밝은 배경에서 안 보임)
   const darkOpacity = useTransform(progress, [0.45, 0.9], [0, 1])
-  // 도착 직전에 사라지고 탭 안 로고가 이어받음
-  const wholeOpacity = useTransform(progress, [0.85, 0.99], [1, 0])
-  const events = useTransform(progress, (p) => (p > 0.9 ? 'none' : 'auto'))
   const asteriskOpacity = useTransform(progress, [0, 0.35], [1, 0])
   const asteriskEvents = useTransform(progress, (p) => (p > 0.3 ? 'none' : 'auto'))
   const shadowOpacity = useTransform(progress, [0, 1], [0.35, 0])
@@ -109,7 +111,7 @@ export function FloatingLogo({
   if (!box) return null
 
   return (
-    <motion.div className="fixed left-0 top-0 z-[60]" style={{ x, y, width, opacity: wholeOpacity, pointerEvents: events }}>
+    <motion.div className="fixed left-0 top-0 z-[60]" style={{ x, y, width }}>
       <motion.div
         initial={reduce ? { opacity: 0 } : { y: '30%', opacity: 0, filter: 'blur(12px)' }}
         animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
