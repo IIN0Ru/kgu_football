@@ -118,12 +118,15 @@ async function main() {
   const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' })
   await writeFile(OUT, JSON.stringify({ ...prev, updatedAt: today, posts }, null, 2) + '\n')
   console.log(`소식 갱신: ${posts.length}개`)
+  if (process.env.GITHUB_ACTIONS) console.log(`::notice title=소식 갱신::${posts.map((p) => `${p.date} ${p.title}${p.image ? ' (사진)' : ''}`).join(' / ')}`)
   for (const p of posts) console.log(`- ${p.date} [${p.category}] ${p.title} ${p.image ? '(사진)' : ''}`)
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch((err) => {
     console.error(err.message)
+    // GitHub Actions 화면(요약)에도 이유가 보이도록
+    if (process.env.GITHUB_ACTIONS) console.log(`::error title=소식 업데이트 실패::${err.message} ${err.cause?.code ?? ''}`)
     process.exit(1)
   })
 }
