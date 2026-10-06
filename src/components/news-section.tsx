@@ -74,6 +74,7 @@ export function NewsSection({
   moreHref,
   blogHref,
   magazineHref,
+  youtubeHref,
 }: {
   blog: NewsItem[]
   magazine: NewsItem[]
@@ -82,6 +83,7 @@ export function NewsSection({
   moreHref: string
   blogHref?: string
   magazineHref?: string
+  youtubeHref?: string
 }) {
   const [lead, ...rest] = blog
 
@@ -94,12 +96,22 @@ export function NewsSection({
         >
           최신 소식
         </h2>
-        <a
-          {...linkProps(moreHref)}
-          className="text-sm text-fg/70 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
-        >
-          인스타그램에서 더 보기
-        </a>
+        <span className="flex gap-4">
+          {youtubeHref && (
+            <a
+              {...linkProps(youtubeHref)}
+              className="text-sm text-fg/70 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
+            >
+              유튜브
+            </a>
+          )}
+          <a
+            {...linkProps(moreHref)}
+            className="text-sm text-fg/70 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
+          >
+            인스타그램
+          </a>
+        </span>
       </div>
 
       {!lead && magazine.length === 0 ? (

@@ -15,6 +15,7 @@ import {
   blogUrl,
   magazine,
   magazineUrl,
+  youtubeUrl,
   nextMatch,
   photoCredit,
   recentResult,
@@ -65,6 +66,7 @@ export default function App() {
             moreHref={instagramUrl}
             blogHref={blogUrl}
             magazineHref={magazineUrl}
+            youtubeHref={youtubeUrl}
           />
         </Reveal>
 

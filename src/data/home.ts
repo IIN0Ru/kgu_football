@@ -209,6 +209,9 @@ export const magazine: NewsItem[] = [
 
 export const magazineUrl = 'https://linktr.ee/kgu_turtles'
 
+/** 축구부 유튜브 채널 (사용자 전달 2026-10-06) */
+export const youtubeUrl = 'https://www.youtube.com/@KGU_TURTLES'
+
 /** 축구부 채널 (링크트리 기준) */
 export const blogUrl = 'https://blog.naver.com/orangeturtles'
 
