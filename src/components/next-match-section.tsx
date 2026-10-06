@@ -4,7 +4,7 @@
  * - 상태 알약: 일정이 있으면 D-day, 당일이면 '오늘 경기', 없으면 '일정 발표 전'
  * - 일시·장소·대회를 아이콘과 함께 정리. 모르는 값은 '확인 중'으로 (지어내지 않음)
  */
-import { ArrowUpRight, CalendarDays, MapPin, Trophy } from 'lucide-react'
+import { CalendarDays, MapPin, Trophy } from 'lucide-react'
 import { ourTeam, type NextMatch } from '@/data/home'
 import { TeamCrest } from '@/components/team-crest'
 
@@ -53,11 +53,9 @@ function InfoRow({
 export function NextMatchSection({
   match,
   titleId,
-  ctaHref,
 }: {
   match: NextMatch
   titleId: string
-  ctaHref: string
 }) {
   const count = match.kickoff ? dDay(match.kickoff) : null
   const when = match.kickoff ? formatKickoff(match.kickoff) : null
@@ -111,17 +109,6 @@ export function NextMatchSection({
         <InfoRow icon={Trophy} label="대회" value={match.competition} />
       </dl>
 
-      <a
-        href={ctaHref}
-        target="_blank"
-        rel="noopener"
-        className="group mt-auto inline-flex items-center gap-2 self-start rounded-full bg-accent py-1 pl-5 pr-1 text-sm font-medium text-on-accent transition-all hover:gap-3 sm:text-base"
-      >
-        인스타그램에서 일정 확인
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-on-accent transition-transform group-hover:scale-110 sm:h-10 sm:w-10">
-          <ArrowUpRight className="h-4 w-4 text-accent" aria-hidden="true" />
-        </span>
-      </a>
     </div>
   )
 }

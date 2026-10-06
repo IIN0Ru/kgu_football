@@ -12,6 +12,7 @@
  * - 배경 사진(image) 추가: 카드 안에 사진을 깔 수 있게
  * - bare 모드 추가: 카드 배경·모서리·덮개 없이 글자와 메뉴만. 사이트 전체 고정 배경(site-background.tsx) 위에 얹을 때 사용
  * - 큰 글자 등장 강화: 흐림 + 아래에서 크게 올라옴 (1.2초). 동작 줄이기 설정 시 페이드만
+ * - 소개 글·버튼을 선택 항목으로 (사이트에서는 사용자 요청으로 둘 다 뺌, KGU만 남김)
  * - 밝은 테마: 상단 메뉴를 검은 탭 → 밝은 반투명 탭(검은 글자)으로. 밝아진 사진 위 소개 글에 그림자 추가
  */
 import { motion, useInView, useReducedMotion } from "framer-motion";
@@ -121,9 +122,11 @@ export interface HeroNavItem {
 
 interface PrismaHeroProps {
   title: string;
-  description: string;
-  ctaLabel: string;
-  ctaHref: string;
+  /** 없으면 소개 글을 그리지 않음 */
+  description?: string;
+  /** 없으면 버튼을 그리지 않음 */
+  ctaLabel?: string;
+  ctaHref?: string;
   navItems: HeroNavItem[];
   /** 배경 영상 주소. 사용 권한이 확인된 영상만 넣는다. 없으면 어두운 배경 */
   videoSrc?: string;
@@ -232,7 +235,9 @@ const PrismaHero = ({
               </h1>
             </div>
 
+            {(description || (ctaLabel && ctaHref)) && (
             <div className="col-span-12 flex flex-col gap-5 pb-6 lg:col-span-4 lg:pb-10">
+              {description && (
               <motion.p
                 {...enter(0.5)}
                 className="text-sm font-medium text-cream md:text-base"
@@ -240,7 +245,9 @@ const PrismaHero = ({
               >
                 {description}
               </motion.p>
+              )}
 
+              {ctaLabel && ctaHref && (
               <motion.a
                 {...enter(0.7)}
                 href={ctaHref}
@@ -257,7 +264,9 @@ const PrismaHero = ({
                   <ArrowRight className="h-4 w-4 text-cream" aria-hidden="true" />
                 </span>
               </motion.a>
+              )}
             </div>
+            )}
           </div>
         </div>
       </div>

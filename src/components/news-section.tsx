@@ -71,7 +71,6 @@ export function NewsSection({
   blog,
   magazine,
   titleId,
-  moreHref,
   blogHref,
   magazineHref,
   youtubeHref,
@@ -80,8 +79,6 @@ export function NewsSection({
   blog: NewsItem[]
   magazine: NewsItem[]
   titleId: string
-  /** 인스타그램 */
-  moreHref: string
   blogHref?: string
   magazineHref?: string
   youtubeHref?: string
@@ -99,18 +96,12 @@ export function NewsSection({
         >
           최신 소식
         </h2>
-        <a
-          {...linkProps(moreHref)}
-          className="text-sm text-fg/70 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
-        >
-          인스타그램에서 더 보기
-        </a>
       </div>
 
       {!lead && magazine.length === 0 ? (
         <div className="flex flex-col items-start gap-4 border-t border-line pt-8">
           <p className="text-2xl font-medium">아직 올라온 소식이 없어요</p>
-          <p className="text-fg/60">경기와 선수단 소식은 축구부 인스타그램에서 먼저 확인할 수 있어요.</p>
+          <p className="text-fg/60">경기와 선수단 소식은 축구부 블로그와 유튜브에서 먼저 확인할 수 있어요.</p>
         </div>
       ) : (
         <div className="grid gap-x-12 gap-y-12 lg:grid-cols-12">

@@ -34,7 +34,7 @@ const navItems: HeroNavItem[] = [
 ]
 
 export default function App() {
-  const { away, goNext } = useHeroSnap('top')
+  const { away } = useHeroSnap('top')
 
   return (
     <>
@@ -44,11 +44,7 @@ export default function App() {
       <PrismaHero
         id="top"
         bare
-        onCtaClick={goNext}
         title="KGU"
-        description="경기대학교 축구부의 경기 일정과 결과, 소식을 한곳에 모아 보는 비공식 팬 사이트입니다."
-        ctaLabel="최신 소식 보기"
-        ctaHref="#news"
         navItems={navItems}
         asteriskHref="#notice"
       />
@@ -64,7 +60,6 @@ export default function App() {
             blog={news}
             magazine={magazine}
             titleId="news-title"
-            moreHref={instagramUrl}
             blogHref={blogUrl}
             magazineHref={magazineUrl}
             youtubeHref={youtubeUrl}
@@ -95,7 +90,7 @@ export default function App() {
             aria-labelledby="next-match-title"
             className="rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10"
           >
-            <NextMatchSection match={nextMatch} titleId="next-match-title" ctaHref={instagramUrl} />
+            <NextMatchSection match={nextMatch} titleId="next-match-title" />
           </Reveal>
         </div>
 
