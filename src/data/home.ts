@@ -67,6 +67,7 @@ export const recentResult = last
   ? {
       competition: season.competition,
       date: `${Number(last.date.slice(5, 7))}월 ${Number(last.date.slice(8))}일 (${weekday(last.date)})`,
+      shortDate: `${Number(last.date.slice(5, 7))}.${Number(last.date.slice(8))}`,
       venue: last.venue,
       home: { name: last.home, score: last.homeScore as number },
       away: { name: last.away, score: last.awayScore as number },
