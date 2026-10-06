@@ -6,8 +6,7 @@
  * - 아래 가운데 SCROLL 안내. 출처는 화면에 적지 않고 푸터 맨 아래에 링크로 (사용자 요청)
  * - 한 번 넘기면 KGU 로고 화면(히어로)으로 — use-hero-snap.ts
  *
- * 움직임 (사용자가 후보 8개 중 1·4·7·8 선택, 2026-10-07)
- * 1. 질주 등장: 배너가 왼쪽에서 가로로 흐린 잔상으로 들어와 0.9초 만에 선명하게 멈춤 (흐린 판은 미리 만든 그림)
+ * 움직임 (사용자가 후보 8개 중 1·4·7·8 선택, 2026-10-07 → 1 질주 등장은 뒤에 빼기로 해 짧은 페이드인만)
  * 4. 필름 질감: 거친 질감이 필름처럼 계속 미세하게 움직임
  * 7. SCROLL 아래 짧은 선이 계속 흘러내림
  * 8. 뚫고 지나가기: 넘기는 동안 배너 화면은 제자리에 붙어 있고(밀려 올라가지 않음 → 두 화면 경계선이 안 보임)
@@ -29,15 +28,13 @@ export function IntroBanner({
   banner,
 }: {
   id: string
-  banner: { webp: string; jpg: string; streak: string; alt: string }
+  banner: { webp: string; jpg: string; alt: string }
 }) {
   const reduce = useReducedMotion()
   const ref = useRef<HTMLElement>(null)
-  // 배너 그림이 다 받아진 뒤에 등장을 시작 (느린 회선에서 빈 화면 동안 등장이 끝나버리지 않게)
+  // 배너 그림이 다 받아진 뒤 짧게 페이드인 (느린 회선에서 빈 화면 동안 등장이 끝나버리지 않게)
   const [loaded, setLoaded] = useState(false)
 
-  // 1. 질주 등장: 미리 가로로 흐리게 만든 배너(kgu-banner-streak)를 겹쳐 함께 들어오다가 사라짐
-  //    (매 프레임 흐림을 계산하지 않고 위치·투명도만 바꿔 휴대폰에서도 부드럽게)
   // 8. 뚫고 지나가기: 0페이지를 지나가는 정도(0 → 1). 화면 층은 제자리에 붙어 있고,
   //    커지고 흐려지며 투명해짐. 스크롤을 따라 위치를 되돌리는 방식은 한 프레임씩 늦어 경계가 보여서,
   //    화면 층 자체를 화면에 고정(fixed)하고 투명도·크기만 바꿈. 0페이지 구역은 스크롤 길이만 차지
@@ -69,14 +66,9 @@ export function IntroBanner({
           style={{ backgroundImage: `url(${banner.jpg})` }}
         />
         <motion.picture
-          initial={reduce ? { opacity: 0 } : { opacity: 0, x: '-14%' }}
-          animate={loaded ? { opacity: 1, x: '0%' } : undefined}
-          transition={{
-            duration: reduce ? 0.4 : 0.9,
-            delay: reduce ? 0 : 0.1,
-            ease: EASE,
-            opacity: { duration: reduce ? 0.4 : 0.5, delay: reduce ? 0 : 0.35 },
-          }}
+          initial={{ opacity: 0 }}
+          animate={loaded ? { opacity: 1 } : undefined}
+          transition={{ duration: 0.6, ease: EASE }}
           className="absolute inset-0 flex items-center justify-center"
         >
           <source type="image/webp" srcSet={banner.webp} />
@@ -92,21 +84,6 @@ export function IntroBanner({
             className="h-auto w-[170%] max-w-none shrink-0 [mask-image:linear-gradient(to_bottom,transparent,#000_12%,#000_88%,transparent)] md:w-full"
           />
         </motion.picture>
-        {!reduce && (
-          <motion.div
-            aria-hidden="true"
-            initial={{ opacity: 0, x: '-14%' }}
-            animate={loaded ? { opacity: [1, 1, 0], x: '0%' } : undefined}
-            transition={{ duration: 0.9, delay: 0.1, ease: EASE, opacity: { duration: 0.9, delay: 0.1, times: [0, 0.35, 1] } }}
-            className="pointer-events-none absolute inset-0 flex items-center justify-center"
-          >
-            <img
-              src={banner.streak}
-              alt=""
-              className="h-auto w-[170%] max-w-none shrink-0 scale-x-110 [mask-image:linear-gradient(to_bottom,transparent,#000_12%,#000_88%,transparent)] md:w-full"
-            />
-          </motion.div>
-        )}
       </motion.div>
 
       {/* 4. 필름 질감: 노이즈를 조금씩 옮겨 계속 살아 움직이게 */}
@@ -122,7 +99,7 @@ export function IntroBanner({
       <motion.div
         initial={{ opacity: 0 }}
         animate={loaded ? { opacity: 1 } : undefined}
-        transition={{ duration: 0.8, delay: reduce ? 0 : 1.1 }}
+        transition={{ duration: 0.8, delay: reduce ? 0 : 0.6 }}
         className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3"
       >
         <span className="font-num text-sm tracking-[0.3em] text-cream/80">SCROLL</span>
