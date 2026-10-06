@@ -1,4 +1,5 @@
 import { DockNav } from '@/components/dock-nav'
+import { FloatingLogo } from '@/components/floating-logo'
 import { SiteBackground } from '@/components/site-background'
 import { Reveal } from '@/components/motion'
 import { ResultSection } from '@/components/result-section'
@@ -10,7 +11,6 @@ import { useHeroSnap } from '@/components/use-hero-snap'
 import {
   heroImage,
   heroLogo,
-  instagramUrl,
   matchSource,
   news,
   blogUrl,
@@ -32,7 +32,6 @@ const navItems: HeroNavItem[] = [
   { label: '최근 결과', href: '#result' },
   { label: '다음 경기', href: '#next-match' },
   { label: '선수단', href: '#squad' },
-  { label: '인스타그램', href: instagramUrl },
 ]
 
 export default function App() {
@@ -42,6 +41,7 @@ export default function App() {
     <>
       <SiteBackground away={away} image={heroImage} />
       <DockNav items={navItems} heroId="top" />
+      <FloatingLogo src={heroLogo.src} darkSrc={heroLogo.darkSrc} alt={heroLogo.alt} heroId="top" asteriskHref="#notice" />
 
       <PrismaHero
         id="top"

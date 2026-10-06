@@ -254,9 +254,11 @@ export const heroImage = {
 }
 
 /** 첫 화면 큰 로고: 경기대학교 UI(1947) 로고 (사용자 전달 2026-10-06, 경기대 UI 페이지의 공식 로고).
- *  사진 위에서 읽히도록 검은 글자(1947·KGU·KYONGGI UNIVERSITY)만 크림색으로 바꿈, 색 테두리는 원본 그대로 (사용자 선택) */
+ *  src: 사진 위에서 읽히도록 검은 글자(1947·KGU·KYONGGI UNIVERSITY)만 크림색으로 바꾼 판 (사용자 선택)
+ *  darkSrc: 원본 (스크롤해서 왼쪽 위 밝은 화면에 있을 때) */
 export const heroLogo = {
   src: img('kgu-logo-1947-light.png'),
+  darkSrc: img('kgu-logo-1947.png'),
   alt: 'KGU 경기대학교 (1947, KYONGGI UNIVERSITY)',
 }
 
