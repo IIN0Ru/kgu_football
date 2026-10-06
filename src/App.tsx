@@ -9,6 +9,7 @@ import { PrismaHero, type HeroNavItem } from '@/components/ui/prisma-hero'
 import { useHeroSnap } from '@/components/use-hero-snap'
 import {
   heroImage,
+  heroLogo,
   instagramUrl,
   matchSource,
   news,
@@ -46,6 +47,7 @@ export default function App() {
         id="top"
         bare
         title="KGU"
+        logo={heroLogo}
         navItems={navItems}
         asteriskHref="#notice"
       />

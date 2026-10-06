@@ -253,6 +253,13 @@ export const heroImage = {
   alt: '경기대학교 캠퍼스와 축구장을 위에서 내려다본 사진',
 }
 
+/** 첫 화면 큰 로고: 경기대학교 UI(1947) 로고 (사용자 전달 2026-10-06, 경기대 UI 페이지의 공식 로고).
+ *  사진 위에서 읽히도록 검은 글자(1947·KGU·KYONGGI UNIVERSITY)만 크림색으로 바꿈, 색 테두리는 원본 그대로 (사용자 선택) */
+export const heroLogo = {
+  src: img('kgu-logo-1947-light.png'),
+  alt: 'KGU 경기대학교 (1947, KYONGGI UNIVERSITY)',
+}
+
 export const photoCredit = {
   label: '경기대학교',
   url: 'https://www.kyonggi.ac.kr/',

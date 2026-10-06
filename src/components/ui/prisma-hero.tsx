@@ -12,6 +12,7 @@
  * - 배경 사진(image) 추가: 카드 안에 사진을 깔 수 있게
  * - bare 모드 추가: 카드 배경·모서리·덮개 없이 글자와 메뉴만. 사이트 전체 고정 배경(site-background.tsx) 위에 얹을 때 사용
  * - 큰 글자 등장 강화: 흐림 + 아래에서 크게 올라옴 (1.2초). 동작 줄이기 설정 시 페이드만
+ * - 큰 글자 대신 로고 이미지(logo)를 넣을 수 있게. 같은 등장 연출(흐림 → 선명, 아래에서 올라옴)
  * - 소개 글·버튼을 선택 항목으로 (사이트에서는 사용자 요청으로 둘 다 뺌, KGU만 남김)
  * - 밝은 테마: 상단 메뉴를 검은 탭 → 밝은 반투명 탭(검은 글자)으로. 밝아진 사진 위 소개 글에 그림자 추가
  */
@@ -84,6 +85,34 @@ interface WordsPullUpMultiStyleProps {
   style?: React.CSSProperties;
 }
 
+/** 큰 글자 자리에 들어가는 로고: 큰 글자와 같은 연출(흐림에서 선명해지며 아래에서 올라옴) */
+const HeroLogo = ({ logo, asteriskHref }: { logo: { src: string; alt: string }; asteriskHref?: string }) => {
+  const reduce = useReducedMotion();
+  return (
+    <motion.span
+      initial={reduce ? { opacity: 0 } : { y: "30%", opacity: 0, filter: "blur(12px)" }}
+      animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+      transition={{ duration: reduce ? 0.4 : 1.2, delay: 0.1, ease: EASE }}
+      className="relative inline-block"
+    >
+      <img
+        src={logo.src}
+        alt={logo.alt}
+        className="h-auto w-[min(58vw,32vh*1.45)] drop-shadow-[0_2px_18px_rgb(0_0_0/0.35)] md:w-[min(30vw,34vh*1.45)]"
+      />
+      {asteriskHref && (
+        <a
+          href={asteriskHref}
+          aria-label="각주: 비공식 사이트 안내"
+          className="absolute -right-6 top-0 text-3xl font-medium text-cream md:-right-8 md:text-5xl"
+        >
+          *
+        </a>
+      )}
+    </motion.span>
+  );
+};
+
 export const WordsPullUpMultiStyle = ({ segments, className = "", style }: WordsPullUpMultiStyleProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
@@ -122,6 +151,8 @@ export interface HeroNavItem {
 
 interface PrismaHeroProps {
   title: string;
+  /** 큰 글자 대신 보여줄 로고 이미지. 있으면 title 은 화면 읽기용 대체 글로만 씀 */
+  logo?: { src: string; alt: string };
   /** 없으면 소개 글을 그리지 않음 */
   description?: string;
   /** 없으면 버튼을 그리지 않음 */
@@ -146,6 +177,7 @@ interface PrismaHeroProps {
 
 const PrismaHero = ({
   title,
+  logo,
   description,
   ctaLabel,
   ctaHref,
@@ -230,9 +262,15 @@ const PrismaHero = ({
         <div className="absolute bottom-0 left-0 right-0 px-4 pb-2 sm:px-6 md:px-10">
           <div className="grid grid-cols-12 items-end gap-4">
             <div className="col-span-12 lg:col-span-8">
+              {logo ? (
+                <h1 className="pb-6 md:pb-10">
+                  <HeroLogo logo={logo} asteriskHref={asteriskHref} />
+                </h1>
+              ) : (
               <h1 className="text-[26vw] font-medium leading-[0.85] tracking-[-0.07em] text-cream sm:text-[24vw] md:text-[22vw] lg:text-[20vw] xl:text-[19vw] 2xl:text-[20vw]">
                 <WordsPullUp text={title} showAsterisk asteriskHref={asteriskHref} />
               </h1>
+              )}
             </div>
 
             {(description || (ctaLabel && ctaHref)) && (
