@@ -34,28 +34,20 @@ const navItems: HeroNavItem[] = [
   { label: '선수단', href: '#squad' },
 ]
 
-// [시안 비교용, 임시] ?nav=1 위 전체 바 / 2 로고 받침 / 3 로고를 메뉴 탭 안에 / 4 왼쪽 세로 메뉴
-const NAV = new URLSearchParams(location.search).get('nav')
-
 export default function App() {
   const { away } = useHeroSnap('top')
 
   return (
     <>
       <SiteBackground away={away} image={heroImage} />
-      <DockNav
-        items={navItems}
-        heroId="top"
-        layout={NAV === '1' ? 'bar' : NAV === '4' ? 'vertical' : 'tab'}
-        logo={NAV === '3' || NAV === '4' ? { src: heroLogo.darkSrc, alt: heroLogo.alt } : undefined}
-      />
+      <DockNav items={navItems} heroId="top" logo={{ src: heroLogo.darkSrc, alt: heroLogo.alt, id: 'dock-logo' }} />
       <FloatingLogo
         src={heroLogo.src}
         darkSrc={heroLogo.darkSrc}
         alt={heroLogo.alt}
         heroId="top"
         asteriskHref="#notice"
-        end={NAV === '1' ? 'bar' : NAV === '2' ? 'backed' : NAV === '3' || NAV === '4' ? 'hide' : 'float'}
+        targetId="dock-logo"
       />
 
       <PrismaHero
@@ -67,7 +59,7 @@ export default function App() {
         asteriskHref="#notice"
       />
 
-      <main className={`mx-auto flex max-w-[1440px] flex-col gap-2 p-2 pt-14 md:gap-3 md:p-3 md:pt-16 ${NAV === '4' ? 'pl-[140px] pt-2 md:pl-[170px] md:pt-3' : ''}`}>
+      <main className="mx-auto flex max-w-[1440px] flex-col gap-2 p-2 pt-14 md:gap-3 md:p-3 md:pt-16">
         {/* 최신 소식 (맨 위, 전체 폭) */}
         <Reveal
           id="news"

@@ -2,25 +2,21 @@
  * 히어로가 화면 밖으로 나가면, 히어로의 검은 메뉴 탭이 화면 위에 붙어 따라온다.
  * 지금 보고 있는 구역 아래로 크림색 알약이 미끄러져 이동한다 (같은 메뉴가 계속 이어진다는 느낌).
  */
-import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from 'framer-motion'
+import { LayoutGroup, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import type { HeroNavItem } from '@/components/ui/prisma-hero'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
-export type NavLayout = 'tab' | 'bar' | 'vertical'
-
 interface DockNavProps {
   items: HeroNavItem[]
-  /** [시안 비교용] 메뉴 모양: tab(가운데 탭) / bar(위 전체 바) / vertical(왼쪽 세로 탭) */
-  layout?: NavLayout
-  /** 메뉴 안에 넣을 로고 (tab 왼쪽 끝 / vertical 맨 위) */
-  logo?: { src: string; alt: string }
+  /** 탭 왼쪽 끝에 넣을 로고 (첫 화면 큰 로고가 날아와 이 자리로 들어옴, 시안 3번) */
+  logo?: { src: string; alt: string; id: string }
   /** 이 id의 요소(히어로)가 화면에서 사라지면 메뉴가 나타남 */
   heroId: string
 }
 
-export function DockNav({ items, heroId, layout = 'tab', logo }: DockNavProps) {
+export function DockNav({ items, heroId, logo }: DockNavProps) {
   const reduce = useReducedMotion()
   const [visible, setVisible] = useState(false)
   const [active, setActive] = useState<string | null>(null)
@@ -91,7 +87,7 @@ export function DockNav({ items, heroId, layout = 'tab', logo }: DockNavProps) {
         }}
         className={`relative whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs transition-colors duration-200 sm:px-3 md:px-4 md:text-sm ${
           isActive ? 'text-on-accent' : 'text-fg/70 hover:text-fg'
-        } ${layout === 'vertical' ? 'text-left' : ''}`}
+        }`}
       >
         {isActive && (
           <motion.span
@@ -112,44 +108,29 @@ export function DockNav({ items, heroId, layout = 'tab', logo }: DockNavProps) {
         window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
       }}
       aria-label={`${logo.alt} — 맨 위로`}
-      className={layout === 'vertical' ? 'mb-2 block px-2 pt-1' : 'mr-1 block pl-1.5'}
+      className="mr-1 block shrink-0 pl-1.5"
     >
-      <img src={logo.src} alt={logo.alt} className={layout === 'vertical' ? 'h-auto w-24' : 'h-7 w-auto md:h-8'} />
+      <img id={logo.id} src={logo.src} alt={logo.alt} className="block h-auto w-10 max-w-none md:w-14" />
     </a>
   )
 
-  const shell =
-    layout === 'bar'
-      ? 'fixed inset-x-0 top-0 z-50'
-      : layout === 'vertical'
-        ? 'fixed left-2 top-2 z-50 md:left-3 md:top-3'
-        : 'fixed left-1/2 top-0 z-50 -translate-x-1/2'
-  const box =
-    layout === 'bar'
-      ? 'surface-blur flex h-14 items-center justify-center gap-1 border-b border-line bg-bar px-3'
-      : layout === 'vertical'
-        ? 'surface-blur flex flex-col items-stretch gap-1 rounded-2xl border border-line bg-bar p-2'
-        : 'surface-blur flex items-center gap-1 rounded-b-2xl border border-t-0 border-line bg-bar p-1.5 md:rounded-b-3xl'
-
+  // 탭은 늘 그려 두고(숨길 땐 위로 밀어 둠) 로고 자리를 floating-logo 가 미리 잴 수 있게 함
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.nav
-          aria-label="빠른 이동"
-          className={shell}
-          initial={reduce ? { opacity: 0 } : layout === 'vertical' ? { x: '-120%' } : { y: '-100%' }}
-          animate={reduce ? { opacity: 1 } : layout === 'vertical' ? { x: 0 } : { y: 0 }}
-          exit={reduce ? { opacity: 0 } : layout === 'vertical' ? { x: '-120%' } : { y: '-100%' }}
-          transition={{ duration: 0.45, ease: EASE }}
-        >
-          <LayoutGroup>
-            <div className={box}>
-              {logoEl}
-              {links}
-            </div>
-          </LayoutGroup>
-        </motion.nav>
-      )}
-    </AnimatePresence>
+    <motion.nav
+      aria-label="빠른 이동"
+      aria-hidden={!visible}
+      className="fixed left-1/2 top-0 z-50 -translate-x-1/2"
+      initial={false}
+      animate={reduce ? { opacity: visible ? 1 : 0 } : { y: visible ? 0 : '-110%' }}
+      style={{ pointerEvents: visible ? 'auto' : 'none' }}
+      transition={{ duration: 0.45, ease: EASE }}
+    >
+      <LayoutGroup>
+        <div className="surface-blur flex items-center gap-1 rounded-b-2xl border border-t-0 border-line bg-bar p-1.5 md:rounded-b-3xl">
+          {logoEl}
+          {links}
+        </div>
+      </LayoutGroup>
+    </motion.nav>
   )
 }
