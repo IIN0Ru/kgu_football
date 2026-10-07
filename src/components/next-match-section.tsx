@@ -1,7 +1,8 @@
 /**
  * 다음 경기 (impeccable polish)
  * - 두 팀을 학교 로고 원(출처 표기, team-crest.tsx)과 이름으로 마주 세움
- * - 상태 알약: 일정이 있으면 D-day, 당일이면 '오늘 경기', 없으면 '일정 발표 전'
+ * - 상태 알약: 일정이 있으면 D-day, 당일이면 '오늘 경기', 없으면 '일정 발표 전' (한국 날짜 기준, 시각 미정이어도 날짜로 계산)
+ * - 일시: 시각 미정이면 '10월 9일 (금) · 시간 확인 중'
  * - 일시·장소·대회를 아이콘과 함께 정리. 모르는 값은 '확인 중'으로 (지어내지 않음)
  * - 아래에 '이후 경기' 최대 3개 작은 줄 (날짜 · 상대 로고·이름 · 홈/원정 · 시각)
  */
@@ -9,30 +10,7 @@ import { Eyebrow } from '@/components/eyebrow'
 import { CalendarDays, MapPin, Trophy } from 'lucide-react'
 import { ourTeam, type LaterMatch, type NextMatch } from '@/data/home'
 import { TeamCrest } from '@/components/team-crest'
-
-function dDay(kickoff: string): { label: string; today: boolean } | null {
-  const t = new Date(kickoff)
-  if (Number.isNaN(t.getTime())) return null
-  const day = (d: Date) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
-  const diff = Math.round((day(t) - day(new Date())) / 86_400_000)
-  if (diff < 0) return null
-  if (diff === 0) return { label: '오늘 경기', today: true }
-  return { label: `D-${diff}`, today: false }
-}
-
-function formatKickoff(kickoff: string) {
-  const t = new Date(kickoff)
-  if (Number.isNaN(t.getTime())) return null
-  return new Intl.DateTimeFormat('ko-KR', {
-    month: 'long',
-    day: 'numeric',
-    weekday: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: 'Asia/Seoul',
-  }).format(t)
-}
+import { dDay, formatMatchWhen } from '@/lib/match-time'
 
 function InfoRow({
   icon: Icon,
@@ -56,13 +34,17 @@ export function NextMatchSection({
   match,
   later = [],
   titleId,
+  now,
 }: {
   match: NextMatch
   later?: LaterMatch[]
   titleId: string
+  /** 기준 시각 (페이지를 연 순간, home.ts pageOpenedAt) */
+  now: Date
 }) {
-  const count = match.kickoff ? dDay(match.kickoff) : null
-  const when = match.kickoff ? formatKickoff(match.kickoff) : null
+  // D-day 와 일시 모두 한국 시간 기준 (방문자 시간대와 무관, 리뷰 반영 2026-10-07)
+  const count = match.date ? dDay(match.date, now) : null
+  const when = match.date ? formatMatchWhen(match.date, match.time) : null
 
   return (
     <div className="flex h-full flex-col gap-10">

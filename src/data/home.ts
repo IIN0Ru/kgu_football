@@ -6,12 +6,17 @@
 
 import season from './matches.json'
 import rosterData from './roster.json'
+import { isStillUpcoming, kickoffIso } from '@/lib/match-time'
 
 export interface NextMatch {
   competition: string
   home: string
   away: string
-  /** 경기 시작 시각 (ISO, 예: '2026-10-18T15:00:00+09:00'). 모르면 null → "일정 발표 전" 표시 */
+  /** 경기 날짜 (한국 기준 'YYYY-MM-DD'). 다음 경기가 아예 없으면 null → "일정 발표 전" 표시 */
+  date: string | null
+  /** 시작 시각 'HH:MM' (한국 시간). 날짜는 확정이고 시각만 미정이면 null → "시간 확인 중" 표시 */
+  time: string | null
+  /** 경기 시작 시각 (ISO, 예: '2026-10-18T15:00:00+09:00'). 시각 미정이면 null */
   kickoff: string | null
   /** 경기장 이름. 모르면 null */
   venue: string | null
@@ -39,25 +44,31 @@ export interface SeasonMatch {
 
 export const matchSource = season.source
 const matches = season.matches as SeasonMatch[]
-const kickoffOf = (m: SeasonMatch) => `${m.date}T${m.time ?? '00:00'}:00+09:00`
 const played = matches.filter((m) => m.homeScore !== null && m.awayScore !== null)
 
 function toNextMatch(m: SeasonMatch | undefined): NextMatch {
-  if (!m) return { competition: season.competition, home: ourTeam, away: '확인 중', kickoff: null, venue: null, side: null }
+  if (!m) {
+    return { competition: season.competition, home: ourTeam, away: '확인 중', date: null, time: null, kickoff: null, venue: null, side: null }
+  }
   return {
     competition: season.competition,
     home: m.home,
     away: m.away,
-    kickoff: m.time ? kickoffOf(m) : null,
+    date: m.date,
+    time: m.time,
+    kickoff: kickoffIso(m.date, m.time),
     venue: m.venue,
     side: m.home === ourTeam ? '홈' : '원정',
   }
 }
 
-/** 점수가 아직 없고, 시작 시각이 지금부터 2시간 전 이후인 첫 경기 (경기 중에도 '오늘 경기'로 보이게) */
-const upcoming = matches.filter(
-  (m) => m.homeScore === null && new Date(kickoffOf(m)).getTime() > Date.now() - 2 * 3_600_000,
-)
+/** 점수가 아직 없고 아직 지나지 않은 경기들 (한국 시간 기준, src/lib/match-time.ts)
+ *  - 시각 확정: 시작 후 2시간까지 (경기 중에도 '오늘 경기'로 보이게)
+ *  - 시각 미정: 경기 당일이 끝날 때까지 (예전엔 자정으로 계산해 당일 새벽 2시에 사라졌음 — 리뷰 반영 2026-10-07) */
+/** 페이지를 연 순간. '다음 경기' 고르기와 D-day 계산이 같은 기준을 쓰도록 내보냄 */
+export const pageOpenedAt = new Date()
+const now = pageOpenedAt
+const upcoming = matches.filter((m) => m.homeScore === null && isStillUpcoming(m.date, m.time, now))
 export const nextMatch = toNextMatch(upcoming[0])
 
 /** 다음 경기 카드 아래 작은 목록: 그다음 경기들 (최대 3개, 날짜순) */

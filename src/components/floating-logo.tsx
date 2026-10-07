@@ -9,8 +9,8 @@
  * - 히어로 위에 다른 전체 화면이 있으면(heroTop > 0) 로고는 히어로 자리에서 서서히 나타나도록 계산이 들어 있음 (0페이지는 2026-10-07 삭제, 지금은 heroTop = 0 이라 항상 보임)
  * - 동작 줄이기 설정: 등장은 짧은 페이드만. 스크롤에 따른 이동은 스크롤 그 자체라 유지
  */
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 
 const RATIO = 598 / 868 // 로고 세로 / 가로
 const EASE = [0.16, 1, 0.3, 1] as const
@@ -68,6 +68,7 @@ export function FloatingLogo({
   heroId,
   asteriskHref,
   targetId,
+  onNavigate,
 }: {
   /** 사진 위(첫 화면)용: 글자 크림색 */
   src: string
@@ -78,6 +79,8 @@ export function FloatingLogo({
   asteriskHref?: string
   /** 도착할 자리 (메뉴 탭 안 로고 요소의 id) */
   targetId: string
+  /** 로고(맨 위로)를 누를 때 먼저 부름: 진행 중인 첫 화면 넘김 취소 */
+  onNavigate?: () => void
 }) {
   const reduce = useReducedMotion()
   const [box, setBox] = useState<Box | null>(null)
@@ -116,6 +119,15 @@ export function FloatingLogo({
   const darkOpacity = useTransform(progress, [0.45, 0.9], [0, 1])
   const asteriskOpacity = useTransform(progress, [0, 0.35], [1, 0])
   const asteriskEvents = useTransform(progress, (p) => (p > 0.3 ? 'none' : 'auto'))
+  // 보이는 상태와 키보드·화면 읽기 상태를 맞춤 (리뷰 반영 2026-10-07): 거의 투명해지면(마우스로 못 누르는 순간과 같은 기준)
+  // Tab 순서에서 빼고 화면 읽기에서도 숨김. 다시 보이면 되돌림. 숨겨질 때 포커스가 있었다면 놓아 줌
+  const asteriskRef = useRef<HTMLAnchorElement>(null)
+  const [asteriskHidden, setAsteriskHidden] = useState(() => progress.get() > 0.3)
+  useMotionValueEvent(progress, 'change', (p) => {
+    const hidden = p > 0.3
+    if (hidden && document.activeElement === asteriskRef.current) asteriskRef.current?.blur()
+    setAsteriskHidden(hidden)
+  })
   const shadowOpacity = useTransform(progress, [0, 1], [0.35, 0])
   const filter = useTransform(shadowOpacity, (o) => `drop-shadow(0 2px 18px rgb(0 0 0 / ${o}))`)
 
@@ -135,6 +147,7 @@ export function FloatingLogo({
           className="block"
           onClick={(e) => {
             e.preventDefault()
+            onNavigate?.()
             window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
           }}
         >
@@ -151,7 +164,10 @@ export function FloatingLogo({
         </a>
         {asteriskHref && (
           <motion.a
+            ref={asteriskRef}
             href={asteriskHref}
+            tabIndex={asteriskHidden ? -1 : undefined}
+            aria-hidden={asteriskHidden || undefined}
             aria-label="각주: 비공식 사이트 안내"
             style={{ opacity: asteriskOpacity, pointerEvents: asteriskEvents }}
             className="absolute -right-6 top-0 text-3xl font-medium text-cream md:-right-8 md:text-5xl"

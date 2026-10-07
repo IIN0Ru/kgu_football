@@ -20,6 +20,7 @@ import {
   youtubeLatestEmbed,
   nextMatch,
   laterMatches,
+  pageOpenedAt,
   photoCredit,
   recentResult,
   earlierResults,
@@ -38,12 +39,12 @@ const navItems: HeroNavItem[] = [
 const SNAP_SCREENS = ['top']
 
 export default function App() {
-  const { away } = useHeroSnap(SNAP_SCREENS)
+  const { away, cancel: cancelSnap } = useHeroSnap(SNAP_SCREENS)
 
   return (
     <>
       <SiteBackground away={away} image={heroImage} />
-      <DockNav items={navItems} heroId="top" logo={{ id: 'dock-logo' }} />
+      <DockNav items={navItems} heroId="top" logo={{ id: 'dock-logo' }} onNavigate={cancelSnap} />
       <FloatingLogo
         src={heroLogo.src}
         darkSrc={heroLogo.darkSrc}
@@ -51,6 +52,7 @@ export default function App() {
         heroId="top"
         asteriskHref="#notice"
         targetId="dock-logo"
+        onNavigate={cancelSnap}
       />
 
       <PrismaHero
@@ -104,7 +106,7 @@ export default function App() {
             aria-labelledby="next-match-title"
             className="rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10"
           >
-            <NextMatchSection match={nextMatch} later={laterMatches} titleId="next-match-title" />
+            <NextMatchSection match={nextMatch} later={laterMatches} titleId="next-match-title" now={pageOpenedAt} />
           </Reveal>
         </div>
 

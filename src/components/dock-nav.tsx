@@ -15,9 +15,11 @@ interface DockNavProps {
   heroId?: string
   /** 탭 왼쪽 끝 로고 자리 (첫 화면 큰 로고가 날아와 이 자리에 머묾) */
   logo?: { id: string }
+  /** 메뉴를 누를 때 먼저 부름: 진행 중인 첫 화면 넘김을 취소해 메뉴 이동이 이기게 (use-hero-snap cancel) */
+  onNavigate?: () => void
 }
 
-export function DockNav({ items, logo, heroId }: DockNavProps) {
+export function DockNav({ items, logo, heroId, onNavigate }: DockNavProps) {
   const reduce = useReducedMotion()
   const [active, setActive] = useState<string | null>(null)
 
@@ -69,6 +71,7 @@ export function DockNav({ items, logo, heroId }: DockNavProps) {
         href={item.href}
         aria-current={isActive ? 'location' : undefined}
         onClick={() => {
+          onNavigate?.()
           if (item.href.startsWith('#')) {
             setActive(item.href.slice(1))
             lockUntil.current = performance.now() + 1200

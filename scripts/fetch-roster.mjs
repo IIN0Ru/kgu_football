@@ -7,7 +7,9 @@
  *
  * 실행: node scripts/fetch-roster.mjs
  */
+import { realpathSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
+import { pathToFileURL } from 'node:url'
 
 const PAGE_URL = 'https://kufc.or.kr/teams/universities/cmpudexpx00055hfsejxuykvu'
 const OUT = new URL('../src/data/roster.json', import.meta.url)
@@ -67,7 +69,22 @@ async function main() {
   console.log(`명단 갱신: ${prev.players.length}명 → ${players.length}명`)
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+/**
+ * 직접 실행했을 때만 수집 (다른 파일에서 import 하면 parsePlayers·pickPublic 만 쓰고 수집은 안 함).
+ * 실행 경로를 운영체제에 맞는 file URL 로 바꿔 비교 — 예전의 `file://${경로}` 문자열 비교는
+ * Windows 경로(C:\...)에서 'file:///C:/...' 와 달라 실행이 안 됐음 (리뷰 반영 2026-10-07).
+ * 바로가기(심볼릭 링크)로 실행해도 맞도록 실제 경로로 바꾼 뒤 비교
+ */
+export function isDirectRun(metaUrl = import.meta.url, entry = process.argv[1]) {
+  if (!entry) return false
+  try {
+    return metaUrl === pathToFileURL(realpathSync(entry)).href
+  } catch {
+    return false
+  }
+}
+
+if (isDirectRun()) {
   main().catch((err) => {
     console.error(err.message)
     process.exit(1)

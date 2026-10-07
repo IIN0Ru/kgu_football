@@ -87,6 +87,11 @@ export function NewsSection({
   youtubeEmbed?: string
 }) {
   const [lead, ...rest] = blog
+  // 세 가지(블로그·유튜브·매거진) 중 하나라도 있으면 그것만 보여 줌. 셋 다 없을 때만 빈 상태 안내
+  // (예전엔 블로그·매거진이 비면 유튜브가 있어도 빈 상태만 보였음 — 리뷰 반영 2026-10-07)
+  const hasBlog = blog.length > 0
+  const hasVideo = Boolean(youtubeEmbed)
+  const hasMagazine = magazine.length > 0
 
   return (
     <div className="flex flex-col gap-10">
@@ -102,14 +107,15 @@ export function NewsSection({
         </div>
       </div>
 
-      {!lead && magazine.length === 0 ? (
+      {!hasBlog && !hasVideo && !hasMagazine ? (
         <div className="flex flex-col items-start gap-4 border-t border-line pt-8">
           <p className="text-2xl font-medium">아직 올라온 소식이 없어요</p>
           <p className="text-fg/60">경기와 선수단 소식은 축구부 블로그와 유튜브에서 먼저 확인할 수 있어요.</p>
         </div>
       ) : (
         <div className="grid gap-x-12 gap-y-12 lg:grid-cols-12">
-          {/* 왼쪽: 블로그 */}
+          {/* 왼쪽: 블로그 (글이 없으면 칸째 생략) */}
+          {hasBlog && (
           <section aria-label="블로그" className="flex flex-col lg:col-span-7">
             <ColumnHead label="블로그" href={blogHref} />
             {lead && (
@@ -139,10 +145,12 @@ export function NewsSection({
               </ul>
             )}
           </section>
+          )}
 
-          {/* 오른쪽: 유튜브 최신 영상 + 매거진 */}
-          <div className="flex flex-col gap-12 lg:col-span-5">
-            {youtubeEmbed && (
+          {/* 오른쪽: 유튜브 최신 영상 + 매거진. 블로그가 없으면 블로그 자리(7칸)를 대신 씀 */}
+          {(hasVideo || hasMagazine) && (
+          <div className={`flex flex-col gap-12 ${hasBlog ? 'lg:col-span-5' : 'lg:col-span-7'}`}>
+            {hasVideo && (
               <section aria-label="유튜브 최신 영상" className="flex flex-col">
                 <ColumnHead label="유튜브 최신 영상" href={youtubeHref} />
                 <div className="overflow-hidden rounded-2xl border border-line bg-ink">
@@ -158,7 +166,7 @@ export function NewsSection({
                 </div>
               </section>
             )}
-            {magazine.length > 0 && (
+            {hasMagazine && (
               <section aria-label="매거진" className="flex flex-col">
                 <ColumnHead label="매거진" href={magazineHref} />
                 <ul>
@@ -169,6 +177,7 @@ export function NewsSection({
               </section>
             )}
           </div>
+          )}
         </div>
       )}
     </div>
