@@ -168,6 +168,8 @@ export function FloatingLogo({
             href={asteriskHref}
             tabIndex={asteriskHidden ? -1 : undefined}
             aria-hidden={asteriskHidden || undefined}
+            // 넘김 초반에 눌러도 푸터(#notice) 이동이 이기도록 진행 중인 넘김만 취소. 앵커 이동은 브라우저 기본 그대로 (리뷰 반영 #45)
+            onClick={() => onNavigate?.()}
             aria-label="각주: 비공식 사이트 안내"
             style={{ opacity: asteriskOpacity, pointerEvents: asteriskEvents }}
             className="absolute -right-6 top-0 text-3xl font-medium text-cream md:-right-8 md:text-5xl"
