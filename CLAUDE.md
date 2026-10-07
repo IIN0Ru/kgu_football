@@ -14,7 +14,7 @@
 
 @DESIGN.md
 
-- 색·글자·모양·움직임은 `DESIGN.md`를 따른다. 색은 `src/index.css`의 `@theme`에 정의된 이름(`fg`, `surface`, `bar`, `line`, `accent`, `on-accent`, `crest`, `win`, `on-win`, `paper`, 첫 화면 사진 위에서만 `cream`, `ink`, `primary`)만 쓴다.
+- 색·글자·모양·움직임은 `DESIGN.md`를 따른다. 색은 `src/index.css`의 `@theme`에 정의된 이름(`fg`, `surface`, `bar`, `line`, `accent`, `on-accent`, `crest`, `win`, `on-win`, `paper`, 첫 화면 사진 위에서만 `cream`·`primary`, 유튜브 플레이어 바탕에 `ink`)만 쓴다.
 - 디자인(색·글꼴·배치)을 바꿀 때는 먼저 시안 캡처와 계획을 보여주고 사용자 승인을 받은 뒤 적용 (사용자 지침 2026-10-07)
 - 히어로는 `src/components/ui/prisma-hero.tsx`(21st.dev 원본을 고친 것). 원본에서 바꾼 점은 파일 맨 위 주석에 적는다.
 
