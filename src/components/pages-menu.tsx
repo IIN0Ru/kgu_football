@@ -1,11 +1,11 @@
 /**
- * 메뉴 탭 옆 '페이지' 버튼 (2026-10-08 사용자 결정)
+ * 메뉴 탭 옆 페이지 버튼 — 작대기 세 개(햄버거) 아이콘, 글자 없음 (2026-10-08 사용자 결정)
  * - 메뉴 탭은 홈 안 구역 이동·현재 위치 표시만 하고, 다른 페이지로 가는 입구는 이 버튼으로 분리
  * - 누르면 아래로 페이지 목록이 펼쳐짐. 지금 페이지는 빨간 점으로 표시
  * - 키보드: Esc 로 닫고 버튼으로 포커스 복귀, 바깥을 누르거나 다른 곳으로 포커스가 나가면 닫힘
  */
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { LayoutGrid, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import type { PageLink } from '@/data/nav'
@@ -54,12 +54,11 @@ export function PagesMenu({ pages, onNavigate }: { pages: PageLink[]; onNavigate
         aria-controls={id}
         aria-label={open ? '페이지 목록 닫기' : '페이지 목록 열기'}
         onClick={() => setOpen((v) => !v)}
-        className={`surface-blur flex h-full items-center gap-2 rounded-b-2xl border border-t-0 border-line px-3 text-xs transition-colors md:rounded-b-3xl md:px-4 md:text-sm ${
+        className={`surface-blur flex h-full items-center rounded-b-2xl border border-t-0 border-line px-3 transition-colors md:rounded-b-3xl md:px-3.5 ${
           open ? 'bg-accent text-on-accent' : 'bg-bar text-fg/70 hover:text-fg'
         }`}
       >
-        {open ? <X className="h-4 w-4" aria-hidden="true" /> : <LayoutGrid className="h-4 w-4" aria-hidden="true" />}
-        <span className="hidden sm:inline">페이지</span>
+        {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
       </button>
 
       <AnimatePresence>
