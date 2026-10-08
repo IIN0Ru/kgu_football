@@ -6,7 +6,7 @@
 
 - Vite + React + TypeScript + Tailwind CSS v4
 - shadcn 구조: 컴포넌트는 `src/components/ui/`, 경로 별칭 `@/` = `src/`, `components.json`, `src/lib/utils.ts`의 `cn()`
-- 애니메이션 `framer-motion`, 아이콘 `lucide-react`
+- 애니메이션 `framer-motion`, 아이콘 `lucide-react`, 페이지 주소 `react-router-dom` (`src/pages/`, 메뉴·페이지 목록은 `src/data/nav.ts`)
 - 명령: `npm install` → `npm run dev`(개발) / `npm run build`(배포용 빌드)
 - GitHub Pages 주소 하위 경로 때문에 `vite.config.ts`의 `base`는 `/kgu_football/`
 

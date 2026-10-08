@@ -10,14 +10,15 @@
 - 한국 시간 기준 다음 경기·D-day·이후 경기 표시
 - 포지션별 선수 명단과 주 1회 자동 갱신
 - 축구부 블로그·매거진 링크와 유튜브 플레이어
+- 경기 일정 페이지: 달별 목록, 남은·끝난·홈·원정 거르기, 구글 캘린더·.ics 로 일정 넣기
 - 스크롤에 반응하는 학교 로고·고정 메뉴·카드 등장 효과
 - 동작 줄이기 설정과 키보드 접근 지원
 
-현재는 홈 화면 하나로 구성된 프론트엔드 사이트이며 서버·DB·관리자 페이지는 없다.
+현재는 홈과 경기 일정 두 페이지로 구성된 프론트엔드 사이트이며 서버·DB·관리자 페이지는 없다.
 
 ## 기술
 
-React 19, TypeScript, Vite, Tailwind CSS v4, framer-motion, lucide-react.
+React 19, TypeScript, Vite, Tailwind CSS v4, react-router, framer-motion, lucide-react.
 shadcn 호환 경로 구조와 `cn()` 유틸리티를 사용하며, 히어로는 전달받은 21st.dev PrismaHero를 수정했다.
 
 ## 실행과 검증
@@ -30,6 +31,7 @@ npm run dev
 npm run build
 npm run lint
 npm run check:time
+npm run check:calendar
 ```
 
 - `npm run preview`: 빌드 결과 미리보기.
