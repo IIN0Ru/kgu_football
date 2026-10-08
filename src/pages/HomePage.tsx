@@ -8,6 +8,7 @@ import { ResultSection } from '@/components/result-section'
 import { RosterSection } from '@/components/roster-section'
 import { NewsSection } from '@/components/news-section'
 import { NextMatchSection } from '@/components/next-match-section'
+import { VenueSection } from '@/components/venue-section'
 import { PrismaHero } from '@/components/ui/prisma-hero'
 import { navItems, pageLinks } from '@/data/nav'
 import { useHeroSnap } from '@/components/use-hero-snap'
@@ -120,6 +121,15 @@ export function HomePage() {
             updatedAt={roster.updatedAt}
             titleId="squad-title"
           />
+        </Reveal>
+
+        {/* 찾아오는 곳 (전체 폭, 맨 아래) */}
+        <Reveal
+          id="venue"
+          aria-labelledby="venue-title"
+          className="rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10"
+        >
+          <VenueSection titleId="venue-title" />
         </Reveal>
       </main>
 

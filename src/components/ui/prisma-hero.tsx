@@ -18,6 +18,7 @@
  * - 테두리만 있는 큰 영문 글자(outlineWord, 사이트에서는 TURTLES)를 오른쪽 아래(모바일은 오른쪽 위)에 깔 수 있게 (시안 C)
  * - SCROLL 안내(scrollHint): SCROLL 글자 + 아래로 계속 흘러내리는 짧은 선. 데스크톱은 로고와 TURTLES 사이, 휴대폰은 오른쪽 아래 (2026-10-07)
  * - 밝은 테마: 상단 메뉴를 검은 탭 → 밝은 반투명 탭(검은 글자)으로. 밝아진 사진 위 소개 글에 그림자 추가
+ * - 메뉴 항목에 좁은 휴대폰용 짧은 이름(short) 추가 (dock-nav.tsx 에서 사용, 2026-10-08)
  */
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -122,6 +123,8 @@ export const WordsPullUpMultiStyle = ({ segments, className = "", style }: Words
 export interface HeroNavItem {
   label: string;
   href: string;
+  /** 좁은 휴대폰(400px 미만)에서 쓰는 짧은 이름 (메뉴 탭이 화면을 넘지 않게) */
+  short?: string;
 }
 
 interface PrismaHeroProps {

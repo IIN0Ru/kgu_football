@@ -83,7 +83,7 @@ export function DockNav({ items, logo, heroId, onNavigate, staticLogo, pageTitle
   const links = items.map((item) => {
     const isRoute = item.href.startsWith('/')
     const isActive = onHome ? item.href === `#${active}` : isRoute && item.href === pathname
-    const cls = `relative whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs transition-colors duration-200 sm:px-3 md:px-4 md:text-sm ${
+    const cls = `relative whitespace-nowrap rounded-full px-[7px] py-1.5 text-xs transition-colors duration-200 min-[400px]:px-2.5 sm:px-3 md:px-4 md:text-sm ${
       isActive ? 'text-on-accent' : 'text-fg/70 hover:text-fg'
     }`
     const inner = (
@@ -95,7 +95,17 @@ export function DockNav({ items, logo, heroId, onNavigate, staticLogo, pageTitle
             transition={{ duration: reduce ? 0 : 0.4, ease: EASE }}
           />
         )}
-        <span className="relative">{item.label}</span>
+        {item.short ? (
+          <>
+            <span className="relative hidden min-[400px]:inline">{item.label}</span>
+            <span className="relative min-[400px]:hidden" aria-hidden="true">
+              {item.short}
+            </span>
+            <span className="sr-only min-[400px]:hidden">{item.label}</span>
+          </>
+        ) : (
+          <span className="relative">{item.label}</span>
+        )}
       </>
     )
     // 다른 페이지로 가거나, 홈이 아닌 곳에서 홈 구역으로 갈 때는 페이지 이동
