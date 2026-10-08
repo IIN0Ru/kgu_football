@@ -55,6 +55,15 @@
 
 ## 개발 로그
 
+### 2026-10-08 #50 (시안, 승인 대기) — 경기 일정 페이지 /schedule (Claude)
+
+- 사용자 선택: 추가 기능 1·2·3·4·7 중 1(일정)부터, 별도 페이지 구성. `preview/schedule` 갈래에만 반영
+- 여러 페이지 구조: react-router(`App.tsx` 라우트, `pages/HomePage`·`pages/SchedulePage`), 공통 푸터 `site-footer.tsx`, 메뉴 항목 `data/nav.ts`('#…' 홈 구역, '/…' 페이지). GitHub Pages 바로 접속용 `public/404.html` → `main.tsx` 가 원래 주소로 복원
+- 메뉴: 소식 · 최근 결과 · **일정** · 선수단 ('다음 경기' 자리에 일정). 홈이 아닌 페이지는 탭 안에 로고를 바로 그림(누르면 홈)
+- 일정 페이지: 달별 목록(끝난 경기 점수 홈 먼저 / 남은 경기 시각, 미정이면 '시간 확인 중' / 지났는데 점수 없으면 '결과 확인 중'), 가장 가까운 경기 D-day, 거르기(전체·남은·끝난 / 홈·원정), 경기별 구글 캘린더·.ics, 시즌 전체 .ics. 한국 시간 기준
+- `lib/calendar.ts`(순수 함수) + `npm run check:calendar`(서울·LA 통과). 린트가 .ics 세미콜론 이스케이프 누락을 잡아 수정
+- 확인: build·lint 0, check:time·check:calendar, GitHub Pages 흉내 서버에서 /schedule 바로 접속·거르기(남은+원정 1, 끝난+홈 4)·.ics 받기·메뉴로 홈 구역 이동·로고로 홈, 1440·390 가로 넘침 없음
+
 ### 2026-10-08 #49 — 개인 메일이 담긴 커밋 메타데이터 정리 (Claude, 사용자 승인)
 
 - 원인: GitHub 'Keep my email addresses private' 가 꺼져 있어 연결 앱(파일 API)으로 만든 문서 커밋 1개의 작성자·커미터에 기본 메일이 들어감. 사용자가 설정 켜기·명령줄 push 차단·PC git 메일 noreply 설정 완료

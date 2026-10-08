@@ -63,3 +63,11 @@ export function formatMatchWhen(date: string, time: string | null): string {
   // 날짜만: 한국 정오로 두어 어느 시간대에서 계산해도 같은 날짜가 나오게
   return `${new Intl.DateTimeFormat('ko-KR', base).format(new Date(`${date}T12:00:00+09:00`))} · 시간 확인 중`
 }
+
+/** 날짜를 한국 기준 월·일·요일로 나눔 (일정 목록 표시용) */
+export function dayParts(date: string): { month: number; day: number; weekday: string } {
+  const weekday = new Intl.DateTimeFormat('ko-KR', { weekday: 'short', timeZone: MATCH_TZ }).format(
+    new Date(`${date}T12:00:00+09:00`),
+  )
+  return { month: Number(date.slice(5, 7)), day: Number(date.slice(8, 10)), weekday }
+}

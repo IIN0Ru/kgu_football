@@ -1,10 +1,14 @@
 /**
  * 화면 위 가운데에 늘 붙어 있는 메뉴 탭 (첫 화면부터 그대로, 2026-10-07 변경).
  * 왼쪽 끝은 경기대 로고 자리 — 로고 그림은 floating-logo.tsx 가 그 자리에 그린다.
- * 지금 보고 있는 구역 아래로 크림색 알약이 미끄러져 이동한다 (같은 메뉴가 계속 이어진다는 느낌).
+ * 지금 보고 있는 구역 아래로 빨간 알약이 미끄러져 이동한다 (같은 메뉴가 계속 이어진다는 느낌).
+ * 2026-10-08 여러 페이지: 항목 주소가 '#…' 면 홈 안 구역, '/…' 면 다른 페이지.
+ * 홈이 아닌 페이지에서는 '#…' 항목이 홈의 그 구역으로 가고, 지금 페이지 항목에 알약이 붙는다.
+ * 홈이 아닌 페이지에는 날아오는 큰 로고가 없으므로 staticLogo 로 탭 안에 로고를 바로 그린다(누르면 홈).
  */
 import { LayoutGroup, motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import type { HeroNavItem } from '@/components/ui/prisma-hero'
 
 const EASE = [0.16, 1, 0.3, 1] as const
@@ -17,10 +21,14 @@ interface DockNavProps {
   logo?: { id: string }
   /** 메뉴를 누를 때 먼저 부름: 진행 중인 첫 화면 넘김을 취소해 메뉴 이동이 이기게 (use-hero-snap cancel) */
   onNavigate?: () => void
+  /** 홈이 아닌 페이지: 탭 안에 로고를 바로 그림 (누르면 홈) */
+  staticLogo?: { src: string; alt: string }
 }
 
-export function DockNav({ items, logo, heroId, onNavigate }: DockNavProps) {
+export function DockNav({ items, logo, heroId, onNavigate, staticLogo }: DockNavProps) {
   const reduce = useReducedMotion()
+  const { pathname } = useLocation()
+  const onHome = pathname === '/'
   const [active, setActive] = useState<string | null>(null)
 
   // 지금 보고 있는 구역: 화면 위쪽 1/3 지점을 이미 지난 구역 중 마지막 것
@@ -28,6 +36,7 @@ export function DockNav({ items, logo, heroId, onNavigate }: DockNavProps) {
   // 메뉴를 눌렀을 땐 누른 구역을 바로 표시하고 이동이 끝날 때까지 유지
   const lockUntil = useRef(0)
   useEffect(() => {
+    if (!onHome) return
     const ids = items.filter((i) => i.href.startsWith('#')).map((i) => i.href.slice(1))
     let raf = 0
     const update = () => {
@@ -61,10 +70,40 @@ export function DockNav({ items, logo, heroId, onNavigate }: DockNavProps) {
       window.removeEventListener('resize', onScroll)
       if (raf) cancelAnimationFrame(raf)
     }
-  }, [items])
+  }, [items, onHome])
 
   const links = items.map((item) => {
-    const isActive = item.href === `#${active}`
+    const isRoute = item.href.startsWith('/')
+    const isActive = onHome ? item.href === `#${active}` : isRoute && item.href === pathname
+    const cls = `relative whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs transition-colors duration-200 sm:px-3 md:px-4 md:text-sm ${
+      isActive ? 'text-on-accent' : 'text-fg/70 hover:text-fg'
+    }`
+    const inner = (
+      <>
+        {isActive && (
+          <motion.span
+            layoutId="dock-pill"
+            className="absolute inset-0 rounded-full bg-accent"
+            transition={{ duration: reduce ? 0 : 0.4, ease: EASE }}
+          />
+        )}
+        <span className="relative">{item.label}</span>
+      </>
+    )
+    // 다른 페이지로 가거나, 홈이 아닌 곳에서 홈 구역으로 갈 때는 페이지 이동
+    if (isRoute || !onHome) {
+      return (
+        <Link
+          key={item.label}
+          to={isRoute ? item.href : { pathname: '/', hash: item.href }}
+          aria-current={isActive ? 'page' : undefined}
+          onClick={() => onNavigate?.()}
+          className={cls}
+        >
+          {inner}
+        </Link>
+      )
+    }
     return (
       <a
         key={item.label}
@@ -77,18 +116,9 @@ export function DockNav({ items, logo, heroId, onNavigate }: DockNavProps) {
             lockUntil.current = performance.now() + 1200
           }
         }}
-        className={`relative whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs transition-colors duration-200 sm:px-3 md:px-4 md:text-sm ${
-          isActive ? 'text-on-accent' : 'text-fg/70 hover:text-fg'
-        }`}
+        className={cls}
       >
-        {isActive && (
-          <motion.span
-            layoutId="dock-pill"
-            className="absolute inset-0 rounded-full bg-accent"
-            transition={{ duration: reduce ? 0 : 0.4, ease: EASE }}
-          />
-        )}
-        <span className="relative">{item.label}</span>
+        {inner}
       </a>
     )
   })
@@ -108,7 +138,16 @@ export function DockNav({ items, logo, heroId, onNavigate }: DockNavProps) {
     const top = hero?.offsetTop ?? 0 // 위에 0페이지가 있으면 그만큼 뒤에서 시작
     return Math.min(1, Math.max(0, (y - top) / h)) * full
   })
-  const logoEl = logo && (
+  const logoEl = staticLogo ? (
+    <Link
+      to="/"
+      aria-label={`${staticLogo.alt} — 홈으로`}
+      className="flex shrink-0 items-center self-stretch pl-0.5 pr-3"
+      style={{ width: full }}
+    >
+      <img src={staticLogo.src} alt="" className="block h-auto max-w-none" style={{ width: full >= 70 ? 56 : 40 }} />
+    </Link>
+  ) : logo && (
     <motion.span
       id={logo.id}
       data-full={full}
