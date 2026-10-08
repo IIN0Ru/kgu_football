@@ -2,13 +2,17 @@
  * 화면 위 가운데에 늘 붙어 있는 메뉴 탭 (첫 화면부터 그대로, 2026-10-07 변경).
  * 왼쪽 끝은 경기대 로고 자리 — 로고 그림은 floating-logo.tsx 가 그 자리에 그린다.
  * 지금 보고 있는 구역 아래로 빨간 알약이 미끄러져 이동한다 (같은 메뉴가 계속 이어진다는 느낌).
- * 2026-10-08 여러 페이지: 항목 주소가 '#…' 면 홈 안 구역, '/…' 면 다른 페이지.
- * 홈이 아닌 페이지에서는 '#…' 항목이 홈의 그 구역으로 가고, 지금 페이지 항목에 알약이 붙는다.
- * 홈이 아닌 페이지에는 날아오는 큰 로고가 없으므로 staticLogo 로 탭 안에 로고를 바로 그린다(누르면 홈).
+ * 2026-10-08 여러 페이지 (사용자 결정): 탭은 홈 안 구역 이동·현재 위치 표시만 맡고,
+ * 다른 페이지로 가는 입구는 탭 옆 '페이지' 버튼(pages-menu.tsx)으로 분리.
+ * 홈이 아닌 페이지(pageTitle)에서는 탭에 로고 · 홈 · 지금 페이지 이름만 보여줌.
+ * 그 페이지에는 날아오는 큰 로고가 없으므로 staticLogo 로 탭 안에 로고를 바로 그린다(누르면 홈).
  */
 import { LayoutGroup, motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
+import { ChevronLeft } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
+import { PagesMenu } from '@/components/pages-menu'
+import type { PageLink } from '@/data/nav'
 import type { HeroNavItem } from '@/components/ui/prisma-hero'
 
 const EASE = [0.16, 1, 0.3, 1] as const
@@ -23,9 +27,13 @@ interface DockNavProps {
   onNavigate?: () => void
   /** 홈이 아닌 페이지: 탭 안에 로고를 바로 그림 (누르면 홈) */
   staticLogo?: { src: string; alt: string }
+  /** 홈이 아닌 페이지의 이름. 있으면 탭에 구역 메뉴 대신 '홈 · 페이지 이름' */
+  pageTitle?: string
+  /** 탭 옆 '페이지' 버튼 목록 */
+  pages?: PageLink[]
 }
 
-export function DockNav({ items, logo, heroId, onNavigate, staticLogo }: DockNavProps) {
+export function DockNav({ items, logo, heroId, onNavigate, staticLogo, pageTitle, pages }: DockNavProps) {
   const reduce = useReducedMotion()
   const { pathname } = useLocation()
   const onHome = pathname === '/'
@@ -164,9 +172,27 @@ export function DockNav({ items, logo, heroId, onNavigate, staticLogo }: DockNav
       className="fixed left-1/2 top-0 z-50 -translate-x-1/2"
     >
       <LayoutGroup>
-        <div className="surface-blur flex items-center gap-1 rounded-b-2xl border border-t-0 border-line bg-bar px-1.5 py-[12px] md:rounded-b-3xl md:py-[14px]">
-          {logoEl}
-          {links}
+        <div className="flex items-stretch gap-1.5">
+          <div className="surface-blur flex items-center gap-1 rounded-b-2xl border border-t-0 border-line bg-bar px-1.5 py-[12px] md:rounded-b-3xl md:py-[14px]">
+            {logoEl}
+            {pageTitle ? (
+              <>
+                <Link
+                  to="/"
+                  className="flex items-center gap-0.5 whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs text-fg/70 transition-colors hover:text-fg md:text-sm"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />홈
+                </Link>
+                <span aria-hidden="true" className="text-fg/30">·</span>
+                <span aria-current="page" className="whitespace-nowrap px-2.5 py-1.5 text-xs font-medium md:text-sm">
+                  {pageTitle}
+                </span>
+              </>
+            ) : (
+              links
+            )}
+          </div>
+          {pages && pages.length > 0 && <PagesMenu pages={pages} onNavigate={onNavigate} />}
         </div>
       </LayoutGroup>
     </motion.nav>

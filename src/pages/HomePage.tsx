@@ -9,7 +9,7 @@ import { RosterSection } from '@/components/roster-section'
 import { NewsSection } from '@/components/news-section'
 import { NextMatchSection } from '@/components/next-match-section'
 import { PrismaHero } from '@/components/ui/prisma-hero'
-import { navItems } from '@/data/nav'
+import { navItems, pageLinks } from '@/data/nav'
 import { useHeroSnap } from '@/components/use-hero-snap'
 import {
   heroImage,
@@ -42,7 +42,7 @@ export function HomePage() {
   return (
     <>
       <SiteBackground away={away} image={heroImage} />
-      <DockNav items={navItems} heroId="top" logo={{ id: 'dock-logo' }} onNavigate={cancelSnap} />
+      <DockNav items={navItems} heroId="top" logo={{ id: 'dock-logo' }} onNavigate={cancelSnap} pages={pageLinks} />
       <FloatingLogo
         src={heroLogo.src}
         darkSrc={heroLogo.darkSrc}

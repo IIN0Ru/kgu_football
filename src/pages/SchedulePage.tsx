@@ -14,7 +14,7 @@ import { SiteBackground } from '@/components/site-background'
 import { SiteFooter } from '@/components/site-footer'
 import { TeamCrest } from '@/components/team-crest'
 import { heroImage, heroLogo, pageOpenedAt } from '@/data/home'
-import { navItems } from '@/data/nav'
+import { navItems, pageLinks } from '@/data/nav'
 import {
   nextScheduleMatch,
   scheduleCompetition,
@@ -183,7 +183,12 @@ export function SchedulePage() {
   return (
     <>
       <SiteBackground away image={heroImage} />
-      <DockNav items={navItems} staticLogo={{ src: heroLogo.darkSrc, alt: heroLogo.alt }} />
+      <DockNav
+        items={navItems}
+        staticLogo={{ src: heroLogo.darkSrc, alt: heroLogo.alt }}
+        pageTitle="경기 일정"
+        pages={pageLinks}
+      />
 
       <main className="mx-auto flex max-w-[1440px] flex-col gap-2 p-2 pt-16 md:gap-3 md:p-3 md:pt-20">
         <Reveal
