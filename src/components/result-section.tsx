@@ -7,6 +7,7 @@
  * - 경기가 끝났는데 점수가 아직 없으면 맨 위에 '결과 확인 중' 줄 (UX 점검 2026-10-08)
  */
 import { Eyebrow } from '@/components/eyebrow'
+import { PageLinkRow } from '@/components/page-link-row'
 import { TeamCrest } from '@/components/team-crest'
 import type { PastMatch, PendingResult, seasonRecord as SeasonRecordValue } from '@/data/home'
 
@@ -116,6 +117,7 @@ export function ResultSection({
           출처 {source.label}
         <span className="sr-only">(새 창)</span></a>
       </div>
+      <PageLinkRow to="/records" className="-mt-6">시즌 기록 전체 보기</PageLinkRow>
     </div>
   )
 }

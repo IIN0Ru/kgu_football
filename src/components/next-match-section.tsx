@@ -5,10 +5,12 @@
  * - 일시: 시각 미정이면 '10월 9일 (금) · 시간 확인 중'
  * - 일시·장소·대회를 아이콘과 함께 정리. 모르는 값은 '확인 중'으로 (지어내지 않음)
  * - 아래에 '이후 경기' 최대 3개 작은 줄 (날짜 · 상대 로고·이름 · 홈/원정 · 시각)
+ * - 맨 아래 '경기 일정 전체 보기 →' (경기 일정 페이지로, UX 점검 2026-10-08)
  */
 import { Eyebrow } from '@/components/eyebrow'
 import { CalendarDays, MapPin, Trophy } from 'lucide-react'
 import { ourTeam, type LaterMatch, type NextMatch } from '@/data/home'
+import { PageLinkRow } from '@/components/page-link-row'
 import { TeamCrest } from '@/components/team-crest'
 import { dDay, formatMatchWhen } from '@/lib/match-time'
 
@@ -118,6 +120,9 @@ export function NextMatchSection({
           </ul>
         </div>
       )}
+      <PageLinkRow to="/schedule" className={later.length > 0 ? '-mt-6' : 'mt-auto'}>
+        경기 일정 전체 보기
+      </PageLinkRow>
     </div>
   )
 }
