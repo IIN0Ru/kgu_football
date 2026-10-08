@@ -1,0 +1,1256 @@
+{
+  "source": {
+    "label": "KUSF 대학스포츠",
+    "url": "https://www.kusf.or.kr/league/league_schedule.html?e_code=45&l_year=2026&l_code=271&t_code=1704"
+  },
+  "updatedAt": "2026-10-08",
+  "competition": "KUSF 대학축구 U리그 4권역",
+  "notes": [
+    "선수 기록은 KUSF 경기별 '경기대 선수기록'(교체 명단 포함)을 사람이 옮겨 넣음",
+    "2026-05-01 중앙대전 1골은 선수 기록에 없음(상대 자책골로 보임)"
+  ],
+  "standings": [
+    {
+      "team": "경기대",
+      "rank": 1,
+      "played": 8,
+      "points": 22,
+      "won": 7,
+      "drawn": 1,
+      "lost": 0,
+      "goalsFor": 28,
+      "goalsAgainst": 12,
+      "goalDiff": 16,
+      "yellow": 19,
+      "red": 0
+    },
+    {
+      "team": "중앙대",
+      "rank": 2,
+      "played": 8,
+      "points": 16,
+      "won": 5,
+      "drawn": 1,
+      "lost": 2,
+      "goalsFor": 21,
+      "goalsAgainst": 10,
+      "goalDiff": 11,
+      "yellow": 14,
+      "red": 0
+    },
+    {
+      "team": "칼빈대",
+      "rank": 3,
+      "played": 8,
+      "points": 16,
+      "won": 5,
+      "drawn": 1,
+      "lost": 2,
+      "goalsFor": 18,
+      "goalsAgainst": 12,
+      "goalDiff": 6,
+      "yellow": 11,
+      "red": 2
+    },
+    {
+      "team": "용인대",
+      "rank": 4,
+      "played": 8,
+      "points": 13,
+      "won": 4,
+      "drawn": 1,
+      "lost": 3,
+      "goalsFor": 13,
+      "goalsAgainst": 10,
+      "goalDiff": 3,
+      "yellow": 9,
+      "red": 0
+    },
+    {
+      "team": "홍익대",
+      "rank": 5,
+      "played": 8,
+      "points": 13,
+      "won": 4,
+      "drawn": 1,
+      "lost": 3,
+      "goalsFor": 16,
+      "goalsAgainst": 14,
+      "goalDiff": 2,
+      "yellow": 11,
+      "red": 0
+    },
+    {
+      "team": "동원대",
+      "rank": 6,
+      "played": 8,
+      "points": 5,
+      "won": 1,
+      "drawn": 2,
+      "lost": 5,
+      "goalsFor": 13,
+      "goalsAgainst": 19,
+      "goalDiff": -6,
+      "yellow": 22,
+      "red": 0
+    },
+    {
+      "team": "성균관대",
+      "rank": 7,
+      "played": 8,
+      "points": 5,
+      "won": 1,
+      "drawn": 2,
+      "lost": 5,
+      "goalsFor": 10,
+      "goalsAgainst": 20,
+      "goalDiff": -10,
+      "yellow": 14,
+      "red": 1
+    },
+    {
+      "team": "여주대",
+      "rank": 8,
+      "played": 8,
+      "points": 1,
+      "won": 0,
+      "drawn": 1,
+      "lost": 7,
+      "goalsFor": 2,
+      "goalsAgainst": 24,
+      "goalDiff": -22,
+      "yellow": 17,
+      "red": 2
+    }
+  ],
+  "matches": [
+    {
+      "date": "2026-04-17",
+      "players": [
+        {
+          "number": 3,
+          "name": "박준원",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 4,
+          "name": "황병석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 5,
+          "name": "황장연",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 7,
+          "name": "조민석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 8,
+          "name": "최지호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 10,
+          "name": "갈정민",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 11,
+          "name": "나하준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 13,
+          "name": "김태형",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 14,
+          "name": "정하민",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 18,
+          "name": "한경호",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 19,
+          "name": "성중현",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 20,
+          "name": "권오성",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 21,
+          "name": "최진수",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 22,
+          "name": "김기완",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 23,
+          "name": "서민준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 25,
+          "name": "김건우",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 27,
+          "name": "손석주",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 77,
+          "name": "민선재",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        }
+      ],
+      "unattributedGoals": 0
+    },
+    {
+      "date": "2026-04-23",
+      "players": [
+        {
+          "number": 3,
+          "name": "박준원",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 5,
+          "name": "황장연",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 6,
+          "name": "조현준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 7,
+          "name": "조민석",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 8,
+          "name": "최지호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 10,
+          "name": "갈정민",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 11,
+          "name": "나하준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 12,
+          "name": "김태현",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 14,
+          "name": "정하민",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 16,
+          "name": "권기원",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 18,
+          "name": "한경호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 19,
+          "name": "성중현",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 20,
+          "name": "권오성",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 21,
+          "name": "최진수",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 22,
+          "name": "김기완",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 27,
+          "name": "손석주",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 77,
+          "name": "민선재",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        }
+      ],
+      "unattributedGoals": 0
+    },
+    {
+      "date": "2026-05-01",
+      "players": [
+        {
+          "number": 3,
+          "name": "박준원",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 4,
+          "name": "황병석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 5,
+          "name": "황장연",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 6,
+          "name": "조현준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 7,
+          "name": "조민석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 8,
+          "name": "최지호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 10,
+          "name": "갈정민",
+          "goals": 2,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 11,
+          "name": "나하준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 14,
+          "name": "정하민",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 18,
+          "name": "한경호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 19,
+          "name": "성중현",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 20,
+          "name": "권오성",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 21,
+          "name": "최진수",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 22,
+          "name": "김기완",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 27,
+          "name": "손석주",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 77,
+          "name": "민선재",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        }
+      ],
+      "unattributedGoals": 1
+    },
+    {
+      "date": "2026-05-15",
+      "players": [
+        {
+          "number": 3,
+          "name": "박준원",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 4,
+          "name": "황병석",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 5,
+          "name": "황장연",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 6,
+          "name": "조현준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 7,
+          "name": "조민석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 8,
+          "name": "최지호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 10,
+          "name": "갈정민",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 11,
+          "name": "나하준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 14,
+          "name": "정하민",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 16,
+          "name": "권기원",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 18,
+          "name": "한경호",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 19,
+          "name": "성중현",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 20,
+          "name": "권오성",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 21,
+          "name": "최진수",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 22,
+          "name": "김기완",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 27,
+          "name": "손석주",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 77,
+          "name": "민선재",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        }
+      ],
+      "unattributedGoals": 0
+    },
+    {
+      "date": "2026-05-22",
+      "players": [
+        {
+          "number": 3,
+          "name": "박준원",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 4,
+          "name": "황병석",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 5,
+          "name": "황장연",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 6,
+          "name": "조현준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 7,
+          "name": "조민석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 8,
+          "name": "최지호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 9,
+          "name": "유태호",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 10,
+          "name": "갈정민",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 14,
+          "name": "정하민",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 16,
+          "name": "권기원",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 18,
+          "name": "한경호",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 19,
+          "name": "성중현",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 20,
+          "name": "권오성",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 21,
+          "name": "최진수",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 22,
+          "name": "김기완",
+          "goals": 2,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 25,
+          "name": "김건우",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 27,
+          "name": "손석주",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 77,
+          "name": "민선재",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        }
+      ],
+      "unattributedGoals": 0
+    },
+    {
+      "date": "2026-05-29",
+      "players": [
+        {
+          "number": 4,
+          "name": "황병석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 5,
+          "name": "황장연",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 6,
+          "name": "조현준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 7,
+          "name": "조민석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 8,
+          "name": "최지호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 10,
+          "name": "갈정민",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 11,
+          "name": "나하준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 12,
+          "name": "김태현",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 14,
+          "name": "정하민",
+          "goals": 2,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 16,
+          "name": "권기원",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 18,
+          "name": "한경호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 19,
+          "name": "성중현",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 20,
+          "name": "권오성",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 21,
+          "name": "최진수",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 22,
+          "name": "김기완",
+          "goals": 3,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 27,
+          "name": "손석주",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 77,
+          "name": "민선재",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        }
+      ],
+      "unattributedGoals": 0
+    },
+    {
+      "date": "2026-06-11",
+      "players": [
+        {
+          "number": 3,
+          "name": "박준원",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 4,
+          "name": "황병석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 5,
+          "name": "황장연",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 6,
+          "name": "조현준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 7,
+          "name": "조민석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 8,
+          "name": "최지호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 9,
+          "name": "유태호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 10,
+          "name": "갈정민",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 14,
+          "name": "정하민",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 16,
+          "name": "권기원",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 19,
+          "name": "성중현",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 20,
+          "name": "권오성",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 21,
+          "name": "최진수",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 22,
+          "name": "김기완",
+          "goals": 2,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 27,
+          "name": "손석주",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 77,
+          "name": "민선재",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        }
+      ],
+      "unattributedGoals": 0
+    },
+    {
+      "date": "2026-09-18",
+      "players": [
+        {
+          "number": 3,
+          "name": "박준원",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 4,
+          "name": "황병석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 5,
+          "name": "황장연",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 7,
+          "name": "조민석",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 8,
+          "name": "최지호",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 10,
+          "name": "갈정민",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 11,
+          "name": "나하준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 1,
+          "red": 0
+        },
+        {
+          "number": 14,
+          "name": "정하민",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 16,
+          "name": "권기원",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 20,
+          "name": "권오성",
+          "goals": 1,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 21,
+          "name": "최진수",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 22,
+          "name": "김기완",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 25,
+          "name": "김건우",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 27,
+          "name": "손석주",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 77,
+          "name": "민선재",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        },
+        {
+          "number": 99,
+          "name": "박성준",
+          "goals": 0,
+          "assists": 0,
+          "yellow": 0,
+          "red": 0
+        }
+      ],
+      "unattributedGoals": 0
+    }
+  ]
+}

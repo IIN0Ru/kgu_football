@@ -7,6 +7,7 @@
  */
 import { Route, Routes } from 'react-router-dom'
 import { HomePage } from '@/pages/HomePage'
+import { RecordsPage } from '@/pages/RecordsPage'
 import { SchedulePage } from '@/pages/SchedulePage'
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/schedule" element={<SchedulePage />} />
+      <Route path="/records" element={<RecordsPage />} />
       <Route path="*" element={<HomePage />} />
     </Routes>
   )
