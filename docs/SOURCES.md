@@ -7,12 +7,14 @@
 | 자료 | 출처 | 갱신 방식 |
 |---|---|---|
 | U리그 일정·결과 | [KUSF 대학스포츠](https://www.kusf.or.kr/league/league_schedule.html?e_code=45&l_year=2026&l_code=271&t_code=1704) | 사람이 확인해 `src/data/matches.json` 수정 |
+| U리그 순위표·경기별 선수 기록 | 같은 KUSF 페이지의 경기기록(팀 기록·경기대 선수기록) | 사용자가 복사해 전달 → `src/data/records.json` (2026-10-08~) |
 | 선수 명단 | [한국대학축구연맹(KUFC)](https://kufc.or.kr/teams/universities/cmpudexpx00055hfsejxuykvu) | 매주 월요일 한국 시간 03:00 자동 확인 |
 | 블로그 | [경기대 축구부 블로그](https://blog.naver.com/orangeturtles) | 사용자가 제공한 주소·화면을 확인해 수동 반영 |
 | 매거진 | [축구부 링크트리](https://linktr.ee/kgu_turtles) 및 개별 FlipHTML5 원문 | 수동 반영 |
 | 유튜브 | [KGU TURTLES](https://www.youtube.com/@KGU_TURTLES) | 공식 업로드 재생목록을 iframe으로 표시 |
 
 - 2026-10-06 조사 기록: KUFC 팀 페이지 수집은 robots.txt에서 허용, KUSF·링크트리·네이버 블로그 RSS는 자동 수집 금지로 판단해 수동 처리했다.
+- 시즌 기록에 쓰는 선수 항목은 KUSF 공식 기록의 이름·등번호·득점·도움·경고·퇴장·명단 포함 경기 수뿐이다 (사용자 승인 2026-10-08). 다른 학교 선수 이름은 쓰지 않는다.
 - 선수 공개 항목은 이름·번호·포지션·학년뿐이다. 사진·생년월·키·몸무게·출신교는 저장하거나 표시하지 않는다.
 - 블로그는 제목·출처·게시일·원문 링크를 표시하며, 요약은 제공된 화면의 소개 문장을 참고했다. 확인하지 못한 날짜·요약은 지어내지 않는다.
 - 유튜브 채널 ID: `UC4aARbVyxSRphfzcgx59BsQ`. 공식 플레이어는 `youtube-nocookie.com`을 사용한다.
