@@ -18,4 +18,5 @@ export const pageLinks: PageLink[] = [
   { label: '홈', href: '/', description: '소식·최근 결과·다음 경기·선수단' },
   { label: '경기 일정', href: '/schedule', description: '시즌 전체 경기, 캘린더에 넣기' },
   { label: '시즌 기록', href: '/records', description: '순위·경기별 득실·선수 기록' },
+  { label: '직관 가이드', href: '/guide', description: '홈 경기장 위치·가는 길' },
 ]

@@ -3,10 +3,12 @@
  * - /          홈
  * - /schedule  경기 일정
  * - /records   시즌 기록
+ * - /guide     직관 가이드
  * GitHub Pages 는 없는 주소를 404.html 로 보내므로 public/404.html 이 원래 주소를 기억해 index.html 로 넘기고,
  * main.tsx 가 그 주소로 되돌린다.
  */
 import { Route, Routes } from 'react-router-dom'
+import { GuidePage } from '@/pages/GuidePage'
 import { HomePage } from '@/pages/HomePage'
 import { RecordsPage } from '@/pages/RecordsPage'
 import { SchedulePage } from '@/pages/SchedulePage'
@@ -17,6 +19,7 @@ export default function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/schedule" element={<SchedulePage />} />
       <Route path="/records" element={<RecordsPage />} />
+      <Route path="/guide" element={<GuidePage />} />
       <Route path="*" element={<HomePage />} />
     </Routes>
   )
