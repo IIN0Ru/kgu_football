@@ -4,10 +4,11 @@
  * - 승리/무승부/패배 표시 없음 (사용자 요청으로 뺌). 점수는 홈 먼저
  * - 위: 대회·날짜·장소 한 줄 + 가장 최근 경기를 크게 (점수 굴러 올라가는 모션은 사용자 요청으로 뺌)
  * - 아래: 이전 4경기를 작은 줄로 (왼쪽에 작은 날짜) → 시즌 기록과 출처는 그대로
+ * - 경기가 끝났는데 점수가 아직 없으면 맨 위에 '결과 확인 중' 줄 (UX 점검 2026-10-08)
  */
 import { Eyebrow } from '@/components/eyebrow'
 import { TeamCrest } from '@/components/team-crest'
-import type { PastMatch, seasonRecord as SeasonRecordValue } from '@/data/home'
+import type { PastMatch, PendingResult, seasonRecord as SeasonRecordValue } from '@/data/home'
 
 type Team = { name: string; score: number }
 export interface RecentResult {
@@ -25,8 +26,10 @@ export function ResultSection({
   record,
   source,
   titleId,
+  pending = null,
 }: {
   result: RecentResult | null
+  pending?: PendingResult | null
   earlier: PastMatch[]
   record: typeof SeasonRecordValue
   source: { label: string; url: string }
@@ -41,10 +44,20 @@ export function ResultSection({
     </div>
   )
 
+  const pendingLine = pending && (
+    <p className="flex flex-wrap items-center gap-x-3 gap-y-1 border-y border-line py-3 text-sm">
+      <span className="rounded-full border border-line px-2 py-0.5 text-xs text-fg/70">결과 확인 중</span>
+      <span>
+        {pending.date} · {pending.home} vs {pending.away}
+      </span>
+    </p>
+  )
+
   if (!result) {
     return (
       <div className="flex flex-col gap-10">
         {title}
+        {pendingLine}
         <p className="border-t border-line pt-6 text-fg/60">아직 이번 시즌 경기 결과가 없어요.</p>
       </div>
     )
@@ -57,6 +70,7 @@ export function ResultSection({
       {title}
 
       <div className="flex flex-col">
+        {pendingLine && <div className="mb-6">{pendingLine}</div>}
         {/* 가장 최근 경기: 크게 */}
         <p className="mb-3 text-sm text-fg/60">
           {[result.competition, result.date, result.venue].filter(Boolean).join(' · ')}
@@ -88,7 +102,7 @@ export function ResultSection({
           <span className="text-fg/60">이번 시즌 {played}경기</span>
           <span className="font-num text-xl tabular-nums tracking-[0.02em]">
             {record.win}승 {record.draw}무 {record.loss}패
-            <span className="ml-3 text-sm font-normal text-fg/50">
+            <span className="ml-3 text-sm font-normal text-fg/60">
               득점 {record.goalsFor} · 실점 {record.goalsAgainst}
             </span>
           </span>
@@ -97,10 +111,10 @@ export function ResultSection({
           href={source.url}
           target="_blank"
           rel="noopener"
-          className="text-fg/60 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg"
+          className="tap-area text-fg/60 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg"
         >
           출처 {source.label}
-        </a>
+        <span className="sr-only">(새 창)</span></a>
       </div>
     </div>
   )
@@ -122,7 +136,7 @@ function ScoreLine({
   const crest = large ? 'h-10 w-10 text-base sm:h-12 sm:w-12 md:h-14 md:w-14' : 'h-8 w-8 text-sm sm:h-9 sm:w-9'
   return (
     <div className={`relative flex items-center gap-2 sm:gap-3 md:gap-4 ${large ? 'py-5' : 'py-3'}`}>
-      {date && <span className="absolute left-0 text-xs tabular-nums text-fg/40">{date}</span>}
+      {date && <span className="absolute left-0 text-xs tabular-nums text-fg/60">{date}</span>}
       <span className={`${name} text-right ${date ? 'pl-10' : ''}`}>{home.name}</span>
       <TeamCrest name={home.name} className={crest} />
       <span

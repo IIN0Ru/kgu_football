@@ -26,6 +26,7 @@ import {
   laterMatches,
   pageOpenedAt,
   recentResult,
+  pendingResult,
   earlierResults,
   roster,
   seasonRecord,
@@ -65,23 +66,8 @@ export function HomePage() {
       />
 
       <main className="mx-auto flex max-w-[1440px] flex-col gap-2 p-2 pt-14 md:gap-3 md:p-3 md:pt-16">
-        {/* 최신 소식 (맨 위, 전체 폭) */}
-        <Reveal
-          id="news"
-          aria-labelledby="news-title"
-          className="rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10"
-        >
-          <NewsSection
-            blog={news}
-            magazine={magazine}
-            titleId="news-title"
-            blogHref={blogUrl}
-            magazineHref={magazineUrl}
-            youtubeHref={youtubeUrl}
-            youtubeEmbed={youtubeLatestEmbed}
-          />
-        </Reveal>
 
+        {/* 최근 결과 | 다음 경기 (첫 화면 바로 다음, 사용자 결정 2026-10-08) */}
         <div className="grid grid-cols-[minmax(0,1fr)] gap-2 md:gap-3 lg:grid-cols-2">
           {/* 최근 결과 */}
           <Reveal
@@ -91,6 +77,7 @@ export function HomePage() {
           >
             <ResultSection
               result={recentResult}
+              pending={pendingResult}
               earlier={earlierResults}
               record={seasonRecord}
               source={matchSource}
@@ -108,6 +95,23 @@ export function HomePage() {
             <NextMatchSection match={nextMatch} later={laterMatches} titleId="next-match-title" now={pageOpenedAt} />
           </Reveal>
         </div>
+
+        {/* 최신 소식 (결과·다음 경기 다음, 전체 폭 — 사용자 결정 2026-10-08) */}
+        <Reveal
+          id="news"
+          aria-labelledby="news-title"
+          className="rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10"
+        >
+          <NewsSection
+            blog={news}
+            magazine={magazine}
+            titleId="news-title"
+            blogHref={blogUrl}
+            magazineHref={magazineUrl}
+            youtubeHref={youtubeUrl}
+            youtubeEmbed={youtubeLatestEmbed}
+          />
+        </Reveal>
 
         {/* 선수단 (전체 폭) */}
         <Reveal

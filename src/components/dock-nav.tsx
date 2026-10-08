@@ -83,7 +83,7 @@ export function DockNav({ items, logo, heroId, onNavigate, staticLogo, pageTitle
   const links = items.map((item) => {
     const isRoute = item.href.startsWith('/')
     const isActive = onHome ? item.href === `#${active}` : isRoute && item.href === pathname
-    const cls = `relative whitespace-nowrap rounded-full px-[7px] py-1.5 text-xs transition-colors duration-200 min-[400px]:px-2.5 sm:px-3 md:px-4 md:text-sm ${
+    const cls = `tap-area relative whitespace-nowrap rounded-full px-[7px] py-1.5 text-xs transition-colors duration-200 min-[400px]:px-2.5 sm:px-3 md:px-4 md:text-sm ${
       isActive ? 'text-on-accent' : 'text-fg/70 hover:text-fg'
     }`
     const inner = (

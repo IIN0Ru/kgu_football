@@ -56,6 +56,19 @@ function CardHead({
   )
 }
 
+/** 표의 숫자: 0은 흐린 '0' 대신 '–'로 (흐린 글자는 대비가 부족해서, UX 점검 2026-10-08). 화면 읽기는 '0' */
+function Count({ n }: { n: number }) {
+  if (n) return <>{n}</>
+  return (
+    <>
+      <span aria-hidden="true" className="text-fg/60">
+        –
+      </span>
+      <span className="sr-only">0</span>
+    </>
+  )
+}
+
 /** 요약 숫자 한 칸 */
 function Stat({ label, value, unit }: { label: string; value: React.ReactNode; unit?: string }) {
   return (
@@ -121,7 +134,7 @@ function FlowChart({ data }: { data: MatchFlow[] }) {
                 <span className="mt-1 font-num text-sm tabular-nums text-fg/60">{m.goalsAgainst}</span>
               </div>
               <span className="mt-1 truncate text-xs font-medium">{m.opponent}</span>
-              <span className="text-[0.7rem] tabular-nums text-fg/50">{shortDate(m.date)}</span>
+              <span className="text-xs tabular-nums text-fg/60">{shortDate(m.date)}</span>
               {hover === i && (
                 <span
                   role="tooltip"
@@ -229,7 +242,7 @@ export function RecordsPage() {
                       <span className="mx-1 text-fg/30">·</span>
                       {r.lost}
                     </span>
-                    <span className="text-xs text-fg/50">승 · 무 · 패</span>
+                    <span className="text-xs text-fg/60">승 · 무 · 패</span>
                     <dl className="grid grid-cols-2 gap-2 text-sm">
                       <div>
                         <dt className="text-fg/60">득점</dt>
@@ -255,7 +268,7 @@ export function RecordsPage() {
               <div className="-mx-2 overflow-x-auto">
                 <table className="w-full text-sm tabular-nums">
                   <thead>
-                    <tr className="text-xs text-fg/50">
+                    <tr className="text-xs text-fg/60">
                       <th className="px-1.5 py-2 sm:px-2 text-left font-normal">순위</th>
                       <th className="px-1.5 py-2 sm:px-2 text-left font-normal">학교</th>
                       <th className="hidden px-1.5 py-2 sm:px-2 font-normal sm:table-cell">경기</th>
@@ -311,9 +324,9 @@ export function RecordsPage() {
                     key={p.name}
                     className="grid grid-cols-[1.5rem_minmax(0,7rem)_minmax(0,1fr)_2rem] items-center gap-3 border-t border-line py-2.5"
                   >
-                    <span className="font-num text-sm text-fg/40">{i + 1}</span>
+                    <span className="font-num text-sm text-fg/60">{i + 1}</span>
                     <span className="truncate text-sm">
-                      <span className="mr-1.5 font-num text-fg/50">{p.number}</span>
+                      <span className="mr-1.5 font-num text-fg/60">{p.number}</span>
                       {p.name}
                     </span>
                     <span className="h-2 rounded-full bg-line">
@@ -327,7 +340,7 @@ export function RecordsPage() {
                 ))}
               </ol>
               {unattributedTotal > 0 && (
-                <p className="text-xs text-fg/50">
+                <p className="text-xs text-fg/60">
                   선수 기록에 없는 득점 {unattributedTotal}골 (5월 1일 중앙대전, 상대 자책골로 보임)
                 </p>
               )}
@@ -350,7 +363,7 @@ export function RecordsPage() {
               <div className="-mx-2 overflow-x-auto">
                 <table className="w-full text-sm tabular-nums">
                   <thead>
-                    <tr className="text-xs text-fg/50">
+                    <tr className="text-xs text-fg/60">
                       <th className="px-1.5 py-2 sm:px-2 text-left font-normal">번호</th>
                       <th className="px-1.5 py-2 sm:px-2 text-left font-normal">이름</th>
                       <th className="px-1.5 py-2 sm:px-2 font-normal">명단 포함</th>
@@ -363,15 +376,21 @@ export function RecordsPage() {
                   <tbody>
                     {playerSeason.map((p) => (
                       <tr key={p.name} className="border-t border-line text-center">
-                        <td className="px-1.5 py-2 sm:px-2 text-left font-num text-base text-fg/50">{p.number}</td>
+                        <td className="px-1.5 py-2 sm:px-2 text-left font-num text-base text-fg/60">{p.number}</td>
                         <td className="px-1.5 py-2 sm:px-2 text-left">{p.name}</td>
                         <td className="px-1.5 py-2 sm:px-2 text-fg/70">{p.listed}</td>
-                        <td className={`px-1.5 py-2 sm:px-2 font-num text-base ${p.goals ? '' : 'text-fg/30'}`}>
-                          {p.goals}
+                        <td className="px-1.5 py-2 font-num text-base sm:px-2">
+                          <Count n={p.goals} />
                         </td>
-                        <td className={`px-1.5 py-2 sm:px-2 ${p.assists ? '' : 'text-fg/30'}`}>{p.assists}</td>
-                        <td className={`px-1.5 py-2 sm:px-2 ${p.yellow ? '' : 'text-fg/30'}`}>{p.yellow}</td>
-                        <td className={`px-1.5 py-2 sm:px-2 ${p.red ? '' : 'text-fg/30'}`}>{p.red}</td>
+                        <td className="px-1.5 py-2 sm:px-2">
+                          <Count n={p.assists} />
+                        </td>
+                        <td className="px-1.5 py-2 sm:px-2">
+                          <Count n={p.yellow} />
+                        </td>
+                        <td className="px-1.5 py-2 sm:px-2">
+                          <Count n={p.red} />
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -382,10 +401,10 @@ export function RecordsPage() {
                   href={recordsSource.url}
                   target="_blank"
                   rel="noopener"
-                  className="underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg"
+                  className="tap-area underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg"
                 >
                   출처 {recordsSource.label}
-                </a>
+                <span className="sr-only">(새 창)</span></a>
                 {' · '}자료 갱신 {updated} · 도움은 KUSF 기록 그대로
               </p>
             </div>

@@ -83,14 +83,14 @@ export function VenueSection({ titleId }: { titleId: string }) {
           className="block aspect-[4/3] h-full w-full md:aspect-[16/9]"
         />
       </div>
-      <p className="text-xs text-fg/50 lg:col-span-12">
+      <p className="text-xs text-fg/60 lg:col-span-12">
         출처{' '}
         {venueSources.map((s, i) => (
           <span key={s.url}>
             {i > 0 && ' · '}
-            <a href={s.url} target="_blank" rel="noopener" className="underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg">
+            <a href={s.url} target="_blank" rel="noopener" className="tap-area underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg">
               {s.label}
-            </a>
+            <span className="sr-only">(새 창)</span></a>
           </span>
         ))}
         {' · '}

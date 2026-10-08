@@ -23,9 +23,9 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-center gap-3 border-t border-line py-4">
-      <Icon className="h-4 w-4 shrink-0 text-fg/50" aria-hidden="true" />
+      <Icon className="h-4 w-4 shrink-0 text-fg/60" aria-hidden="true" />
       <dt className="w-10 shrink-0 text-sm text-fg/60">{label}</dt>
-      <dd className={`min-w-0 text-base ${value ? '' : 'text-fg/50'}`}>{value ?? '확인 중'}</dd>
+      <dd className={`min-w-0 text-base ${value ? '' : 'text-fg/60'}`}>{value ?? '확인 중'}</dd>
     </div>
   )
 }
@@ -67,7 +67,7 @@ export function NextMatchSection({
         </span>
       </div>
 
-      {/* 맞대결: 경기대는 홈·원정 어느 쪽이든 크림색 원과 밝은 글자로 강조 */}
+      {/* 맞대결: 양 팀 모두 흰색 원 안의 학교 로고 (예전 크림색 강조는 밝은 테마 전환 때 없앰) */}
       <div className="flex items-center gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <TeamCrest name={match.home} className="h-14 w-14 text-xl md:h-16 md:w-16 md:text-2xl" />
@@ -79,7 +79,7 @@ export function NextMatchSection({
             {match.home}
           </span>
         </div>
-        <span className="shrink-0 text-sm text-fg/40">vs</span>
+        <span className="shrink-0 text-sm text-fg/60">vs</span>
         <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
           <span
             className={`truncate text-right text-2xl font-medium tracking-[-0.03em] md:text-3xl ${
@@ -106,11 +106,11 @@ export function NextMatchSection({
           <ul>
             {later.map((m) => (
               <li key={`${m.date}-${m.opponent}`} className="flex items-center gap-3 border-t border-line py-3">
-                <span className="w-10 shrink-0 text-sm tabular-nums text-fg/50">{m.date}</span>
+                <span className="w-10 shrink-0 text-sm tabular-nums text-fg/60">{m.date}</span>
                 <TeamCrest name={m.opponent} className="h-7 w-7 text-xs" />
                 <span className="min-w-0 flex-1 truncate text-base font-medium">
                   {m.opponent}
-                  <span className="ml-2 text-xs font-normal text-fg/50">{m.side}</span>
+                  <span className="ml-2 text-xs font-normal text-fg/60">{m.side}</span>
                 </span>
                 <span className="shrink-0 text-sm tabular-nums text-fg/60">{m.time ?? '시간 확인 중'}</span>
               </li>

@@ -24,7 +24,7 @@ export interface NextMatch {
   side: '홈' | '원정' | null
 }
 
-/** 우리 학교 표시 이름. 맞대결에서 이 팀을 강조(크림색 원)한다 */
+/** 우리 학교 표시 이름. 홈/원정 판단과 로고 없는 팀 원(빨강 채움)에 쓴다 */
 export const ourTeam = '경기대'
 
 /**
@@ -90,8 +90,26 @@ export const laterMatches: LaterMatch[] = upcoming.slice(1, 4).map((m) => {
   }
 })
 
+/** 날짜·시각이 지났는데 점수가 아직 없는 경기 (UX 점검 2026-10-08: 결과 입력 전에 홈에서 경기가 사라지던 문제).
+ *  최근 결과 카드 맨 위에 '결과 확인 중'으로 보여 줌. 가장 최근 것 하나만 */
+export interface PendingResult {
+  date: string
+  home: string
+  away: string
+}
+const pending = matches.filter((m) => (m.homeScore === null || m.awayScore === null) && !isStillUpcoming(m.date, m.time, now))
+const lastPending = pending[pending.length - 1]
+
 const last = played[played.length - 1]
 const weekday = (d: string) => new Intl.DateTimeFormat('ko-KR', { weekday: 'short', timeZone: 'Asia/Seoul' }).format(new Date(`${d}T12:00:00+09:00`))
+
+export const pendingResult: PendingResult | null = lastPending
+  ? {
+      date: `${Number(lastPending.date.slice(5, 7))}월 ${Number(lastPending.date.slice(8))}일 (${weekday(lastPending.date)})`,
+      home: lastPending.home,
+      away: lastPending.away,
+    }
+  : null
 
 /** 점수가 들어간 마지막 경기. 없으면 null */
 export const recentResult = last

@@ -1,9 +1,9 @@
 /**
  * 팀 표시 원
- * - 로고가 있는 학교: 크림색 원 안에 로고 (어두운 배경에서도 남색·검정 로고가 보이게)
+ * - 로고가 있는 학교: 흰색 원 안에 로고 (밝은 테마 전환 후 흰색, 색 이름 crest)
  *   원 자체가 그 학교 공식 홈페이지(로고 출처) 링크. 새 창으로 열림 (사용자 요청 2026-10-06)
- *   마우스를 올리면 원 둘레에 크림색 테두리가 생겨 누를 수 있다는 걸 알려줌
- * - 로고가 없는 팀: 이전처럼 이니셜 한 글자 (우리 팀은 크림 채움, 상대는 테두리만)
+ *   마우스를 올리면 원 둘레에 옅은 테두리가 생기고 살짝 커져 누를 수 있다는 걸 알려줌
+ * - 로고가 없는 팀: 이니셜 한 글자 (우리 팀은 빨강 채움, 상대는 테두리만)
  */
 import { cn } from '@/lib/utils'
 import { ourTeam } from '@/data/home'
@@ -35,7 +35,7 @@ export function TeamCrest({ name, className }: { name: string; className?: strin
   return (
     <span
       aria-hidden="true"
-      className={cn(base, 'font-medium', ours ? 'bg-accent text-on-accent' : 'border border-line text-fg/50', className)}
+      className={cn(base, 'font-medium', ours ? 'bg-accent text-on-accent' : 'border border-line text-fg/60', className)}
     >
       {name.slice(0, 1)}
     </span>

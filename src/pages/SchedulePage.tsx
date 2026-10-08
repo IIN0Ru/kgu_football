@@ -90,7 +90,7 @@ function MatchRow({ m }: { m: ScheduleMatch }) {
         {m.awayScore}
       </span>
     ) : (
-      <span className={`text-sm tabular-nums ${m.time ? 'font-medium' : 'text-fg/50'}`}>{m.time ?? '시간 확인 중'}</span>
+      <span className={`text-sm tabular-nums ${m.time ? 'font-medium' : 'text-fg/60'}`}>{m.time ?? '시간 확인 중'}</span>
     )
 
   return (
@@ -102,7 +102,7 @@ function MatchRow({ m }: { m: ScheduleMatch }) {
       {/* 날짜 */}
       <div className="flex flex-col leading-none">
         <span className="font-num text-3xl tabular-nums md:text-4xl">{day}</span>
-        <span className="mt-1 text-xs text-fg/50">{weekday}요일</span>
+        <span className="mt-1 text-xs text-fg/60">{weekday}요일</span>
       </div>
 
       {/* 맞대결: 홈 이름·로고 · 점수/시각 · 원정 로고·이름 */}
@@ -123,7 +123,7 @@ function MatchRow({ m }: { m: ScheduleMatch }) {
             {count.label}
           </span>
         )}
-        {m.status === 'pending' && <span className="text-xs text-fg/50">결과 확인 중</span>}
+        {m.status === 'pending' && <span className="text-xs text-fg/60">결과 확인 중</span>}
       </div>
 
       {/* 캘린더 (남은 경기만) */}
@@ -272,10 +272,10 @@ export function SchedulePage() {
                 href={scheduleSource.url}
                 target="_blank"
                 rel="noopener"
-                className="underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg"
+                className="tap-area underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg"
               >
                 출처 {scheduleSource.label}
-              </a>
+              <span className="sr-only">(새 창)</span></a>
               {' · '}자료 갱신 {Number(scheduleUpdatedAt.slice(5, 7))}월 {Number(scheduleUpdatedAt.slice(8))}일 · 시각은 한국 시간
             </p>
           </div>

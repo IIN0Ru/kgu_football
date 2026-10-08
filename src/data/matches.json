@@ -13,8 +13,8 @@
     { "date": "2026-05-22", "time": "15:00", "venue": "경기대 대운동장", "home": "경기대", "away": "성균관대", "homeScore": 7, "awayScore": 1 },
     { "date": "2026-05-29", "time": "15:00", "venue": "경기대 대운동장", "home": "경기대", "away": "용인대", "homeScore": 5, "awayScore": 2 },
     { "date": "2026-06-11", "time": "15:00", "venue": "경기대 대운동장", "home": "경기대", "away": "홍익대", "homeScore": 3, "awayScore": 2 },
-    { "date": "2026-09-18", "time": "15:00", "venue": "경기대운동장", "home": "경기대", "away": "칼빈대", "homeScore": 3, "awayScore": 2 },
+    { "date": "2026-09-18", "time": "15:00", "venue": "경기대 대운동장", "home": "경기대", "away": "칼빈대", "homeScore": 3, "awayScore": 2 },
     { "date": "2026-10-09", "time": "11:00", "venue": "화성비봉습지공원축구장", "home": "홍익대", "away": "경기대", "homeScore": null, "awayScore": null },
-    { "date": "2026-10-30", "time": "15:00", "venue": "경기대운동장", "home": "경기대", "away": "중앙대", "homeScore": null, "awayScore": null }
+    { "date": "2026-10-30", "time": "15:00", "venue": "경기대 대운동장", "home": "경기대", "away": "중앙대", "homeScore": null, "awayScore": null }
   ]
 }

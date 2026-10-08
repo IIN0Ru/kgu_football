@@ -15,6 +15,11 @@ function linkProps(href: string) {
   return isExternal(href) ? { href, target: '_blank', rel: 'noopener' } : { href }
 }
 
+/** 새 창으로 열리는 링크임을 화면 읽기에 알림 (UX 점검 2026-10-08) */
+function NewTabHint({ href }: { href: string }) {
+  return isExternal(href) ? <span className="sr-only">(새 창)</span> : null
+}
+
 function Meta({ item }: { item: NewsItem }) {
   const date = item.date?.replace(/^(\d{4})-(\d{2})-(\d{2})$/, (_, y, m, d) => `${y}.${Number(m)}.${Number(d)}`)
   const parts = [item.category, item.source, date].filter(Boolean)
@@ -47,6 +52,7 @@ function Row({ item }: { item: NewsItem }) {
           <Meta item={item} />
         </span>
         <ArrowDot external={isExternal(item.href)} />
+        <NewTabHint href={item.href} />
       </a>
     </li>
   )
@@ -59,9 +65,10 @@ function ColumnHead({ label, href }: { label: string; href?: string }) {
       {href && (
         <a
           {...linkProps(href)}
-          className="text-sm text-fg/60 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
+          className="tap-area text-sm text-fg/60 underline decoration-fg/30 underline-offset-4 transition-colors hover:text-fg hover:decoration-fg"
         >
           전체 보기
+          <NewTabHint href={href} />
         </a>
       )}
     </div>
@@ -134,6 +141,7 @@ export function NewsSection({
                   )}
                 </div>
                 <ArrowDot external={isExternal(lead.href)} large />
+                <NewTabHint href={lead.href} />
               </a>
               </div>
             )}

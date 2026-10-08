@@ -34,6 +34,10 @@
   --font-display: "Black Han Sans", "Pretendard", sans-serif;
   --font-num: "Anton", "Pretendard", sans-serif;
 
+  /* 가장 작은 글자: 사이트 전체 85% 축소 후에도 실제 12px 이상 (UX 점검 2026-10-08: 10.2px 글자가 읽기 어려움) */
+  --text-xs: 0.8825rem;
+  --text-xs--line-height: 1.4;
+
   /* 움직임: 컴포넌트와 같은 곡선 */
   --ease-pull: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -164,4 +168,14 @@ html {
 @keyframes scroll-drip {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(200%); }
+}
+
+/* 작은 글자 링크의 누르는 영역을 위아래로 넓힘 (보이는 모양은 그대로, UX 점검 2026-10-08: 12~24px 높이 링크) */
+.tap-area {
+  position: relative;
+}
+.tap-area::after {
+  content: "";
+  position: absolute;
+  inset: -10px -4px;
 }

@@ -13,11 +13,11 @@ export function SiteFooter() {
           없습니다.
         </p>
         <p>경기 일정·결과는 KUSF 대학스포츠, 선수 명단은 한국대학축구연맹(KUFC) 공개 자료를 참고했습니다.</p>
-        <p className="text-xs text-fg/40">
+        <p className="text-xs text-fg/60">
           {photoCredit.label}{' '}
-          <a href={photoCredit.url} target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-fg/70">
+          <a href={photoCredit.url} target="_blank" rel="noopener" className="tap-area underline underline-offset-2 hover:text-fg/70">
             {photoCredit.url}
-          </a>
+          <span className="sr-only">(새 창)</span></a>
         </p>
       </footer>
   )
