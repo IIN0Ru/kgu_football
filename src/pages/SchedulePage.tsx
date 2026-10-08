@@ -161,7 +161,11 @@ export function SchedulePage() {
   const [side, setSide] = useState<SideFilter>('all')
 
   // 페이지를 바꾸면 맨 위에서 시작
-  useEffect(() => window.scrollTo({ top: 0, behavior: 'auto' }), [])
+  // 중괄호로 감싸 아무것도 돌려주지 않게: 최신 크롬(152~)은 scrollTo 가 Promise 를 돌려주는데,
+  // 그대로 돌려주면 React 가 정리 함수로 알고 페이지를 떠날 때 호출하다 앱 전체가 멈춤 (2026-10-08 버그 #53)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' })
+  }, [])
 
   const played = scheduleMatches.filter((m) => m.status === 'played').length
   const remaining = scheduleMatches.filter((m) => m.status === 'upcoming').length
