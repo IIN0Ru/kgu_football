@@ -19,6 +19,9 @@ import {
   recordsCompetition,
   recordsSource,
   recordsUpdatedAt,
+  recordsPending,
+  recordsThrough,
+  seasonTotals,
   sideRecords,
   standings,
   unattributedTotal,
@@ -161,6 +164,15 @@ export function RecordsPage() {
   const maxGoals = Math.max(1, ...playerSeason.map((p) => p.goals))
   const scorers = playerSeason.filter((p) => p.goals > 0)
   const updated = `${Number(recordsUpdatedAt.slice(5, 7))}월 ${Number(recordsUpdatedAt.slice(8))}일`
+  const md = (d: string) => `${Number(d.slice(5, 7))}월 ${Number(d.slice(8))}일`
+  const t = seasonTotals
+  // 점수는 들어왔는데 순위표·선수 기록이 아직이면 어디까지 반영됐는지 알림 (KUSF 기록은 늦게 열림)
+  const lag =
+    recordsPending.length > 0 && recordsThrough
+      ? `순위·승점·경고와 선수 기록은 ${md(recordsThrough)} 경기까지 반영 · ${recordsPending
+          .map((m) => `${md(m.date)} ${m.opponent}전`)
+          .join(', ')} 기록 확인 중`
+      : null
 
   return (
     <>
@@ -185,6 +197,12 @@ export function RecordsPage() {
                 <p className="text-sm text-fg/60">
                   {recordsCompetition} · {matchFlow.length}경기 · {updated} 기준
                 </p>
+                {lag && (
+                  <p className="flex flex-wrap items-center gap-2 text-sm">
+                    <span className="rounded-full border border-line px-2 py-0.5 text-xs text-fg/70">확인 중</span>
+                    {lag}
+                  </p>
+                )}
               </div>
               {s ? (
                 <div className="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3 lg:grid-cols-6">
@@ -194,16 +212,16 @@ export function RecordsPage() {
                     label="승 · 무 · 패"
                     value={
                       <>
-                        {s.won}
+                        {t.won}
                         <span className="mx-1 text-fg/30">·</span>
-                        {s.drawn}
+                        {t.drawn}
                         <span className="mx-1 text-fg/30">·</span>
-                        {s.lost}
+                        {t.lost}
                       </>
                     }
                   />
-                  <Stat label="득점" value={s.goalsFor} unit={`경기당 ${(s.goalsFor / s.played).toFixed(1)}`} />
-                  <Stat label="실점" value={s.goalsAgainst} unit={`경기당 ${(s.goalsAgainst / s.played).toFixed(1)}`} />
+                  <Stat label="득점" value={t.goalsFor} unit={`경기당 ${(t.goalsFor / t.played).toFixed(1)}`} />
+                  <Stat label="실점" value={t.goalsAgainst} unit={`경기당 ${(t.goalsAgainst / t.played).toFixed(1)}`} />
                   <Stat label="경고 · 퇴장" value={`${s.yellow} · ${s.red}`} />
                 </div>
               ) : (

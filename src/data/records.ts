@@ -112,4 +112,24 @@ export const playerSeason: PlayerSeason[] = (() => {
   return [...byName.values()].sort((a, b) => b.goals - a.goals || b.listed - a.listed || a.number - b.number)
 })()
 
+/** 순위표·선수 기록이 반영된 마지막 경기 날짜. KUSF 기록은 경기 뒤 한참 있다 열려서,
+ *  점수(matches.json)는 먼저 들어오고 순위표·선수 기록은 늦게 들어올 수 있음 (2026-10-09) */
+export const recordsThrough = [...lineups.keys()].sort().at(-1) ?? null
+/** 점수는 있지만 순위표·선수 기록이 아직 안 들어온 경기 */
+export const recordsPending = matchFlow.filter((m) => !lineups.has(m.date))
+
+/** 시즌 승무패·득실점: 점수(matches.json) 기준이라 순위표보다 먼저 최신이 됨 */
+export const seasonTotals = matchFlow.reduce(
+  (t, m) => {
+    t.played++
+    if (m.goalsFor > m.goalsAgainst) t.won++
+    else if (m.goalsFor === m.goalsAgainst) t.drawn++
+    else t.lost++
+    t.goalsFor += m.goalsFor
+    t.goalsAgainst += m.goalsAgainst
+    return t
+  },
+  { played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0 },
+)
+
 export const unattributedTotal = matchFlow.reduce((n, m) => n + m.unattributedGoals, 0)

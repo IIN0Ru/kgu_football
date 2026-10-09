@@ -13,8 +13,12 @@ const season = read('../src/data/matches.json')
 const records = read('../src/data/records.json')
 const OUR = '경기대'
 
-const played = season.matches.filter((m) => m.homeScore !== null && m.awayScore !== null)
+const allPlayed = season.matches.filter((m) => m.homeScore !== null && m.awayScore !== null)
 const lineups = new Map(records.matches.map((m) => [m.date, m]))
+// KUSF 기록은 경기 뒤 늦게 열려서, 점수만 먼저 들어온 경기는 순위표·선수 기록 대조에서 뺌 (마지막 선수 기록 날짜 이후 경기만 허용)
+const through = [...lineups.keys()].sort().at(-1) ?? ''
+const played = allPlayed.filter((m) => m.date <= through)
+const waiting = allPlayed.filter((m) => m.date > through)
 assert.equal(lineups.size, records.matches.length, '선수 기록 날짜가 겹침')
 
 let won = 0, drawn = 0, lost = 0, gf = 0, ga = 0, yellow = 0, red = 0
@@ -54,4 +58,5 @@ records.standings.forEach((s, i) => {
   assert.equal(s.played, s.won + s.drawn + s.lost, `${s.team} 경기 수`)
 })
 
+if (waiting.length) console.log(`기록 대기: ${waiting.map((m) => m.date).join(', ')} (점수만 들어옴, 순위표·선수 기록은 아직)`)
 console.log(`시즌 기록 확인 통과: ${played.length}경기, ${won}승 ${drawn}무 ${lost}패, ${gf}득점 ${ga}실점, 경고 ${yellow}`)
