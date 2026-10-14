@@ -32,7 +32,35 @@ export function StandingsTab({ data, reload }: { data: AdminData; reload: () => 
   const hasOurs = parsed?.rows.some((r) => teamByKey.get(schoolKey(r.team))?.id === ours.id)
   const adjusted = parsed?.rows.filter((r) => r.points !== r.won * 3 + r.drawn) ?? []
 
+  // 사이트 반영 때 검사(check-records)와 같은 기준을 저장 전에 미리 확인: 경기대 줄 = 끝난 경기를 날짜순으로 앞에서부터 N경기
+  const ourRow = parsed?.rows.find((r) => teamByKey.get(schoolKey(r.team))?.id === ours.id)
+  const finishedMatches = data.matches
+    .filter((m) => m.status === 'finished' && !m.archived_at)
+    .sort((a, b) => a.match_date.localeCompare(b.match_date) || a.id - b.id)
+  let scoreMismatch: string | null = null
+  if (ourRow) {
+    if (ourRow.played > finishedMatches.length) {
+      scoreMismatch = `순위표는 ${ourRow.played}경기인데 점수가 저장된 경기는 ${finishedMatches.length}경기예요. ‘경기’ 탭에서 점수를 먼저 저장해 주세요`
+    } else {
+      const t = { won: 0, drawn: 0, lost: 0, gf: 0, ga: 0 }
+      for (const m of finishedMatches.slice(0, ourRow.played)) {
+        const home = m.home_team_id === ours.id
+        const f = (home ? m.home_score : m.away_score) ?? 0
+        const a = (home ? m.away_score : m.home_score) ?? 0
+        t.gf += f
+        t.ga += a
+        if (f > a) t.won++
+        else if (f === a) t.drawn++
+        else t.lost++
+      }
+      if (t.won !== ourRow.won || t.drawn !== ourRow.drawn || t.lost !== ourRow.lost || t.gf !== ourRow.goalsFor || t.ga !== ourRow.goalsAgainst) {
+        scoreMismatch = `${ours.short_name} 줄(${ourRow.won}승 ${ourRow.drawn}무 ${ourRow.lost}패, ${ourRow.goalsFor}득점 ${ourRow.goalsAgainst}실점)이 저장된 앞 ${ourRow.played}경기 점수(${t.won}승 ${t.drawn}무 ${t.lost}패, ${t.gf}득점 ${t.ga}실점)와 달라요. 점수나 붙여 넣은 표를 확인해 주세요`
+      }
+    }
+  }
+
   const problems: string[] = []
+  if (scoreMismatch) problems.push(scoreMismatch)
   if (parsed && !parsed.headerFound) problems.push('표 머리줄(순위·팀명·승·무·패·득점·실점·승점)을 찾지 못했어요. 머리줄까지 같이 복사해 주세요')
   if (parsed?.errors.length) problems.push('읽지 못한 줄을 고쳐 주세요 (순위표는 한 줄이라도 빠지면 저장하지 않아요)')
   if (unknown.length) problems.push(`모르는 학교: ${unknown.map((r) => r.team).join(', ')} — 학교 이름을 확인하거나 개발자에게 알려 주세요`)

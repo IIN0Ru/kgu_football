@@ -29,6 +29,8 @@ export interface Standing {
   goalsFor: number
   goalsAgainst: number
   goalDiff: number
+  /** 승점 조정(감점 등). 승점 = 승×3 + 무 + 조정 */
+  pointsAdjustment: number
   yellow: number
   red: number
 }
@@ -40,8 +42,10 @@ export const standings = records.standings as Standing[]
 export const ourStanding = standings.find((s) => s.team === ourTeam) ?? null
 
 const lineups = new Map(
-  (records.matches as { date: string; players: PlayerLine[]; unattributedGoals: number }[]).map((m) => [m.date, m]),
+  (records.matches as { date: string; players: PlayerLine[]; unattributedGoals: number; note?: string }[]).map((m) => [m.date, m]),
 )
+/** KUSF 선수 기록이 끝내 없는 경기 (관리자가 '기록 없음 + 사유'로 표시) */
+const unavailable = new Map((records.unavailable as { date: string; note: string }[]).map((m) => [m.date, m.note]))
 
 /** 끝난 경기 흐름 (날짜순): 득점·실점은 matches.json 기준 */
 export interface MatchFlow {
@@ -115,8 +119,10 @@ export const playerSeason: PlayerSeason[] = (() => {
 /** 순위표·선수 기록이 반영된 마지막 경기 날짜. KUSF 기록은 경기 뒤 한참 있다 열려서,
  *  점수(matches.json)는 먼저 들어오고 순위표·선수 기록은 늦게 들어올 수 있음 (2026-10-09) */
 export const recordsThrough = [...lineups.keys()].sort().at(-1) ?? null
-/** 점수는 있지만 순위표·선수 기록이 아직 안 들어온 경기 */
-export const recordsPending = matchFlow.filter((m) => !lineups.has(m.date))
+/** 점수는 있지만 선수 기록이 아직 안 들어온 경기 ('기록 없음'으로 표시한 경기는 기다리지 않으므로 뺌, 따로 표시하지 않음) */
+export const recordsPending = matchFlow.filter((m) => !lineups.has(m.date) && !unavailable.has(m.date))
+/** 선수 기록에 없는 득점(상대 자책골 등)이 있는 경기 + 사유 */
+export const unattributedMatches = matchFlow.filter((m) => m.unattributedGoals > 0).map((m) => ({ ...m, note: lineups.get(m.date)?.note ?? '' }))
 
 /** 시즌 승무패·득실점: 점수(matches.json) 기준이라 순위표보다 먼저 최신이 됨 */
 export const seasonTotals = matchFlow.reduce(

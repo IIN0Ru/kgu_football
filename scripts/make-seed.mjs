@@ -39,9 +39,13 @@ for (const n of names) {
 out.push('', '-- 경기')
 for (const m of season.matches) {
   const lineup = records.matches.find((r) => r.date === m.date)
+  const missing = (records.unavailable ?? []).find((r) => r.date === m.date)
   const finished = m.homeScore !== null && m.awayScore !== null
+  const status = m.status ?? (finished ? 'finished' : 'scheduled')
+  const recordsStatus = lineup ? 'complete' : missing ? 'unavailable' : 'pending'
+  const note = lineup?.note ?? missing?.note ?? null
   out.push(
-    `insert into public.matches (season, competition, match_date, kickoff, venue, home_team_id, away_team_id, status, home_score, away_score, kgu_unattributed_goals, records_status, records_note) values (${YEAR}, ${q(season.competition)}, ${q(m.date)}, ${q(m.time)}, ${q(m.venue)}, ${team(m.home)}, ${team(m.away)}, ${q(finished ? 'finished' : 'scheduled')}, ${q(m.homeScore)}, ${q(m.awayScore)}, ${lineup?.unattributedGoals ?? 0}, ${q(lineup ? 'complete' : 'pending')}, ${q(lineup?.unattributedGoals ? '상대 자책골로 보임' : null)}) on conflict on constraint one_fixture do nothing;`,
+    `insert into public.matches (season, competition, match_date, kickoff, venue, home_team_id, away_team_id, status, home_score, away_score, kgu_unattributed_goals, records_status, records_note) values (${YEAR}, ${q(season.competition)}, ${q(m.date)}, ${q(m.time)}, ${q(m.venue)}, ${team(m.home)}, ${team(m.away)}, ${q(status)}, ${q(m.homeScore)}, ${q(m.awayScore)}, ${lineup?.unattributedGoals ?? 0}, ${q(recordsStatus)}, ${q(note)}) on conflict on constraint one_fixture do nothing;`,
   )
 }
 
@@ -61,7 +65,7 @@ for (const r of records.matches) {
 out.push('', '-- 4권역 순위표')
 for (const s of records.standings) {
   out.push(
-    `insert into public.standings (season, competition, team_id, rank, played, won, drawn, lost, goals_for, goals_against, points, yellow, red, source, checked_on) values (${YEAR}, ${q(records.competition)}, ${team(s.team)}, ${s.rank}, ${s.played}, ${s.won}, ${s.drawn}, ${s.lost}, ${s.goalsFor}, ${s.goalsAgainst}, ${s.points}, ${s.yellow}, ${s.red}, ${q(records.source.label)}, ${q(records.updatedAt)}) on conflict do nothing;`,
+    `insert into public.standings (season, competition, team_id, rank, played, won, drawn, lost, goals_for, goals_against, points, points_adjustment, yellow, red, source, checked_on) values (${YEAR}, ${q(records.competition)}, ${team(s.team)}, ${s.rank}, ${s.played}, ${s.won}, ${s.drawn}, ${s.lost}, ${s.goalsFor}, ${s.goalsAgainst}, ${s.points}, ${s.pointsAdjustment ?? 0}, ${s.yellow}, ${s.red}, ${q(records.source.label)}, ${q(records.updatedAt)}) on conflict do nothing;`,
   )
 }
 

@@ -142,7 +142,11 @@ export const statusLabel: Record<MatchStatus, string> = {
 /** 목록의 상태 알약: 끝났는데 선수 기록이 없으면 '기록 대기', 날짜가 지났는데 예정이면 '결과 입력' */
 export function matchBadge(m: Match): { text: string; tone: 'done' | 'todo' | 'plain' } {
   if (m.archived_at) return { text: '보관됨', tone: 'plain' }
-  if (m.status === 'finished') return m.records_status === 'pending' ? { text: '기록 대기', tone: 'todo' } : { text: '끝남', tone: 'done' }
+  if (m.status === 'finished') {
+    if (m.records_status === 'pending') return { text: '기록 대기', tone: 'todo' }
+    if (m.records_status === 'unavailable') return { text: '기록 없음', tone: 'plain' }
+    return { text: '끝남', tone: 'done' }
+  }
   if (m.status === 'scheduled' && m.match_date < todayKst()) return { text: '결과 입력', tone: 'todo' }
   return { text: statusLabel[m.status], tone: 'plain' }
 }

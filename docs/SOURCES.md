@@ -51,5 +51,8 @@
 
 - Pretendard: `index.html`의 버전 고정 CDN stylesheet, SIL Open Font License 1.1.
 - Black Han Sans·Anton: `@fontsource` 패키지로 제공, SIL Open Font License 1.1. 패키지의 라이선스 파일을 기준으로 한다.
-- PrismaHero: 사용자가 전달한 21st.dev 컴포넌트를 수정해 사용한다. 원본의 정확한 배포 라이선스는 기존 기록에 명시돼 있지 않다. 확인 시 이 문서에 추가한다. 수정 내역은 `src/components/ui/prisma-hero.tsx` 머리말에 있다.
+- 첫 화면(히어로): `src/components/home-hero.tsx` 는 이 프로젝트에서 직접 작성한 코드다 (2026-10-14). 외부 코드 없음
+  - 경위: 처음에는 사용자가 전달한 21st.dev 컴포넌트 PrismaHero(https://21st.dev/@rahil1202/components/prisma-hero, 작성자 Rahil Vahora)를 고쳐 썼다. 2026-10-14 확인 결과 원본 페이지 라이선스가 **'License: unknown'** 이었고, 21st.dev 이용약관도 올린 코드의 사용 허가를 자동으로 주지 않음(소유권은 작성자, 사용 조건은 컴포넌트별 라이선스). 허가를 확인할 수 없어 원본 파일(`src/components/ui/prisma-hero.tsx`)을 지우고, 실제로 쓰던 부분(화면 읽기용 제목, TURTLES 장식 글자, SCROLL 안내 — 뒤의 둘은 원래 이 프로젝트에서 추가한 것)만 새로 작성했다 (사용자 결정 "다시짜자")
+  - 옛 파일은 저장소 이력(2026-10-14 이전 커밋)에 남아 있다
+  - 바꾸기 전후 캡처를 픽셀 비교: 동작 줄이기 화면은 완전히 같음, 일반 화면은 흘러내리는 SCROLL 선의 위치(움직이는 중)만 다름
 - impeccable: `pbakaus/impeccable`의 디자인·움직임 지침 참고, Apache-2.0. 기존 기록의 참고 버전은 v4.5.0, 커밋 `ece38d9`다. 도구 설치 실패 후 Claude 작업 환경에 복사해 사용했으며 이 저장소에 스킬 파일은 포함하지 않았다.

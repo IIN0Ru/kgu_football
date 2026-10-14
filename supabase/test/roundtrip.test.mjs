@@ -28,6 +28,25 @@ for (const f of ['matches.json', 'records.json', 'posts.json']) {
   console.log(`  ✓ 왕복: ${f} 동일`)
 }
 
+// 연기·기록 없음·승점 조정이 공개 자료까지 남는지 (2026-10-14 데이터 계약)
+sql(`update public.matches set status = 'postponed' where match_date = '2026-10-30'`)
+sql(`delete from public.player_records where match_id = (select id from public.matches where match_date = '2026-05-15')`)
+sql(`update public.matches set records_status = 'unavailable', records_note = 'KUSF 기록 미제공' where match_date = '2026-05-15'`)
+sql(`update public.standings set points = points - 3, points_adjustment = -3 where team_id = (select id from public.teams where short_name = '여주대')`)
+{
+  const r = await fetch(`${process.env.API}/rpc/public_snapshot`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+  const f = snapshotToFiles(await r.json())
+  assert.equal(f['matches.json'].matches.find((m) => m.date === '2026-10-30').status, 'postponed')
+  assert.deepEqual(f['records.json'].unavailable, [{ date: '2026-05-15', note: 'KUSF 기록 미제공' }])
+  assert.ok(!f['records.json'].matches.some((m) => m.date === '2026-05-15'))
+  assert.equal(f['records.json'].standings.find((s) => s.team === '여주대').pointsAdjustment, -3)
+  assert.equal(f['records.json'].matches.find((m) => m.date === '2026-05-01').note, '상대 자책골로 보임')
+  console.log('  ✓ 연기·기록 없음·승점 조정·자책골 사유가 공개 자료에 남음')
+}
+// 되돌림 (다음 시험이 지금 자료 기준이라)
+sql('truncate public.player_records, public.standings, public.posts, public.matches, public.players, public.teams restart identity cascade')
+execSync(`${process.env.PSQL} -f ${new URL('supabase/seed.sql', root).pathname}`)
+
 // 빈 응답·일부 응답은 거부
 assert.ok(validateSnapshot({ ...snap, matches: [] }, { matches: 10 }).length > 0)
 assert.ok(validateSnapshot({ revision: 1 }, null).length > 0)

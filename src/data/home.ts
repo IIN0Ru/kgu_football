@@ -41,10 +41,14 @@ export interface SeasonMatch {
   away: string
   homeScore: number | null
   awayScore: number | null
+  /** 연기·취소된 경기만 있음 (관리자 입력, 2026-10-14). 공개 화면에서는 빼고 따로 표시하지 않음 (사용자 결정) */
+  status?: 'postponed' | 'cancelled'
 }
 
 export const matchSource = season.source
-const matches = season.matches as SeasonMatch[]
+const allMatches = season.matches as SeasonMatch[]
+/** 연기·취소를 뺀 경기 (홈 화면 계산용) */
+const matches = allMatches.filter((m) => !m.status)
 const played = matches.filter((m) => m.homeScore !== null && m.awayScore !== null)
 
 function toNextMatch(m: SeasonMatch | undefined): NextMatch {

@@ -5,7 +5,7 @@
 ## 기술 스택
 
 - Vite + React + TypeScript + Tailwind CSS v4
-- shadcn 구조: 컴포넌트는 `src/components/ui/`, 경로 별칭 `@/` = `src/`, `components.json`, `src/lib/utils.ts`의 `cn()`
+- shadcn 호환 구조: shadcn 컴포넌트를 들일 때는 `src/components/ui/`(지금은 비어 있음), 경로 별칭 `@/` = `src/`, `components.json`, `src/lib/utils.ts`의 `cn()`
 - 애니메이션 `framer-motion`, 아이콘 `lucide-react`, 페이지 주소 `react-router-dom` (`src/pages/`, 메뉴·페이지 목록은 `src/data/nav.ts`)
 - 명령: `npm install` → `npm run dev`(개발) / `npm run build`(배포용 빌드)
 - GitHub Pages 주소 하위 경로 때문에 `vite.config.ts`의 `base`는 `/kgu_football/`
@@ -16,7 +16,7 @@
 
 - 색·글자·모양·움직임은 `DESIGN.md`를 따른다. 색은 `src/index.css`의 `@theme`에 정의된 이름(`fg`, `surface`, `bar`, `line`, `accent`, `on-accent`, `crest`, `win`, `on-win`, `paper`, 첫 화면 사진 위에서만 `cream`·`primary`, 유튜브 플레이어 바탕에 `ink`)만 쓴다.
 - 디자인(색·글꼴·배치)을 바꿀 때는 먼저 시안 캡처와 계획을 보여주고 사용자 승인을 받은 뒤 적용 (사용자 지침 2026-10-07)
-- 히어로는 `src/components/ui/prisma-hero.tsx`(21st.dev 원본을 고친 것). 원본에서 바꾼 점은 파일 맨 위 주석에 적는다.
+- 히어로는 `src/components/home-hero.tsx`(직접 작성). 예전 PrismaHero(21st.dev)는 라이선스를 확인할 수 없어 2026-10-14 제거 — 라이선스가 확인되지 않은 외부 코드는 넣지 않는다 (`docs/SOURCES.md`)
 
 ## 데이터
 

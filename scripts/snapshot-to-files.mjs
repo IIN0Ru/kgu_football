@@ -1,6 +1,9 @@
 /**
  * DB 공개 스냅샷(public_snapshot() 결과) → 사이트 자료 파일(matches.json · records.json · posts.json) 변환
- * - 화면 코드가 그대로 쓰도록 지금 파일과 같은 모양으로 만든다 (공개 사이트 코드·디자인은 바뀌지 않음)
+ * - 화면 코드가 그대로 쓰도록 지금 파일과 같은 모양으로 만든다
+ * - 경기 상태·기록 상태·승점 조정은 공개 자료에 그대로 남긴다 (2026-10-14 데이터 계약 정리):
+ *   matches[].status(연기·취소일 때만) / records.matches[].note(기록에 없는 득점의 사유) /
+ *   records.unavailable[](KUSF 선수 기록이 끝내 없는 경기 + 사유) / standings[].pointsAdjustment(감점 등)
  * - 받은 스냅샷이 이상하면 파일을 쓰지 않고 오류로 멈춘다 (기존 정상 파일 유지): validateSnapshot
  */
 
@@ -85,6 +88,7 @@ export function snapshotToFiles(snap) {
       goalsFor: s.goals_for,
       goalsAgainst: s.goals_against,
       goalDiff: s.goals_for - s.goals_against,
+      pointsAdjustment: s.points_adjustment ?? 0,
       yellow: s.yellow,
       red: s.red,
     })),
@@ -95,7 +99,11 @@ export function snapshotToFiles(snap) {
         .sort((a, b) => a.id - b.id)
         .map((r) => ({ number: r.shirt_number, name: player.get(r.player_id), goals: r.goals, assists: r.assists, yellow: r.yellow, red: r.red })),
       unattributedGoals: m.kgu_unattributed_goals,
+      ...(m.kgu_unattributed_goals > 0 && m.records_note ? { note: m.records_note } : {}),
     })),
+    unavailable: matches
+      .filter((m) => m.status === 'finished' && m.records_status === 'unavailable')
+      .map((m) => ({ date: m.match_date, note: m.records_note ?? '' })),
   }
 
   const post = (p) => ({

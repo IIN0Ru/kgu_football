@@ -21,6 +21,7 @@ import {
   recordsUpdatedAt,
   recordsPending,
   recordsThrough,
+  unattributedMatches,
   seasonTotals,
   sideRecords,
   standings,
@@ -173,6 +174,7 @@ export function RecordsPage() {
           .map((m) => `${md(m.date)} ${m.opponent}전`)
           .join(', ')} 기록 확인 중`
       : null
+  const perGame = (n: number) => (t.played ? `경기당 ${(n / t.played).toFixed(1)}` : undefined)
 
   return (
     <>
@@ -220,8 +222,8 @@ export function RecordsPage() {
                       </>
                     }
                   />
-                  <Stat label="득점" value={t.goalsFor} unit={`경기당 ${(t.goalsFor / t.played).toFixed(1)}`} />
-                  <Stat label="실점" value={t.goalsAgainst} unit={`경기당 ${(t.goalsAgainst / t.played).toFixed(1)}`} />
+                  <Stat label="득점" value={t.goalsFor} unit={perGame(t.goalsFor)} />
+                  <Stat label="실점" value={t.goalsAgainst} unit={perGame(t.goalsAgainst)} />
                   <Stat label="경고 · 퇴장" value={`${s.yellow} · ${s.red}`} />
                 </div>
               ) : (
@@ -359,7 +361,8 @@ export function RecordsPage() {
               </ol>
               {unattributedTotal > 0 && (
                 <p className="text-xs text-fg/60">
-                  선수 기록에 없는 득점 {unattributedTotal}골 (5월 1일 중앙대전, 상대 자책골로 보임)
+                  선수 기록에 없는 득점 {unattributedTotal}골 (
+                  {unattributedMatches.map((m) => `${md(m.date)} ${m.opponent}전${m.note ? `, ${m.note}` : ''}`).join(' · ')})
                 </p>
               )}
             </div>

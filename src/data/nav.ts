@@ -1,4 +1,11 @@
-import type { HeroNavItem } from '@/components/ui/prisma-hero'
+/** 위 메뉴 탭 항목 */
+export interface HeroNavItem {
+  label: string
+  href: string
+  /** 좁은 휴대폰(400px 미만)에서 쓰는 짧은 이름 (메뉴 탭이 화면을 넘지 않게) */
+  short?: string
+}
+
 
 /** 위 메뉴 탭: 홈 안 구역 이동만 (지금 보는 구역 표시와 같은 역할이라 다른 페이지 링크는 넣지 않음 — 사용자 결정 2026-10-08) */
 export const navItems: HeroNavItem[] = [

@@ -59,6 +59,36 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
   if (parsed?.headerFound && !sumOk) problems.push(`선수 득점 합 ${goalSum} + 기록에 없는 득점 ${Number.isNaN(extra) ? '?' : extra} ≠ 경기대 점수 ${kguScore}`)
   if (extra > 0 && !note.trim()) problems.push('기록에 없는 득점의 사유를 적어 주세요 (예: 상대 자책골로 보임)')
 
+  // KUSF 에 이 경기 선수 기록이 끝내 안 나올 때: '기록 없음 + 사유' (공개 화면에서 '확인 중' 대신 사유를 보여 줌)
+  const [missingNote, setMissingNote] = useState('')
+  async function saveUnavailable() {
+    if (!match || !missingNote.trim()) return
+    setBusy(true)
+    setFeedback(null)
+    try {
+      const { error } = await supabase.rpc('save_match_result', {
+        p_match_id: match.id,
+        p_expected_version: match.version,
+        p_request_id: crypto.randomUUID(),
+        p_status: 'finished',
+        p_home_score: match.home_score,
+        p_away_score: match.away_score,
+        p_kgu_unattributed_goals: 0,
+        p_records_status: 'unavailable',
+        p_records_note: missingNote.trim(),
+        p_players: [],
+      })
+      if (error) throw error
+      setMissingNote('')
+      await reload()
+      setFeedback({ tone: 'ok', text: '‘기록 없음’으로 저장했어요. 나중에 기록이 나오면 붙여 넣어 저장하면 돼요' })
+    } catch (e) {
+      setFeedback({ tone: 'error', text: friendlyError(e) })
+    } finally {
+      setBusy(false)
+    }
+  }
+
   async function save() {
     if (!match || !parsed || problems.length) return
     setBusy(true)
@@ -123,7 +153,15 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
         {match && saved && (
           <p className="flex flex-wrap items-center gap-2 text-sm text-fg/60">
             지금 저장된 기록:
-            {match.records_status === 'pending' ? <Badge text="기록 대기" tone="todo" /> : <span className="text-fg">선수 {saved.length}명 · 득점 {saved.reduce((s, r) => s + r.goals, 0)}</span>}
+            {match.records_status === 'pending' ? (
+              <Badge text="기록 대기" tone="todo" />
+            ) : match.records_status === 'unavailable' ? (
+              <span className="text-fg">기록 없음{match.records_note ? ` (${match.records_note})` : ''}</span>
+            ) : (
+              <span className="text-fg">
+                선수 {saved.length}명 · 득점 {saved.reduce((s, r) => s + r.goals, 0)}
+              </span>
+            )}
             {saved.length > 0 && <span>— 새로 붙여 넣어 저장하면 이 경기의 선수 줄을 통째로 바꿔요</span>}
           </p>
         )}
@@ -236,6 +274,23 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
             {busy ? '저장 중…' : '저장'}
           </button>
         </div>
+        {match && !parsed && match.records_status !== 'unavailable' && (
+          <details className="text-sm">
+            <summary className="cursor-pointer text-fg/60">KUSF 에 이 경기 선수 기록이 끝내 안 나오나요?</summary>
+            <div className="mt-3 flex flex-col gap-3">
+              <p className="text-fg/60">
+                ‘기록 없음’으로 저장하면 사이트에 ‘확인 중’ 대신 사유가 보여요. 저장된 선수 줄이 있으면 지워져요.
+              </p>
+              <label className={label}>
+                사유
+                <input className={input} value={missingNote} placeholder="예: KUSF 기록 미제공" onChange={(e) => setMissingNote(e.target.value)} />
+              </label>
+              <button className={cn(btnLine, 'self-end')} disabled={busy || !missingNote.trim()} onClick={saveUnavailable}>
+                기록 없음으로 저장
+              </button>
+            </div>
+          </details>
+        )}
         {match && saved && saved.length > 0 && !parsed && (
           <details className="text-sm">
             <summary className="cursor-pointer text-fg/60">저장된 선수 기록 보기</summary>
