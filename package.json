@@ -13,11 +13,14 @@
     "check:records": "node scripts/check-records.mjs",
     "make:seed": "node scripts/make-seed.mjs",
     "test:db": "bash scripts/test-db.sh",
-    "export:snapshot": "node scripts/export-snapshot.mjs"
+    "export:snapshot": "node scripts/export-snapshot.mjs",
+    "test:parse": "node --experimental-strip-types --no-warnings scripts/parse.test.ts",
+    "dev:admin": "bash scripts/dev-admin.sh"
   },
   "dependencies": {
     "@fontsource/anton": "^5.3.0",
     "@fontsource/black-han-sans": "^5.3.0",
+    "@supabase/supabase-js": "^2.117.3",
     "clsx": "^2.1.1",
     "framer-motion": "^14.0.0",
     "lucide-react": "^1.52.0",

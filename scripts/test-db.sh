@@ -48,6 +48,21 @@ API_PID=$!
 for _ in $(seq 1 40); do curl -s "http://127.0.0.1:$API_PORT/" >/dev/null 2>&1 && break; sleep 0.25; done
 
 export API="http://127.0.0.1:$API_PORT"
+
+# 관리자 화면 로컬 시험 (npm run dev:admin): 시험 운영진을 만들고 개발 서버를 이 DB 에 붙여 띄움. Ctrl+C 로 끝내면 DB 도 지움
+if [ -n "${KEEP:-}" ]; then
+  ADMIN_ID="$(node -e "console.log(crypto.randomUUID())")"
+  $PSQL -c "insert into auth.users (id, email) values ('$ADMIN_ID', 'local-admin@test'); insert into private.admins (user_id, display_name) values ('$ADMIN_ID', '로컬 시험 운영진')"
+  JWT="$(node -e "
+    const c=require('node:crypto');const b=(o)=>Buffer.from(JSON.stringify(o)).toString('base64url');
+    const h=b({alg:'HS256',typ:'JWT'}),p=b({role:'authenticated',sub:'$ADMIN_ID',exp:Math.floor(Date.now()/1000)+8*3600});
+    console.log(h+'.'+p+'.'+c.createHmac('sha256',process.env.JWT_SECRET).update(h+'.'+p).digest('base64url'))")"
+  echo "로컬 DB: $API · psql: $PSQL"
+  echo "$PSQL" > "${KEEP_PSQL_FILE:-/dev/null}"
+  cd "$ROOT" && LOCAL_API="$API" VITE_LOCAL_JWT="$JWT" npx vite --port "${DEV_PORT:-5173}" --strictPort
+  exit 0
+fi
+
 node "$ROOT/supabase/test/rls.test.mjs"
 node "$ROOT/supabase/test/roundtrip.test.mjs"
 export API_REST="$API" ; bash "$ROOT/supabase/test/export.test.sh"
