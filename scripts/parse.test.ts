@@ -1,0 +1,26 @@
+// 관리자 화면 붙여넣기 읽기 시험 (npm run test:parse)
+import assert from 'node:assert/strict'
+import { parsePlayers, parseStandings } from '../src/admin/parse.ts'
+
+// 탭으로 나뉜 표 + 제목 줄 + 다른 학교 선수 + 잘못된 숫자 + 중복
+const p = parsePlayers(
+  ['경기대 선수기록', '등번호\t선수명\t포지션\t득점\t도움\t경고\t퇴장', '1\t민선재\tGK\t0\t0\t0\t0', '10\t갈정민(경기대)\tMF\t1\t\t0\t0',
+   '7\t홍길동(홍익대)\tFW\t1\t0\t0\t0', '2O\t김기완\tMF\t0\t0\t0\t0', '14\t정하민\tFW\t1\t1\t1\t0', '14\t정하민\tFW\t1\t1\t1\t0', '합계\t\t\t2\t1\t1\t0'].join('\n'))
+assert.equal(p.headerFound, true)
+assert.deepEqual(p.rows.map((r) => [r.number, r.name, r.goals, r.assists, r.yellow]), [[1, '민선재', 0, 0, 0], [10, '갈정민', 1, 0, 0], [14, '정하민', 1, 1, 1]])
+assert.deepEqual(p.errors.map((e) => e.line), [6, 8])
+assert.equal(p.skipped.length, 1)
+
+// 머리줄 없음 → 아무것도 읽지 않음
+assert.equal(parsePlayers('1\t민선재\t0\t0').headerFound, false)
+// 공백 두 칸으로 나뉜 표, 도움 칸 없음
+const q = parsePlayers('번호  이름  득점  경고\n9  LI BINGKE  2  1')
+assert.deepEqual(q.rows[0], { line: 2, number: 9, name: 'LI BINGKE', goals: 2, assists: 0, yellow: 1, red: 0 })
+assert.deepEqual(q.missingColumns, ['도움', '퇴장'])
+
+const s = parseStandings(['순위\t팀명\t경기\t승\t무\t패\t득점\t실점\t득실\t승점\t경고\t퇴장', '1위\t경기대학교\t9\t8\t1\t0\t30\t12\t18\t25\t20\t0', '2\t중앙대\t9\t5\t1\t2\t21\t10\t11\t16\t14\t0'].join('\n'))
+assert.equal(s.rows.length, 1)
+assert.equal(s.rows[0].rank, 1)
+assert.equal(s.rows[0].team, '경기대학교')
+assert.equal(s.errors[0].line, 3) // 9경기인데 5+1+2
+console.log('붙여넣기 읽기 시험 통과')

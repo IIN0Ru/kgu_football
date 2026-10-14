@@ -52,5 +52,5 @@ for (const f of ['matches.json', 'records.json', 'posts.json']) {
     console.log(`바뀜: src/data/${f}`)
   }
 }
-writeFileSync(path('public/content-revision.json'), JSON.stringify({ revision: snap.revision }) + '\n')
+writeFileSync(path('public/content-revision.json'), JSON.stringify({ revision: snap.revision, changedAt: snap.changed_at }) + '\n')
 console.log(`스냅샷 버전 ${snap.revision}, 바뀐 자료 파일 ${changed}개`)

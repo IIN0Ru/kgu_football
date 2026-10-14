@@ -6,10 +6,14 @@
  * GitHub Pages 는 없는 주소를 404.html 로 보내므로 public/404.html 이 원래 주소를 기억해 index.html 로 넘기고,
  * main.tsx 가 그 주소로 되돌린다.
  */
+import { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { HomePage } from '@/pages/HomePage'
 import { RecordsPage } from '@/pages/RecordsPage'
 import { SchedulePage } from '@/pages/SchedulePage'
+
+// 관리자 화면은 따로 불러옴: 방문자는 Supabase 연결 코드를 받지 않음
+const AdminPage = lazy(() => import('@/pages/AdminPage'))
 
 export default function App() {
   return (
@@ -17,6 +21,14 @@ export default function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/schedule" element={<SchedulePage />} />
       <Route path="/records" element={<RecordsPage />} />
+      <Route
+        path="/admin"
+        element={
+          <Suspense fallback={null}>
+            <AdminPage />
+          </Suspense>
+        }
+      />
       <Route path="*" element={<HomePage />} />
     </Routes>
   )
