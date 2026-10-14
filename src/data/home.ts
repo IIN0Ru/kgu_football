@@ -41,7 +41,7 @@ export interface SeasonMatch {
   away: string
   homeScore: number | null
   awayScore: number | null
-  /** 연기·취소된 경기만 있음 (관리자 입력, 2026-10-14). 이런 경기는 다음 경기·결과 확인 중·캘린더에서 뺀다 */
+  /** 연기·취소된 경기만 있음 (관리자 입력, 2026-10-14). 공개 화면에서는 빼고 따로 표시하지 않음 (사용자 결정) */
   status?: 'postponed' | 'cancelled'
 }
 

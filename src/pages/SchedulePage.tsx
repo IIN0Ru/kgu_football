@@ -89,9 +89,6 @@ function MatchRow({ m }: { m: ScheduleMatch }) {
         <span className="mx-1.5 text-fg/40">:</span>
         {m.awayScore}
       </span>
-    ) : m.status === 'postponed' || m.status === 'cancelled' ? (
-      // 연기·취소 (관리자 입력): 시각 대신 상태 글자, 캘린더 버튼 없음
-      <span className="rounded-full border border-line px-2.5 py-0.5 text-sm text-fg/70">{m.status === 'postponed' ? '연기' : '취소'}</span>
     ) : (
       <span className={`text-sm tabular-nums ${m.time ? 'font-medium' : 'text-fg/60'}`}>{m.time ?? '시간 확인 중'}</span>
     )
@@ -172,14 +169,11 @@ export function SchedulePage() {
 
   const played = scheduleMatches.filter((m) => m.status === 'played').length
   const remaining = scheduleMatches.filter((m) => m.status === 'upcoming').length
-  const postponed = scheduleMatches.filter((m) => m.status === 'postponed').length
-  const cancelled = scheduleMatches.filter((m) => m.status === 'cancelled').length
 
   const months = useMemo(() => {
     const list = scheduleMatches.filter(
       (m) =>
-        // 남은 경기: 아직 안 한 경기·결과 확인 중·연기 (취소는 '전체'에서만)
-        (when === 'all' || (when === 'played' ? m.status === 'played' : m.status !== 'played' && m.status !== 'cancelled')) &&
+        (when === 'all' || (when === 'played' ? m.status === 'played' : m.status !== 'played')) &&
         (side === 'all' || m.side === side),
     )
     const groups = new Map<number, ScheduleMatch[]>()
@@ -215,13 +209,11 @@ export function SchedulePage() {
                 </h1>
                 <p className="text-sm text-fg/60">
                   {scheduleCompetition} · {scheduleMatches.length}경기 · 끝난 경기 {played} · 남은 경기 {remaining}
-                  {postponed > 0 && ` · 연기 ${postponed}`}
-                  {cancelled > 0 && ` · 취소 ${cancelled}`}
                 </p>
               </div>
               <button
                 type="button"
-                onClick={() => downloadIcs('kgu-football-2026.ics', scheduleMatches.filter((m) => m.status !== 'postponed' && m.status !== 'cancelled'))}
+                onClick={() => downloadIcs('kgu-football-2026.ics', scheduleMatches)}
                 className="group flex items-center gap-3 rounded-full border border-line bg-bar py-1.5 pl-4 pr-1.5 text-sm transition-colors hover:border-accent"
               >
                 시즌 전체 일정 캘린더에 넣기

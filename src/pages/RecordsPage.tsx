@@ -19,11 +19,8 @@ import {
   recordsCompetition,
   recordsSource,
   recordsUpdatedAt,
-  pointsAdjusted,
   recordsPending,
-  recordsUnavailable,
-  standingsBehind,
-  standingsThrough,
+  recordsThrough,
   unattributedMatches,
   seasonTotals,
   sideRecords,
@@ -171,12 +168,12 @@ export function RecordsPage() {
   const md = (d: string) => `${Number(d.slice(5, 7))}월 ${Number(d.slice(8))}일`
   const t = seasonTotals
   // 점수는 들어왔는데 순위표·선수 기록이 아직이면 어디까지 반영됐는지 알림 (KUSF 기록은 늦게 열림)
-  // 순위표와 선수 기록은 따로 늦을 수 있어 각각 적음 (2026-10-14 데이터 계약)
-  const lagParts = [
-    standingsBehind > 0 ? (standingsThrough ? `순위·승점·경고는 ${md(standingsThrough)} 경기까지 반영` : '순위표 확인 중') : null,
-    recordsPending.length > 0 ? `${recordsPending.map((m) => `${md(m.date)} ${m.opponent}전`).join(', ')} 선수 기록 확인 중` : null,
-  ].filter(Boolean)
-  const lag = lagParts.length ? lagParts.join(' · ') : null
+  const lag =
+    recordsPending.length > 0 && recordsThrough
+      ? `순위·승점·경고와 선수 기록은 ${md(recordsThrough)} 경기까지 반영 · ${recordsPending
+          .map((m) => `${md(m.date)} ${m.opponent}전`)
+          .join(', ')} 기록 확인 중`
+      : null
   const perGame = (n: number) => (t.played ? `경기당 ${(n / t.played).toFixed(1)}` : undefined)
 
   return (
@@ -332,11 +329,6 @@ export function RecordsPage() {
                   </tbody>
                 </table>
               </div>
-              {pointsAdjusted.length > 0 && (
-                <p className="text-xs text-fg/60">
-                  승점 조정: {pointsAdjusted.map((t) => `${t.team} ${t.pointsAdjustment > 0 ? '+' : '−'}${Math.abs(t.pointsAdjustment)}`).join(', ')} (KUSF 순위표 기준)
-                </p>
-              )}
             </div>
           </Reveal>
         </div>
@@ -371,11 +363,6 @@ export function RecordsPage() {
                 <p className="text-xs text-fg/60">
                   선수 기록에 없는 득점 {unattributedTotal}골 (
                   {unattributedMatches.map((m) => `${md(m.date)} ${m.opponent}전${m.note ? `, ${m.note}` : ''}`).join(' · ')})
-                </p>
-              )}
-              {recordsUnavailable.length > 0 && (
-                <p className="text-xs text-fg/60">
-                  선수 기록 없음: {recordsUnavailable.map((m) => `${md(m.date)} ${m.opponent}전${m.note ? ` (${m.note})` : ''}`).join(' · ')}
                 </p>
               )}
             </div>
