@@ -21,7 +21,7 @@
 ## 기술
 
 React 19, TypeScript, Vite, Tailwind CSS v4, react-router, framer-motion, lucide-react.
-shadcn 호환 경로 구조와 `cn()` 유틸리티를 사용하며, 히어로는 전달받은 21st.dev PrismaHero를 수정했다.
+shadcn 호환 경로 구조와 `cn()` 유틸리티를 사용한다. 첫 화면은 처음에 21st.dev 컴포넌트를 고쳐 썼으나, 라이선스를 확인할 수 없어 직접 다시 작성했다(`docs/SOURCES.md`).
 
 ## 실행과 검증
 
