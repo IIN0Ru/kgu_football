@@ -69,6 +69,16 @@
 - 소식 목록을 `home.ts` 에서 `src/data/posts.json` 으로 분리(내보내기 대상). 화면 변화 없음
 - 남은 단계: 사용자 Supabase 설정(docs/ADMIN_SETUP.md) → publish 워크플로·Edge Function → 관리자 화면 시안 승인 → 구현 → 복구 연습 → 운영 시작
 
+### 2026-10-14 #58 — 관리자 입력 2단계: 실제 Supabase 연결 확인, 사이트 반영 워크플로·중계 함수 (Claude)
+
+- 사용자가 Supabase 프로젝트 생성(서울)·공개 가입 끔·마이그레이션·seed 실행(학교 8, 선수 23, 경기 10, 선수 기록 135, 순위표 8, 글 10)
+- 실제 프로젝트 점검(Claude 앱 브라우저, 공개 키): 공개 스냅샷 읽기 OK·수정자 ID 없음, 방문자 추가·수정·삭제·버전 조작 401, 운영진 함수 401, 운영진 명단·감사 기록 REST 404, 가입 막힘(disable_signup=true), 익명 로그인 꺼짐. 실제 스냅샷 → 자료 파일이 저장소 파일과 3개 모두 동일
+- `src/config/supabase.mjs`: URL·공개 키(공개 값). `scripts/export-snapshot.mjs`: 스냅샷 → 검사 → 내용이 바뀐 파일만 쓰기, `public/content-revision.json` 에 반영 버전
+- `publish.yml`: 수동·6시간마다 대조·중계 함수로 실행 → 내보내기 → check:records → 바뀌면 커밋 후 deploy.yml 실행(선수 명단 워크플로와 같은 방식, GITHUB_TOKEN 커밋은 다른 워크플로를 못 깨우므로)
+- `supabase/functions/request-publish`: 로그인 토큰으로 DB request_publish()(운영진 확인·60초 중복 거름) → GitHub workflow_dispatch. GitHub 토큰은 함수 비밀값만, 권한은 이 저장소 Actions 쓰기만. 허용 주소(Origin) 제한
+- 시험: test:db 에 내보내기 시험 추가(같으면 0개, 글 고치면 posts.json 만, 글 급감·접속 실패 시 실패하고 파일 유지). 중계 함수는 TypeScript 문법 검사만(실행은 배포 후 확인)
+- 남은 단계: 사용자 GitHub 토큰·중계 함수 배포(docs/ADMIN_SETUP.md 5) → 관리자 화면 시안 → 구현
+
 ### 2026-10-09 #56 — 결과·다음 경기 카드 바로가기 줄, 10/9 홍익대전 점수 (Claude, 사용자 승인)
 
 - UX 점검 2번 묶음 중 1번만(사용자 결정: 학교 로고 링크·표기 바꾸기는 하지 않음): 최근 결과 카드 맨 아래 '시즌 기록 전체 보기 →', 다음 경기 카드 맨 아래 '경기 일정 전체 보기 →' (`page-link-row.tsx`)

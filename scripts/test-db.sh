@@ -50,3 +50,4 @@ for _ in $(seq 1 40); do curl -s "http://127.0.0.1:$API_PORT/" >/dev/null 2>&1 &
 export API="http://127.0.0.1:$API_PORT"
 node "$ROOT/supabase/test/rls.test.mjs"
 node "$ROOT/supabase/test/roundtrip.test.mjs"
+export API_REST="$API" ; bash "$ROOT/supabase/test/export.test.sh"

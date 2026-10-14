@@ -12,7 +12,8 @@
     "check:calendar": "node --experimental-strip-types --no-warnings scripts/check-calendar.mjs",
     "check:records": "node scripts/check-records.mjs",
     "make:seed": "node scripts/make-seed.mjs",
-    "test:db": "bash scripts/test-db.sh"
+    "test:db": "bash scripts/test-db.sh",
+    "export:snapshot": "node scripts/export-snapshot.mjs"
   },
   "dependencies": {
     "@fontsource/anton": "^5.3.0",

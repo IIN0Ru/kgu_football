@@ -41,13 +41,41 @@ on conflict (user_id) do nothing;
 운영진에서 빼기: `delete from private.admins where user_id = (select id from auth.users where email = '…');`
 비밀번호를 잊으면: Users 에서 해당 계정 → Reset password 대신 개발자가 새 비밀번호를 정해 전달
 
-## 5. 지켜야 할 것
+## 5. 사이트 반영 연결 (GitHub 토큰 + 중계 함수)
+
+관리자 화면의 '사이트에 반영' 버튼 → Supabase 중계 함수 `request-publish` → GitHub `publish.yml` 실행 → 자료 커밋 → 배포
+
+### 5-1. GitHub 토큰 만들기 (저장소 하나, 워크플로 실행 권한만)
+
+1. GitHub → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token
+2. Token name: `kgu-football-publish`, Expiration: 최대 1년 (만료 전에 새로 만들어 5-3 에서 바꿔 넣기)
+3. Repository access: **Only select repositories → IIN0Ru/kgu_football**
+4. Permissions → Repository permissions → **Actions: Read and write** (나머지는 건드리지 않음. Metadata: Read 는 자동)
+5. Generate → 나온 `github_pat_…` 를 복사 (다시 볼 수 없음). **Claude 나 저장소에 붙여넣지 않음**
+
+### 5-2. 중계 함수 만들기
+
+1. Supabase → Edge Functions → Deploy a new function → **Via Editor**
+2. 함수 이름: `request-publish`
+3. 편집기 내용을 지우고 `supabase/functions/request-publish/index.ts` 전체를 붙여넣기 → Deploy
+4. 함수 설정(Details)에서 **Verify JWT** 는 켜 둔 그대로 (로그인한 사람만 부를 수 있음. 운영진 여부는 함수가 DB 로 다시 확인)
+
+### 5-3. 토큰을 비밀값으로 넣기
+
+Edge Functions → Secrets → Add new secret
+
+- Name: `GITHUB_DISPATCH_TOKEN`
+- Value: 5-1 에서 복사한 `github_pat_…`
+
+토큰이 새거나 의심되면: GitHub 에서 그 토큰 삭제 → 새로 만들어 5-3 다시. 권한이 이 저장소의 워크플로 실행뿐이라 새어도 코드·자료를 바꿀 수는 없다.
+
+## 6. 지켜야 할 것
 
 - 경기·글 **영구 삭제**는 관리자 화면에서 안 됨(보관·복원만). 꼭 지워야 하면 개발자가 Table Editor 에서
 - 수정 기록(`private.audit_log`)은 운영진이 고칠 수 없지만 DB 소유자는 고칠 수 있다. 완전한 위조 방지 기록은 아님
 - 무료 플랜은 7일 동안 활동이 적으면 정지된다. 공개 사이트는 저장소의 JSON 으로 보이므로 방문자에게는 영향 없음. 관리자 화면을 쓰려면 대시보드에서 다시 켬
 
-## 6. 장애 복구
+## 7. 장애 복구
 
 DB 가 사라지거나 꼬였을 때
 
@@ -58,6 +86,6 @@ DB 가 사라지거나 꼬였을 때
 
 운영진 명단과 수정 기록은 복구되지 않는다 (사용자 결정 2026-10-14).
 
-## 7. 개발용 시험
+## 8. 개발용 시험
 
-`npm run test:db` — 임시 Postgres + PostgREST 로 권한(방문자·일반 로그인·운영진), 저장 함수(득점 합 검사·전체 롤백·중복 요청·버전 충돌), 감사 기록, 왕복(JSON → DB → JSON 동일)을 시험한다. 실제 Supabase 에는 아무것도 하지 않는다. 로그인 서버 자체는 시험하지 않으므로 실제 프로젝트에서 한 번 로그인해 확인한다.
+`npm run test:db` — 임시 Postgres + PostgREST 로 권한(방문자·일반 로그인·운영진), 저장 함수(득점 합 검사·전체 롤백·중복 요청·버전 충돌), 감사 기록, 왕복(JSON → DB → JSON 동일), 내보내기(바뀐 파일만 쓰기·급감/접속 실패 시 파일 유지)를 시험한다. 실제 Supabase 에는 아무것도 하지 않는다. 로그인 서버 자체는 시험하지 않으므로 실제 프로젝트에서 한 번 로그인해 확인한다.

@@ -1,0 +1,49 @@
+# 관리자 화면의 '사이트에 반영' → Supabase Edge Function(request-publish) 이 이 워크플로를 실행한다.
+# DB 공개 스냅샷을 받아 검사 → 자료 파일이 바뀌었으면 커밋 → 배포 워크플로 실행.
+# 비밀 키 없이 공개(publishable) 키로만 읽는다. 검사에 실패하면 아무 파일도 바꾸지 않고 실패(기존 사이트 유지).
+# 놓친 반영이 없도록 6시간마다도 한 번씩 대조한다. 손으로: Actions 탭 → 사이트 자료 반영 → Run workflow
+name: 사이트 자료 반영
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: DB 스냅샷 받아 자료 파일 만들기
+        run: node scripts/export-snapshot.mjs
+      - name: 자료 검사
+        run: |
+          node scripts/check-records.mjs
+      - name: 바뀌었으면 커밋하고 배포
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- src/data public/content-revision.json; then
+            echo "변경 없음"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add src/data public/content-revision.json
+          git commit -m "관리자 입력 반영 (DB 버전 $(node -p "require('./public/content-revision.json').revision"))"
+          git push
+          # 봇이 한 push 는 다른 워크플로를 깨우지 않으므로 배포를 직접 실행 (workflow_dispatch 는 예외로 실행됨)
+          gh workflow run deploy.yml --ref main
