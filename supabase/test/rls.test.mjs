@@ -161,7 +161,9 @@ let postId
 
 // ---------- 저장 함수: 경기 결과 + 선수 기록 ----------
 {
-  // 10/9 홍익대 0:2 경기대 (선수 기록 대기 상태로 옮겨 둔 경기)
+  // 10/9 홍익대 0:2 경기대 — 실제 자료에는 이제 선수 기록이 있으므로(2026-10-14 반영) 시험용으로 '대기' 상태로 되돌림
+  sql(`delete from public.player_records where match_id = (select id from public.matches where match_date = '2026-10-09')`)
+  sql(`update public.matches set records_status = 'pending' where match_date = '2026-10-09'`)
   const m = JSON.parse(sql(`select row_to_json(m) from public.matches m where match_date = '2026-10-09'`))
   assert.equal(m.records_status, 'pending')
   const base = {

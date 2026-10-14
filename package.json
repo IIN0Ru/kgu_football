@@ -15,7 +15,8 @@
     "test:db": "bash scripts/test-db.sh",
     "export:snapshot": "node scripts/export-snapshot.mjs",
     "test:parse": "node --experimental-strip-types --no-warnings scripts/parse.test.ts",
-    "dev:admin": "bash scripts/dev-admin.sh"
+    "dev:admin": "bash scripts/dev-admin.sh",
+    "test:records": "node scripts/check-records.test.mjs"
   },
   "dependencies": {
     "@fontsource/anton": "^5.3.0",

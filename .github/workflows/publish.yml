@@ -39,7 +39,17 @@ jobs:
           # 새로 생긴 파일(처음 만든 반영 버전 파일)도 잡히도록 먼저 add 한 뒤 비교
           git add src/data public/content-revision.json
           if git diff --cached --quiet; then
-            echo "변경 없음"
+            # 자료는 이미 저장소에 있음. 그래도 공개 사이트 버전이 다르면(앞선 배포 실패 등) 같은 자료로 다시 배포
+            # (2026-10-14 리뷰 1-4: 커밋은 됐는데 배포가 실패하면 다시 반영해도 복구되지 않던 문제)
+            REPO_REV=$(node -p "require('./public/content-revision.json').revision")
+            LIVE_REV=$(curl -fsS --max-time 15 "https://iin0ru.github.io/kgu_football/content-revision.json?t=$(date +%s)" \
+              | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{console.log(JSON.parse(s).revision)}catch{console.log('none')}})" || echo none)
+            if [ "$LIVE_REV" != "$REPO_REV" ]; then
+              echo "자료 변경 없음 · 공개 사이트 버전 $LIVE_REV ≠ 저장소 $REPO_REV → 다시 배포"
+              gh workflow run deploy.yml --ref main
+            else
+              echo "변경 없음 · 공개 사이트도 최신 ($LIVE_REV)"
+            fi
             exit 0
           fi
           git config user.name "github-actions[bot]"

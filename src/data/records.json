@@ -21,6 +21,7 @@
       "goalsFor": 30,
       "goalsAgainst": 12,
       "goalDiff": 18,
+      "pointsAdjustment": 0,
       "yellow": 20,
       "red": 0
     },
@@ -35,6 +36,7 @@
       "goalsFor": 27,
       "goalsAgainst": 11,
       "goalDiff": 16,
+      "pointsAdjustment": 0,
       "yellow": 17,
       "red": 0
     },
@@ -49,6 +51,7 @@
       "goalsFor": 19,
       "goalsAgainst": 18,
       "goalDiff": 1,
+      "pointsAdjustment": 0,
       "yellow": 11,
       "red": 2
     },
@@ -63,6 +66,7 @@
       "goalsFor": 13,
       "goalsAgainst": 10,
       "goalDiff": 3,
+      "pointsAdjustment": 0,
       "yellow": 9,
       "red": 0
     },
@@ -77,6 +81,7 @@
       "goalsFor": 16,
       "goalsAgainst": 16,
       "goalDiff": 0,
+      "pointsAdjustment": 0,
       "yellow": 11,
       "red": 0
     },
@@ -91,6 +96,7 @@
       "goalsFor": 13,
       "goalsAgainst": 19,
       "goalDiff": -6,
+      "pointsAdjustment": 0,
       "yellow": 22,
       "red": 0
     },
@@ -105,6 +111,7 @@
       "goalsFor": 10,
       "goalsAgainst": 20,
       "goalDiff": -10,
+      "pointsAdjustment": 0,
       "yellow": 14,
       "red": 1
     },
@@ -119,6 +126,7 @@
       "goalsFor": 2,
       "goalsAgainst": 24,
       "goalDiff": -22,
+      "pointsAdjustment": 0,
       "yellow": 17,
       "red": 2
     }
@@ -548,7 +556,8 @@
           "red": 0
         }
       ],
-      "unattributedGoals": 1
+      "unattributedGoals": 1,
+      "note": "상대 자책골로 보임"
     },
     {
       "date": "2026-05-15",
@@ -1394,5 +1403,6 @@
       ],
       "unattributedGoals": 0
     }
-  ]
+  ],
+  "unavailable": []
 }
