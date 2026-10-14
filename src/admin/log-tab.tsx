@@ -3,7 +3,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { RotateCcw } from 'lucide-react'
 import { friendlyError, supabase } from './client'
 import { shortDate, statusLabel, type AdminData, type MatchStatus } from './data'
-import { Badge, btnLine, FeedbackLine, type Feedback } from './ui'
+import { Badge, FeedbackLine, type Feedback } from './ui'
+import { btnLine } from './ui-tokens'
 
 interface Change {
   at: string

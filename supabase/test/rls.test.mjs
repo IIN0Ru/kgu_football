@@ -89,10 +89,10 @@ const ok = (name) => console.log(`  ✓ ${++n}. ${name}`)
   const ins = await call('other', 'POST', '/teams', { short_name: '해킹대' })
   assert.equal(ins.status, 403, JSON.stringify(ins.json))
   const upd = await call('other', 'PATCH', '/matches?id=gt.0', { venue: '조작' })
-  assert.ok(upd.status === 200 && upd.json.length === 0, '수정되는 줄이 없어야 함')
+  denied(upd, '일반 로그인 경기 수정 (0002: 경기 직접 수정 권한 없음)')
   assert.equal(Number(sql(`select count(*) from public.matches where venue = '조작'`)), 0)
   const del = await call('other', 'DELETE', '/player_records?id=gt.0')
-  assert.ok(del.status === 200 && del.json.length === 0)
+  denied(del, '일반 로그인 선수 기록 삭제 (0002: 직접 쓰기 권한 없음)')
   ok('일반 로그인: 추가·수정·삭제 모두 반영 안 됨')
   denied(await call('other', 'POST', '/rpc/save_match_result', { p_match_id: 1 }), '일반 로그인 저장 함수')
   const sv = await call('other', 'POST', '/rpc/save_match_result', {
@@ -223,6 +223,90 @@ let postId
   })
   assert.ok(sched.status >= 400)
   ok('경기 상태: 예정 경기에 점수 넣기 거부')
+}
+
+// ---------- 0002: 점수·선수 기록·순위표는 저장 함수로만 ----------
+{
+  const m = JSON.parse(sql(`select row_to_json(m) from public.matches m where match_date = '2026-09-18'`))
+  denied(await call('admin', 'PATCH', `/matches?id=eq.${m.id}`, { home_score: 9 }), '운영진 점수 직접 수정')
+  denied(await call('admin', 'PATCH', `/matches?id=eq.${m.id}`, { venue: '직접' }), '운영진 장소 직접 수정')
+  denied(await call('admin', 'DELETE', `/player_records?match_id=eq.${m.id}`), '운영진 선수 기록 직접 삭제')
+  denied(await call('admin', 'POST', '/player_records', { match_id: m.id, player_id: 1, goals: 5 }), '운영진 선수 기록 직접 추가')
+  denied(await call('admin', 'PATCH', '/standings?rank=eq.1', { points: 99 }), '운영진 순위표 직접 수정')
+  assert.equal(sql(`select home_score from public.matches where id = ${m.id}`), '3')
+  const arch = await call('admin', 'PATCH', `/matches?id=eq.${m.id}&version=eq.${m.version}`, { archived_at: new Date().toISOString() })
+  assert.equal(arch.status, 200, JSON.stringify(arch.json))
+  assert.equal(arch.json.length, 1)
+  sql(`update public.matches set archived_at = null where id = ${m.id}`)
+  ok('0002: 점수·장소·선수 기록·순위표 직접 쓰기 막힘, 보관만 직접 가능')
+}
+{
+  // save_match: 9/18 경기대 3:2 칼빈대 (선수 기록 완료) — 장소는 고쳐지고, 득점 합과 다른 점수는 거부
+  const m = JSON.parse(sql(`select row_to_json(m) from public.matches m where match_date = '2026-09-18'`))
+  const args = (o) => ({ p_match_id: m.id, p_request_id: randomUUID(), p_match_date: '2026-09-18', p_kickoff: '15:00', p_venue: '경기대 대운동장', p_status: 'finished', p_home_score: 3, p_away_score: 2, ...o })
+  const ok1 = await call('admin', 'POST', '/rpc/save_match', args({ p_expected_version: m.version, p_venue: '경기대 대운동장 (시험)' }))
+  assert.equal(ok1.status, 200, JSON.stringify(ok1.json))
+  const v = Number(sql(`select version from public.matches where id = ${m.id}`))
+  const badScore = await call('admin', 'POST', '/rpc/save_match', args({ p_expected_version: v, p_home_score: 4 }))
+  assert.ok(badScore.status >= 400 && /득점/.test(JSON.stringify(badScore.json)), JSON.stringify(badScore.json))
+  assert.equal(sql(`select home_score from public.matches where id = ${m.id}`), '3')
+  const toSched = await call('admin', 'POST', '/rpc/save_match', args({ p_expected_version: v, p_status: 'postponed' }))
+  assert.ok(toSched.status >= 400)
+  const stale = await call('admin', 'POST', '/rpc/save_match', args({ p_expected_version: m.version }))
+  assert.ok(stale.status >= 400 && /먼저 고쳤/.test(JSON.stringify(stale.json)))
+  ok('save_match: 일정 수정, 선수 기록과 어긋난 점수·상태 거부, 버전 충돌')
+
+  // save_match_result 로 점수와 선수 기록을 함께 정정 (3:2 → 4:2, 득점 한 골 추가)
+  const recs = JSON.parse(sql(`select json_agg(json_build_object('player_id', player_id, 'shirt_number', shirt_number, 'goals', goals, 'assists', assists, 'yellow', yellow, 'red', red) order by id) from public.player_records where match_id = ${m.id}`))
+  recs[0].goals += 1
+  const fix = await call('admin', 'POST', '/rpc/save_match_result', {
+    p_match_id: m.id, p_expected_version: v, p_request_id: randomUUID(), p_status: 'finished', p_home_score: 4, p_away_score: 2,
+    p_kgu_unattributed_goals: 0, p_records_status: 'complete', p_records_note: null, p_players: recs,
+  })
+  assert.equal(fix.status, 200, JSON.stringify(fix.json))
+  assert.equal(sql(`select home_score from public.matches where id = ${m.id}`), '4')
+  ok('save_match_result: 점수와 선수 기록을 한 번에 정정')
+}
+{
+  // replace_standings
+  const key = () => sql(`select coalesce(string_agg(team_id || ':' || version, ',' order by team_id), '') from public.standings`)
+  const rows = JSON.parse(sql(`select json_agg(json_build_object('team_id', team_id, 'rank', rank, 'played', played, 'won', won, 'drawn', drawn, 'lost', lost, 'goals_for', goals_for, 'goals_against', goals_against, 'points', points, 'yellow', yellow, 'red', red) order by rank) from public.standings`))
+  const comp = sql(`select competition from public.standings limit 1`)
+  const call2 = (o) => call('admin', 'POST', '/rpc/replace_standings', { p_season: 2026, p_competition: comp, p_group_label: '', p_expected: key(), p_request_id: randomUUID(), p_rows: rows, ...o })
+  const before = key()
+  // 위에서 9/18 을 4:2 로 바꿨으므로 지금 순위표(30득점)와 경기 결과(31득점)가 다름 → 거부, 변경 없음
+  const mismatch = await call2({})
+  assert.ok(mismatch.status >= 400 && /경기대 줄/.test(JSON.stringify(mismatch.json)), JSON.stringify(mismatch.json))
+  assert.equal(key(), before)
+  const ours = rows.find((r) => r.team_id === Number(sql(`select id from public.teams where is_ours`)))
+  ours.goals_for += 1
+  const yeoju = rows.find((r) => r.team_id === Number(sql(`select id from public.teams where short_name = '여주대'`)))
+  yeoju.points -= 3
+  const stale = await call2({ p_expected: '1:1' })
+  assert.ok(stale.status >= 400 && /먼저/.test(JSON.stringify(stale.json)))
+  const req = randomUUID()
+  const good = await call2({ p_request_id: req })
+  assert.equal(good.status, 200, JSON.stringify(good.json))
+  assert.equal(sql(`select points_adjustment from public.standings where team_id = ${yeoju.team_id}`), '-3')
+  const dup = await call2({ p_request_id: req, p_expected: 'x' })
+  assert.equal(dup.json.duplicate, true)
+  ok('replace_standings: 경기 결과와 어긋나면 거부, 버전 충돌, 승점 조정 계산, 같은 요청 한 번')
+}
+{
+  // reorder_posts
+  const list = JSON.parse(sql(`select json_agg(json_build_object('id', id, 'version', version) order by id) from public.posts where kind = 'magazine' and archived_at is null`))
+  const positions = () => sql(`select string_agg(id || ':' || position, ',' order by id) from public.posts where kind = 'magazine'`)
+  const before = positions()
+  const ids = list.map((p) => p.id).reverse()
+  const vers = list.map((p) => p.version).reverse()
+  const stale = await call('admin', 'POST', '/rpc/reorder_posts', { p_request_id: randomUUID(), p_ids: ids, p_versions: vers.map((x, i) => (i === 0 ? x + 5 : x)) })
+  assert.ok(stale.status >= 400)
+  assert.equal(positions(), before, '하나라도 버전이 다르면 아무 글도 순서가 바뀌면 안 됨')
+  const good = await call('admin', 'POST', '/rpc/reorder_posts', { p_request_id: randomUUID(), p_ids: ids, p_versions: vers })
+  assert.equal(good.status, 200, JSON.stringify(good.json))
+  assert.equal(Number(sql(`select position from public.posts where id = ${ids[0]}`)), 0)
+  assert.equal(Number(sql(`select position from public.posts where id = ${ids[ids.length - 1]}`)), ids.length - 1)
+  ok('reorder_posts: 버전이 하나라도 다르면 전체 거부, 맞으면 한 번에 순서 저장')
 }
 
 // ---------- 반영 요청: 60초 안 중복은 한 번만 ----------

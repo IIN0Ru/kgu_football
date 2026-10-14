@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { CloudUpload, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { friendlyError, isLocalTest, supabase } from './client'
-import { btnMain, draft } from './ui'
+import { btnMain, draft } from './ui-tokens'
 
 type Phase = 'idle' | 'sending' | 'waiting' | 'done' | 'slow' | 'error'
 const POLL_MS = 20_000
@@ -24,7 +24,7 @@ export function PublishBar({ dbRevision, siteRevision, refreshSite }: { dbRevisi
   })
   const [phase, setPhase] = useState<Phase>(wait ? 'waiting' : 'idle')
   const [error, setError] = useState('')
-  const [now, setNow] = useState(Date.now())
+  const [now, setNow] = useState(() => Date.now())
 
   const remember = (w: typeof wait) => {
     setWait(w)
