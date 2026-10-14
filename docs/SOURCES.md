@@ -51,5 +51,6 @@
 
 - Pretendard: `index.html`의 버전 고정 CDN stylesheet, SIL Open Font License 1.1.
 - Black Han Sans·Anton: `@fontsource` 패키지로 제공, SIL Open Font License 1.1. 패키지의 라이선스 파일을 기준으로 한다.
-- PrismaHero: 사용자가 전달한 21st.dev 컴포넌트를 수정해 사용한다. 원본의 정확한 배포 라이선스는 기존 기록에 명시돼 있지 않다. 확인 시 이 문서에 추가한다. 수정 내역은 `src/components/ui/prisma-hero.tsx` 머리말에 있다.
+- PrismaHero: 사용자가 전달한 21st.dev 컴포넌트를 수정해 사용한다. 수정 내역은 `src/components/ui/prisma-hero.tsx` 머리말에 있다.
+  - 라이선스 확인(2026-10-14): 원본 페이지 https://21st.dev/@rahil1202/components/prisma-hero (작성자 Rahil Vahora)에 **'License: unknown'** 으로 표시됨. 21st.dev 안내는 "대부분 MIT 이지만 컴포넌트마다 페이지의 라이선스를 확인하라"고 함 → 이 컴포넌트는 사용 허가가 확인되지 않은 상태. 처리 방법(작성자에게 허가 요청 또는 직접 다시 작성)은 사용자 결정 대기
 - impeccable: `pbakaus/impeccable`의 디자인·움직임 지침 참고, Apache-2.0. 기존 기록의 참고 버전은 v4.5.0, 커밋 `ece38d9`다. 도구 설치 실패 후 Claude 작업 환경에 복사해 사용했으며 이 저장소에 스킬 파일은 포함하지 않았다.
