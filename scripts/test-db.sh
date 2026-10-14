@@ -29,8 +29,8 @@ export PGOPTIONS="-c client_min_messages=warning"
 export PSQL="psql -h $WORK -p $PORT -U postgres -d postgres -v ON_ERROR_STOP=1 -q"
 
 $PSQL -f "$ROOT/supabase/test/local_stub.sql"
-$PSQL -f "$ROOT/supabase/migrations/0001_admin_schema.sql"
-$PSQL -f "$ROOT/supabase/migrations/0001_admin_schema.sql"   # 두 번 돌려도 되는지
+for M in "$ROOT"/supabase/migrations/*.sql; do $PSQL -f "$M"; done
+for M in "$ROOT"/supabase/migrations/*.sql; do $PSQL -f "$M"; done   # 두 번 돌려도 되는지
 node "$ROOT/scripts/make-seed.mjs" >/dev/null
 $PSQL -f "$ROOT/supabase/seed.sql"
 $PSQL -f "$ROOT/supabase/seed.sql"                           # 두 번 돌려도 되는지

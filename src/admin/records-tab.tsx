@@ -3,45 +3,110 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { friendlyError, supabase } from './client'
-import { loadRecords, shortDate, type AdminData, type PlayerRecord } from './data'
+import { loadRecords, shortDate, type AdminData, type Match, type PlayerRecord } from './data'
 import { parsePlayers } from './parse'
-import { Badge, btnLine, btnMain, draft, FeedbackLine, input, label, type Feedback } from './ui'
+import { Badge, FeedbackLine, type Feedback } from './ui'
+import { btnLine, btnMain, draft, input, label } from './ui-tokens'
 
 const dash = (n: number) => (n ? n : '–')
 
-export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; reload: () => Promise<void>; initialMatch: number | null }) {
-  const ours = data.teams.find((t) => t.is_ours)!
-  const team = useMemo(() => new Map(data.teams.map((t) => [t.id, t.short_name])), [data.teams])
-  const playerName = useMemo(() => new Map(data.players.map((p) => [p.id, p.name])), [data.players])
+type Saved = { matchId: number; rows: PlayerRecord[] } | { matchId: number; error: string } | null
+
+/** 바깥: 경기 고르기·안내 문구. 안쪽 RecordsForm 은 경기(와 버전)가 바뀔 때 새로 만들어져 입력값이 그 경기 값으로 시작함 */
+export function RecordsTab({
+  data,
+  reload,
+  initialMatch,
+  onDirtyChange,
+}: {
+  data: AdminData
+  reload: () => Promise<void>
+  initialMatch: number | null
+  onDirtyChange: (dirty: boolean) => void
+}) {
   const finished = data.matches.filter((m) => m.status === 'finished' && !m.archived_at)
   const defaultId = initialMatch ?? finished.find((m) => m.records_status === 'pending')?.id ?? finished[finished.length - 1]?.id ?? null
   const [matchId, setMatchId] = useState<number | null>(defaultId)
+  const [feedback, setFeedback] = useState<Feedback>(null)
   const match = finished.find((m) => m.id === matchId) ?? null
 
-  const [text, setText] = useState(() => (matchId ? draft.get(`records:${matchId}`) : ''))
-  const [saved, setSaved] = useState<PlayerRecord[] | null>(null)
-  const [unattributed, setUnattributed] = useState('0')
-  const [note, setNote] = useState('')
+  if (finished.length === 0 || !match) return <p className="text-base text-fg/60">끝난 경기가 아직 없어요. ‘경기’ 탭에서 결과를 먼저 저장해 주세요.</p>
+  return (
+    <RecordsForm
+      key={`${match.id}-${match.version}`}
+      data={data}
+      reload={reload}
+      match={match}
+      finished={finished}
+      onPick={(id) => {
+        setFeedback(null)
+        setMatchId(id)
+      }}
+      feedback={feedback}
+      setFeedback={setFeedback}
+      onDirtyChange={onDirtyChange}
+    />
+  )
+}
+
+function RecordsForm({
+  data,
+  reload,
+  match,
+  finished,
+  onPick,
+  feedback,
+  setFeedback,
+  onDirtyChange,
+}: {
+  data: AdminData
+  reload: () => Promise<void>
+  match: Match
+  finished: Match[]
+  onPick: (id: number) => void
+  feedback: Feedback
+  setFeedback: (f: Feedback) => void
+  onDirtyChange: (dirty: boolean) => void
+}) {
+  const ours = data.teams.find((t) => t.is_ours)!
+  const team = useMemo(() => new Map(data.teams.map((t) => [t.id, t.short_name])), [data.teams])
+  const playerName = useMemo(() => new Map(data.players.map((p) => [p.id, p.name])), [data.players])
+  const draftKey = `records:${match.id}`
+
+  const [text, setText] = useState(() => draft.get(draftKey))
+  const [savedState, setSavedState] = useState<Saved>(null)
+  const [unattributed, setUnattributed] = useState(String(match.kgu_unattributed_goals))
+  const [note, setNote] = useState(match.records_note ?? '')
+  // 점수 정정: 선수 기록과 함께 한 번에 저장 (GPT 리뷰 2-2)
+  const [homeScore, setHomeScore] = useState(String(match.home_score ?? ''))
+  const [awayScore, setAwayScore] = useState(String(match.away_score ?? ''))
   const [dropBad, setDropBad] = useState(false)
+  const [confirmed, setConfirmed] = useState(false)
   const [busy, setBusy] = useState(false)
-  const [feedback, setFeedback] = useState<Feedback>(null)
   const requestId = useRef<string | null>(null) // 연결이 끊겨 다시 누를 때 같은 요청으로 (두 번 저장 방지)
 
+  // 저장된 선수 기록: 늦게 온 응답이 다른 경기 화면에 섞이지 않게 경기 번호를 같이 보관, 실패는 빈 목록과 구분 (리뷰 2-3)
   useEffect(() => {
-    if (!match) return
-    setSaved(null)
-    loadRecords(match.id).then(setSaved, () => setSaved([]))
-    setText(draft.get(`records:${match.id}`))
-    setUnattributed(String(match.kgu_unattributed_goals))
-    setNote(match.records_note ?? '')
-    setDropBad(false)
-    requestId.current = null
-  }, [match?.id, match?.version])
-  // 다른 경기를 고를 때만 안내 문구를 지움 (저장 직후 새로 불러올 때는 '저장했어요'를 남김)
-  useEffect(() => setFeedback(null), [match?.id])
+    let alive = true
+    loadRecords(match.id).then(
+      (rows) => alive && setSavedState({ matchId: match.id, rows }),
+      (e) => alive && setSavedState({ matchId: match.id, error: friendlyError(e) }),
+    )
+    return () => {
+      alive = false
+    }
+  }, [match.id])
+  const saved = savedState && savedState.matchId === match.id && 'rows' in savedState ? savedState.rows : null
+  const savedError = savedState && savedState.matchId === match.id && 'error' in savedState ? savedState.error : null
+
+  const scoreChanged = homeScore !== String(match.home_score ?? '') || awayScore !== String(match.away_score ?? '')
+  const dirty = text.trim() !== '' || scoreChanged
+  useEffect(() => onDirtyChange(dirty), [dirty, onDirtyChange])
 
   const parsed = useMemo(() => (text.trim() ? parsePlayers(text, ours.short_name) : null), [text, ours.short_name])
-  const kguScore = match ? (match.home_team_id === ours.id ? match.home_score : match.away_score) ?? 0 : 0
+  const hs = /^\d{1,2}$/.test(homeScore) ? Number(homeScore) : NaN
+  const as = /^\d{1,2}$/.test(awayScore) ? Number(awayScore) : NaN
+  const kguScore = match.home_team_id === ours.id ? hs : as
   const extra = /^\d+$/.test(unattributed) ? Number(unattributed) : NaN
   const goalSum = parsed?.rows.reduce((s, r) => s + r.goals, 0) ?? 0
   const sumOk = !Number.isNaN(extra) && goalSum + extra === kguScore
@@ -58,11 +123,24 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
   if (parsed && parsed.errors.length > 0 && !dropBad) problems.push('읽지 못한 줄을 고치거나 ‘읽지 못한 줄 빼고 저장’을 골라 주세요')
   if (parsed?.headerFound && !sumOk) problems.push(`선수 득점 합 ${goalSum} + 기록에 없는 득점 ${Number.isNaN(extra) ? '?' : extra} ≠ 경기대 점수 ${kguScore}`)
   if (extra > 0 && !note.trim()) problems.push('기록에 없는 득점의 사유를 적어 주세요 (예: 상대 자책골로 보임)')
+  if (Number.isNaN(hs) || Number.isNaN(as)) problems.push('점수를 숫자로 적어 주세요')
+  if (parsed?.headerFound && saved === null) problems.push(savedError ? `저장된 기록을 불러오지 못했어요: ${savedError}` : '저장된 기록을 불러오는 중이에요')
+
+  // 통째로 바꾸기 전 확인 (리뷰 2-4): 빠지는 선수·뺀 줄·없는 칸이 있으면 체크해야 저장
+  const newIds = new Set(parsed?.rows.map((r) => byName.get(r.name)).filter(Boolean))
+  const removed = (saved ?? []).filter((r) => !newIds.has(r.player_id)).map((r) => playerName.get(r.player_id) ?? '?')
+  const cautions = [
+    removed.length ? `지금 저장된 선수 중 ${removed.length}명이 빠져요: ${removed.join(', ')}` : null,
+    dropBad && parsed?.errors.length ? `읽지 못한 ${parsed.errors.length}줄을 빼고 저장해요` : null,
+    parsed?.missingColumns.length ? `표에 ${parsed.missingColumns.join('·')} 칸이 없어 모두 0으로 저장해요` : null,
+    scoreChanged ? `점수를 ${match.home_score} : ${match.away_score} → ${homeScore} : ${awayScore} 로 고쳐요` : null,
+  ].filter((x): x is string => Boolean(x))
+  if (parsed?.headerFound && cautions.length > 0 && !confirmed) problems.push('아래 확인 사항을 읽고 체크해 주세요')
 
   // KUSF 에 이 경기 선수 기록이 끝내 안 나올 때: '기록 없음 + 사유' (공개 화면에서 '확인 중' 대신 사유를 보여 줌)
   const [missingNote, setMissingNote] = useState('')
   async function saveUnavailable() {
-    if (!match || !missingNote.trim()) return
+    if (!missingNote.trim()) return
     setBusy(true)
     setFeedback(null)
     try {
@@ -90,7 +168,7 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
   }
 
   async function save() {
-    if (!match || !parsed || problems.length) return
+    if (!parsed || problems.length) return
     setBusy(true)
     setFeedback(null)
     requestId.current ??= crypto.randomUUID()
@@ -108,8 +186,8 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
         p_expected_version: match.version,
         p_request_id: requestId.current,
         p_status: 'finished',
-        p_home_score: match.home_score,
-        p_away_score: match.away_score,
+        p_home_score: hs,
+        p_away_score: as,
         p_kgu_unattributed_goals: extra,
         p_records_status: 'complete',
         p_records_note: extra > 0 ? note.trim() : null,
@@ -120,8 +198,9 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
         throw error
       }
       requestId.current = null
-      draft.set(`records:${match.id}`, '')
+      draft.set(draftKey, '')
       setText('')
+      onDirtyChange(false)
       await reload()
       setFeedback({
         tone: 'ok',
@@ -134,14 +213,12 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
     }
   }
 
-  if (finished.length === 0) return <p className="text-base text-fg/60">끝난 경기가 아직 없어요. ‘경기’ 탭에서 결과를 먼저 저장해 주세요.</p>
-
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="flex flex-col gap-4">
         <label className={label}>
           어느 경기의 기록인가요
-          <select className={input} value={matchId ?? ''} onChange={(e) => setMatchId(Number(e.target.value))}>
+          <select className={input} value={match.id} onChange={(e) => onPick(Number(e.target.value))}>
             {[...finished].reverse().map((m) => (
               <option key={m.id} value={m.id}>
                 {shortDate(m.match_date)} {team.get(m.home_team_id)} {m.home_score} : {m.away_score} {team.get(m.away_team_id)}
@@ -150,7 +227,8 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
             ))}
           </select>
         </label>
-        {match && saved && (
+        {savedError && <FeedbackLine value={{ tone: 'error', text: `저장된 기록을 불러오지 못했어요: ${savedError}` }} />}
+        {saved && (
           <p className="flex flex-wrap items-center gap-2 text-sm text-fg/60">
             지금 저장된 기록:
             {match.records_status === 'pending' ? (
@@ -174,7 +252,8 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
             onChange={(e) => {
               setText(e.target.value)
               setDropBad(false)
-              if (match) draft.set(`records:${match.id}`, e.target.value)
+              setConfirmed(false)
+              draft.set(draftKey, e.target.value)
             }}
           />
         </label>
@@ -191,7 +270,7 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
               {parsed.headerFound && (
                 <span className="text-base">
                   선수 {parsed.rows.length}명 · 득점 합 <b className="font-medium">{goalSum}</b>
-                  {extra > 0 && <> + 기록에 없는 득점 {extra}</>} {sumOk ? '=' : '≠'} 경기대 점수 <b className="font-medium">{kguScore}</b>
+                  {extra > 0 && <> + 기록에 없는 득점 {extra}</>} {sumOk ? '=' : '≠'} 경기대 점수 <b className="font-medium">{Number.isNaN(kguScore) ? '?' : kguScore}</b>
                   {sumOk && <Check className="ml-1 inline h-4 w-4" aria-label="맞음" />}
                 </span>
               )}
@@ -242,6 +321,21 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
           </>
         )}
 
+        <div className="flex items-end gap-3">
+          <label className={cn(label, 'flex-1')}>
+            {team.get(match.home_team_id)} (홈) 점수
+            <input className={cn(input, 'text-center font-num text-xl')} inputMode="numeric" value={homeScore} onChange={(e) => (setHomeScore(e.target.value), setConfirmed(false))} />
+          </label>
+          <span className="pb-2.5 font-num text-xl text-fg/30" aria-hidden="true">
+            :
+          </span>
+          <label className={cn(label, 'flex-1')}>
+            {team.get(match.away_team_id)} (원정) 점수
+            <input className={cn(input, 'text-center font-num text-xl')} inputMode="numeric" value={awayScore} onChange={(e) => (setAwayScore(e.target.value), setConfirmed(false))} />
+          </label>
+        </div>
+        <p className="-mt-2 text-xs text-fg/60">점수가 틀렸으면 여기서 고치면 선수 기록과 함께 한 번에 저장돼요.</p>
+
         <div className="grid gap-3 sm:grid-cols-[8rem_1fr]">
           <label className={label}>
             기록에 없는 득점
@@ -262,10 +356,24 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
             ))}
           </ul>
         )}
+        {parsed?.headerFound && cautions.length > 0 && (
+          <div className="flex flex-col gap-2 rounded-xl border border-accent/50 bg-crest/60 p-3 text-sm">
+            <span className="font-medium">이 경기의 선수 기록을 통째로 바꾸기 전에 확인해 주세요</span>
+            <ul className="flex flex-col gap-1">
+              {cautions.map((c) => (
+                <li key={c}>· {c}</li>
+              ))}
+            </ul>
+            <label className="flex items-center gap-2">
+              <input type="checkbox" className="h-4 w-4 accent-[var(--accent)]" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)} />
+              확인했어요, 이대로 저장할게요
+            </label>
+          </div>
+        )}
         <FeedbackLine value={feedback} />
         <div className="flex flex-wrap justify-end gap-2">
           {parsed && parsed.errors.length > 0 && (
-            <button className={btnLine} aria-pressed={dropBad} onClick={() => setDropBad((v) => !v)}>
+            <button className={btnLine} aria-pressed={dropBad} onClick={() => (setDropBad((v) => !v), setConfirmed(false))}>
               {dropBad ? '✓ 읽지 못한 줄 빼고 저장' : '읽지 못한 줄 빼고 저장'}
             </button>
           )}
@@ -274,12 +382,12 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
             {busy ? '저장 중…' : '저장'}
           </button>
         </div>
-        {match && !parsed && match.records_status !== 'unavailable' && (
+        {!parsed && match.records_status !== 'unavailable' && (
           <details className="text-sm">
             <summary className="cursor-pointer text-fg/60">KUSF 에 이 경기 선수 기록이 끝내 안 나오나요?</summary>
             <div className="mt-3 flex flex-col gap-3">
               <p className="text-fg/60">
-                ‘기록 없음’으로 저장하면 사이트에 ‘확인 중’ 대신 사유가 보여요. 저장된 선수 줄이 있으면 지워져요.
+                ‘기록 없음’으로 저장하면 시즌 기록 페이지의 ‘확인 중’ 목록에서 빠져요. 저장된 선수 줄이 있으면 지워져요.
               </p>
               <label className={label}>
                 사유
@@ -291,7 +399,7 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
             </div>
           </details>
         )}
-        {match && saved && saved.length > 0 && !parsed && (
+        {saved && saved.length > 0 && !parsed && (
           <details className="text-sm">
             <summary className="cursor-pointer text-fg/60">저장된 선수 기록 보기</summary>
             <ul className="mt-2">

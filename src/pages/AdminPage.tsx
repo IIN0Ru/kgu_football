@@ -22,7 +22,8 @@ import { PostsTab } from '@/admin/posts-tab'
 import { PublishBar } from '@/admin/publish-bar'
 import { RecordsTab } from '@/admin/records-tab'
 import { StandingsTab } from '@/admin/standings-tab'
-import { btnLine, btnMain, FeedbackLine, input, label, type Feedback } from '@/admin/ui'
+import { FeedbackLine, type Feedback } from '@/admin/ui'
+import { btnLine, btnMain, input, label } from '@/admin/ui-tokens'
 
 const card = 'rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10'
 
@@ -92,6 +93,16 @@ function Workspace({ name, onLogout }: { name: string; onLogout: () => void }) {
     return tabs.some((x) => x.id === t) ? (t as Tab) : 'matches'
   })
   const [recordsMatch, setRecordsMatch] = useState<number | null>(null)
+  // 저장하지 않은 수정 (리뷰 2-3): 탭을 옮기거나 창을 닫을 때 확인
+  const [dirty, setDirty] = useState(false)
+  const [pendingTab, setPendingTab] = useState<Tab | null>(null)
+  const onDirtyChange = useCallback((d: boolean) => setDirty(d), [])
+  useEffect(() => {
+    if (!dirty) return
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault()
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [dirty])
 
   const reload = useCallback(async () => {
     try {
@@ -122,7 +133,13 @@ function Workspace({ name, onLogout }: { name: string; onLogout: () => void }) {
     refreshSite()
   }, [reload, refreshSite])
 
-  function go(t: Tab) {
+  function go(t: Tab, force = false) {
+    if (dirty && t !== tab && !force) {
+      setPendingTab(t)
+      return
+    }
+    setPendingTab(null)
+    setDirty(false)
     setTab(t)
     const u = new URL(location.href)
     u.searchParams.set('tab', t)
@@ -161,6 +178,17 @@ function Workspace({ name, onLogout }: { name: string; onLogout: () => void }) {
           </button>
         ))}
       </nav>
+      {pendingTab && (
+        <div role="alert" className="flex flex-wrap items-center gap-2 rounded-xl border border-accent/50 bg-crest/60 p-3 text-sm">
+          <span className="flex-1">저장하지 않은 수정이 있어요. 다른 탭으로 가면 입력한 내용이 사라져요 (붙여 넣은 표는 남아요).</span>
+          <button className={btnLine} onClick={() => setPendingTab(null)}>
+            계속 고치기
+          </button>
+          <button className={btnLine} onClick={() => go(pendingTab, true)}>
+            버리고 이동
+          </button>
+        </div>
+      )}
 
       {loadError && (
         <div className="flex flex-col items-start gap-3">
@@ -175,15 +203,16 @@ function Workspace({ name, onLogout }: { name: string; onLogout: () => void }) {
         <MatchesTab
           data={data}
           reload={reload}
+          onDirtyChange={onDirtyChange}
           onGoRecords={(id) => {
             setRecordsMatch(id)
             go('records')
           }}
         />
       )}
-      {data && tab === 'records' && <RecordsTab key={recordsMatch ?? 'auto'} data={data} reload={reload} initialMatch={recordsMatch} />}
+      {data && tab === 'records' && <RecordsTab key={recordsMatch ?? 'auto'} data={data} reload={reload} initialMatch={recordsMatch} onDirtyChange={onDirtyChange} />}
       {data && tab === 'standings' && <StandingsTab data={data} reload={reload} />}
-      {data && tab === 'posts' && <PostsTab data={data} reload={reload} />}
+      {data && tab === 'posts' && <PostsTab data={data} reload={reload} onDirtyChange={onDirtyChange} />}
       {data && tab === 'log' && <LogTab data={data} siteChangedAt={site.changedAt} />}
     </section>
   )
@@ -191,7 +220,6 @@ function Workspace({ name, onLogout }: { name: string; onLogout: () => void }) {
 
 export default function AdminPage() {
   const [session, setSession] = useState<Session | null | undefined>(isLocalTest ? null : undefined)
-  const [me, setMe] = useState<{ is_admin: boolean; display_name: string | null } | null>(null)
 
   // 검색 엔진에 나오지 않게
   useEffect(() => {
@@ -214,14 +242,20 @@ export default function AdminPage() {
     return () => data.subscription.unsubscribe()
   }, [])
 
-  const userId = session?.user.id
+  // 운영진 확인 결과는 어느 계정의 것인지와 함께 보관 → 로그아웃·계정 전환 때 따로 지울 필요 없음
+  const userId = session?.user.id ?? (isLocalTest ? 'local' : null)
+  const [whoami, setWhoami] = useState<{ userId: string; value: { is_admin: boolean; display_name: string | null } } | null>(null)
   useEffect(() => {
-    if (!isLocalTest && !userId) {
-      setMe(null)
-      return
+    if (!userId) return
+    let alive = true
+    supabase.rpc('whoami').then(({ data, error }) => {
+      if (alive) setWhoami({ userId, value: error ? { is_admin: false, display_name: null } : data })
+    })
+    return () => {
+      alive = false
     }
-    supabase.rpc('whoami').then(({ data, error }) => setMe(error ? { is_admin: false, display_name: null } : data))
   }, [userId])
+  const me = whoami && whoami.userId === userId ? whoami.value : null
 
   const logout = () => supabase.auth.signOut()
   const checking = session === undefined || ((isLocalTest || session) && !me)

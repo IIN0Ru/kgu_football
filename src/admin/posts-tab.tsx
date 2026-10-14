@@ -1,10 +1,11 @@
 /** 글 탭: 블로그·매거진 글 추가·고치기·순서·보관/되살리기 (사진 없음: 제목·소개·원문 링크만) */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Archive, ArrowDown, ArrowUp, Check, ExternalLink, Plus, RotateCcw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { friendlyError, supabase } from './client'
 import { updateVersioned, type AdminData, type Post } from './data'
-import { btnLine, btnMain, chip, FeedbackLine, input, label, type Feedback } from './ui'
+import { FeedbackLine, type Feedback } from './ui'
+import { btnLine, btnMain, chip, input, label, nowIso } from './ui-tokens'
 
 type View = 'blog' | 'magazine' | 'archived'
 const defaults = { blog: { source: '축구부 블로그' }, magazine: { source: '축구부 매거진' } }
@@ -22,7 +23,7 @@ const fromPost = (p: Post): Form => ({ url: p.url, title: p.title, summary: p.su
 /** 사이트에 보이는 순서와 같게: 날짜 최신순 → 순서 번호 → 먼저 넣은 것 */
 const byOrder = (a: Post, b: Post) => (b.published_on ?? '').localeCompare(a.published_on ?? '') || a.position - b.position || a.id - b.id
 
-export function PostsTab({ data, reload }: { data: AdminData; reload: () => Promise<void> }) {
+export function PostsTab({ data, reload, onDirtyChange }: { data: AdminData; reload: () => Promise<void>; onDirtyChange: (dirty: boolean) => void }) {
   const [view, setView] = useState<View>('blog')
   const [editing, setEditing] = useState<Post | null>(null)
   const [form, setForm] = useState<Form>(empty)
@@ -34,9 +35,18 @@ export function PostsTab({ data, reload }: { data: AdminData; reload: () => Prom
   const list = data.posts.filter((p) => (view === 'archived' ? p.archived_at : !p.archived_at && p.kind === view)).sort(byOrder)
   const set = (patch: Partial<Form>) => setForm((f) => ({ ...f, ...patch }))
 
-  useEffect(() => {
-    if (view !== 'archived') setNewKind(view)
-  }, [view])
+  // 저장하지 않은 글이 있는데 다른 글·분류를 누르면 먼저 물어봄 (리뷰 2-3)
+  const dirty = JSON.stringify(form) !== JSON.stringify(editing ? fromPost(editing) : empty)
+  useEffect(() => onDirtyChange(dirty), [dirty, onDirtyChange])
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null)
+  const guard = (fn: () => void) => (dirty ? setPendingAction(() => fn) : fn())
+  const requestId = useRef<string | null>(null)
+
+  function pickView(v: View) {
+    setView(v)
+    if (v !== 'archived') setNewKind(v)
+    edit(null)
+  }
 
   function edit(p: Post | null) {
     setEditing(p)
@@ -87,7 +97,7 @@ export function PostsTab({ data, reload }: { data: AdminData; reload: () => Prom
   async function toggleArchive(p: Post) {
     setBusy(true)
     try {
-      await updateVersioned('posts', p.id, p.version, { archived_at: p.archived_at ? null : new Date().toISOString() })
+      await updateVersioned('posts', p.id, p.version, { archived_at: p.archived_at ? null : nowIso() })
       await reload()
       if (editing?.id === p.id) edit(null)
       setFeedback({ tone: 'ok', text: p.archived_at ? '되살렸어요' : '보관했어요 (‘보관함’에서 되살릴 수 있어요)' })
@@ -106,9 +116,18 @@ export function PostsTab({ data, reload }: { data: AdminData; reload: () => Prom
     ;[order[i], order[j]] = [order[j], order[i]]
     setBusy(true)
     try {
-      for (const [pos, p] of order.entries()) {
-        if (p.position !== pos) await updateVersioned('posts', p.id, p.version, { position: pos })
+      // 순서를 한 번에 저장 (0002 reorder_posts): 하나라도 다른 사람이 먼저 고쳤으면 전체 취소
+      requestId.current ??= crypto.randomUUID()
+      const { error } = await supabase.rpc('reorder_posts', {
+        p_request_id: requestId.current,
+        p_ids: order.map((p) => p.id),
+        p_versions: order.map((p) => p.version),
+      })
+      if (error) {
+        if (!/fetch|network/i.test(error.message)) requestId.current = null
+        throw error
       }
+      requestId.current = null
       await reload()
     } catch (e) {
       setFeedback({ tone: 'error', text: friendlyError(e) })
@@ -127,6 +146,24 @@ export function PostsTab({ data, reload }: { data: AdminData; reload: () => Prom
   return (
     <div className="grid gap-6 lg:grid-cols-12">
       <div className="flex flex-col gap-2 lg:col-span-7">
+        {pendingAction && (
+          <div role="alert" className="flex flex-wrap items-center gap-2 rounded-xl border border-accent/50 bg-crest/60 p-3 text-sm">
+            <span className="flex-1">저장하지 않은 글 수정이 있어요.</span>
+            <button className={btnLine} onClick={() => setPendingAction(null)}>
+              계속 고치기
+            </button>
+            <button
+              className={btnLine}
+              onClick={() => {
+                const fn = pendingAction
+                setPendingAction(null)
+                fn()
+              }}
+            >
+              버리고 이동
+            </button>
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-2">
           {(
             [
@@ -135,7 +172,7 @@ export function PostsTab({ data, reload }: { data: AdminData; reload: () => Prom
               ['archived', '보관함'],
             ] as const
           ).map(([v, t]) => (
-            <button key={v} className={chip(view === v)} aria-pressed={view === v} onClick={() => (setView(v), edit(null))}>
+            <button key={v} className={chip(view === v)} aria-pressed={view === v} onClick={() => guard(() => pickView(v))}>
               {t}
             </button>
           ))}
@@ -155,7 +192,7 @@ export function PostsTab({ data, reload }: { data: AdminData; reload: () => Prom
                   </button>
                 </span>
               )}
-              <button className="flex min-w-0 flex-1 flex-col text-left" onClick={() => edit(p)}>
+              <button className="flex min-w-0 flex-1 flex-col text-left" onClick={() => guard(() => edit(p))}>
                 <span className="truncate text-base">{p.title}</span>
                 <span className="text-xs text-fg/60">
                   {p.kind === 'blog' ? '블로그' : '매거진'} · {p.category}
@@ -185,7 +222,7 @@ export function PostsTab({ data, reload }: { data: AdminData; reload: () => Prom
         <div className="flex items-center justify-between gap-2">
           <span className="text-base font-medium">{editing ? '글 고치기' : '새 글 추가'}</span>
           {editing && (
-            <button type="button" className={btnLine} onClick={() => edit(null)}>
+            <button type="button" className={btnLine} onClick={() => guard(() => edit(null))}>
               <Plus className="h-4 w-4" aria-hidden="true" />새 글로
             </button>
           )}

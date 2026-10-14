@@ -1,11 +1,12 @@
 /** 순위표 탭: KUSF 순위표 붙여넣기 → 지금 표와 비교 → 통째로 교체 */
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { friendlyError, supabase } from './client'
-import { todayKst, type AdminData, type Standing } from './data'
+import { todayKst, type AdminData } from './data'
 import { parseStandings, schoolKey } from './parse'
-import { btnMain, draft, FeedbackLine, input, label, type Feedback } from './ui'
+import { FeedbackLine, type Feedback } from './ui'
+import { btnMain, draft, input, label } from './ui-tokens'
 
 const cols = [
   ['rank', '순위'],
@@ -22,6 +23,7 @@ export function StandingsTab({ data, reload }: { data: AdminData; reload: () => 
   const [text, setText] = useState(() => draft.get('standings'))
   const [busy, setBusy] = useState(false)
   const [feedback, setFeedback] = useState<Feedback>(null)
+  const requestId = useRef<string | null>(null)
   const teamByKey = useMemo(() => new Map(data.teams.map((t) => [schoolKey(t.short_name), t])), [data.teams])
   const current = useMemo(() => new Map(data.standings.map((s) => [s.team_id, s])), [data.standings])
   const base = data.standings[0] ?? { season: Number(todayKst().slice(0, 4)), competition: data.matches[0]?.competition ?? 'KUSF 대학축구 U리그 4권역', group_label: '' }
@@ -73,41 +75,44 @@ export function StandingsTab({ data, reload }: { data: AdminData; reload: () => 
     try {
       const noYellow = parsed.missingColumns.includes('경고')
       const noRed = parsed.missingColumns.includes('퇴장')
-      const rows: Omit<Standing, 'checked_on'>[] = parsed.rows.map((r) => {
+      const rows = parsed.rows.map((r) => {
         const teamId = teamByKey.get(schoolKey(r.team))!.id
         return {
-        season: base.season,
-        competition: base.competition,
-        group_label: base.group_label,
-        team_id: teamId,
-        rank: r.rank,
-        played: r.played,
-        won: r.won,
-        drawn: r.drawn,
-        lost: r.lost,
-        goals_for: r.goalsFor,
-        goals_against: r.goalsAgainst,
-        points: r.points,
-        points_adjustment: r.points - (r.won * 3 + r.drawn),
-        // 표에 경고·퇴장 칸이 없으면 지금 값을 그대로 둠
-        yellow: noYellow ? current.get(teamId)?.yellow ?? 0 : r.yellow,
-        red: noRed ? current.get(teamId)?.red ?? 0 : r.red,
+          team_id: teamId,
+          rank: r.rank,
+          played: r.played,
+          won: r.won,
+          drawn: r.drawn,
+          lost: r.lost,
+          goals_for: r.goalsFor,
+          goals_against: r.goalsAgainst,
+          points: r.points,
+          // 표에 경고·퇴장 칸이 없으면 지금 값을 그대로 둠
+          yellow: noYellow ? (current.get(teamId)?.yellow ?? 0) : r.yellow,
+          red: noRed ? (current.get(teamId)?.red ?? 0) : r.red,
         }
       })
-      // 1) 있으면 고치고 없으면 넣기 (한 번에)  2) 새 표에 없는 학교 줄은 지움
-      const { error } = await supabase
-        .from('standings')
-        .upsert(rows.map((r) => ({ ...r, checked_on: todayKst() })), { onConflict: 'season,competition,group_label,team_id' })
-      if (error) throw error
-      const keep = rows.map((r) => r.team_id)
-      const { error: delError } = await supabase
-        .from('standings')
-        .delete()
-        .eq('season', base.season)
-        .eq('competition', base.competition)
-        .eq('group_label', base.group_label)
-        .not('team_id', 'in', `(${keep.join(',')})`)
-      if (delError) throw delError
+      // 통째로 교체를 한 번에 (0002 replace_standings): 불러온 뒤 다른 사람이 고쳤으면 PT409,
+      // 경기대 줄이 저장된 점수와 어긋나면 DB 가 거부하고 아무것도 안 바뀜. 승점 조정은 DB 가 계산
+      requestId.current ??= crypto.randomUUID()
+      const expected = [...data.standings]
+        .filter((s) => s.season === base.season && s.competition === base.competition && s.group_label === base.group_label)
+        .sort((a, b) => a.team_id - b.team_id)
+        .map((s) => `${s.team_id}:${s.version}`)
+        .join(',')
+      const { error } = await supabase.rpc('replace_standings', {
+        p_season: base.season,
+        p_competition: base.competition,
+        p_group_label: base.group_label,
+        p_expected: expected,
+        p_request_id: requestId.current,
+        p_rows: rows,
+      })
+      if (error) {
+        if (!/fetch|network/i.test(error.message)) requestId.current = null
+        throw error
+      }
+      requestId.current = null
       draft.set('standings', '')
       setText('')
       await reload()

@@ -1,10 +1,11 @@
 /** 경기 탭: 일정·상태·점수 고치기, 경기 추가, 보관/되살리기 */
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { AlertTriangle, Archive, Check, Plus, RotateCcw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { friendlyError, supabase } from './client'
-import { dateLabel, loadRecords, matchBadge, shortDate, statusLabel, updateVersioned, type AdminData, type Match, type MatchStatus } from './data'
-import { Badge, btnLine, btnMain, chip, FeedbackLine, input, intOrNull, label, type Feedback } from './ui'
+import { dateLabel, matchBadge, shortDate, statusLabel, updateVersioned, type AdminData, type Match, type MatchStatus } from './data'
+import { Badge, FeedbackLine, type Feedback } from './ui'
+import { btnLine, btnMain, chip, input, intOrNull, label, nowIso } from './ui-tokens'
 
 interface Form {
   status: MatchStatus
@@ -45,7 +46,17 @@ const fromMatch = (m: Match): Form => ({
   newAway: '',
 })
 
-export function MatchesTab({ data, reload, onGoRecords }: { data: AdminData; reload: () => Promise<void>; onGoRecords: (id: number) => void }) {
+export function MatchesTab({
+  data,
+  reload,
+  onGoRecords,
+  onDirtyChange,
+}: {
+  data: AdminData
+  reload: () => Promise<void>
+  onGoRecords: (id: number) => void
+  onDirtyChange: (dirty: boolean) => void
+}) {
   const ours = data.teams.find((t) => t.is_ours)!
   const team = useMemo(() => new Map(data.teams.map((t) => [t.id, t.short_name])), [data.teams])
   const [showArchived, setShowArchived] = useState(false)
@@ -62,10 +73,14 @@ export function MatchesTab({ data, reload, onGoRecords }: { data: AdminData; rel
   const original = match ? fromMatch(match) : blank(ours.id)
   const dirty = JSON.stringify(form) !== JSON.stringify(original)
 
-  // 다시 불러온 뒤 선택한 경기의 새 값으로 맞춤
-  useEffect(() => {
-    if (match) setForm(fromMatch(match))
-  }, [match?.version])
+  // 다시 불러온 뒤 선택한 경기의 새 값으로 맞춤 (그리는 중에 맞춰 effect 없이)
+  const [syncedVersion, setSyncedVersion] = useState(match?.version)
+  if (match && match.version !== syncedVersion) {
+    setSyncedVersion(match.version)
+    setForm(fromMatch(match))
+  }
+  useEffect(() => onDirtyChange(dirty), [dirty, onDirtyChange])
+  const requestId = useRef<string | null>(null) // 연결이 끊겨 다시 누를 때 같은 요청으로
 
   function select(id: number | 'new') {
     if (dirty && id !== selected) {
@@ -141,22 +156,24 @@ export function MatchesTab({ data, reload, onGoRecords }: { data: AdminData; rel
         setSelected(row.id as number)
         setFeedback({ tone: 'ok', text: '경기를 추가했어요. 위의 ‘사이트에 반영’을 눌러야 사이트에 보여요' })
       } else if (match) {
-        // 선수 기록이 이미 저장된 경기: 점수를 바꾸면 선수 득점 합과 어긋나지 않는지 먼저 확인
-        if (match.records_status === 'complete') {
-          if (!finished) {
-            throw { message: '선수 기록이 저장된 경기는 ‘끝남’에서 다른 상태로 바꿀 수 없어요. 개발자에게 알려 주세요' }
-          }
-          const kgu = match.home_team_id === ours.id ? scores.home_score : scores.away_score
-          const before = match.home_team_id === ours.id ? match.home_score : match.away_score
-          if (kgu !== before) {
-            const recs = await loadRecords(match.id)
-            const sum = recs.reduce((s, r) => s + r.goals, 0) + match.kgu_unattributed_goals
-            if (sum !== kgu) {
-              throw { message: `저장된 선수 득점 합이 ${sum}골이라 경기대 점수를 ${kgu}(으)로 바꿀 수 없어요. ‘선수 기록’ 탭에서 기록을 다시 붙여 넣으면서 고쳐 주세요` }
-            }
-          }
+        // 날짜·시각·장소·상태·점수를 한 번에 (0002 save_match). 선수 기록과 어긋나는 점수는 DB 가 거부
+        requestId.current ??= crypto.randomUUID()
+        const { error } = await supabase.rpc('save_match', {
+          p_match_id: match.id,
+          p_expected_version: match.version,
+          p_request_id: requestId.current,
+          p_match_date: common.match_date,
+          p_kickoff: common.kickoff,
+          p_venue: common.venue,
+          p_status: common.status,
+          p_home_score: common.home_score,
+          p_away_score: common.away_score,
+        })
+        if (error) {
+          if (!/fetch|network/i.test(error.message)) requestId.current = null
+          throw error
         }
-        await updateVersioned('matches', match.id, match.version, common)
+        requestId.current = null
         await reload()
         setFeedback({
           tone: 'ok',
@@ -167,7 +184,8 @@ export function MatchesTab({ data, reload, onGoRecords }: { data: AdminData; rel
         })
       }
     } catch (e) {
-      setFeedback({ tone: 'error', text: friendlyError(e) })
+      const text = friendlyError(e)
+      setFeedback({ tone: 'error', text: /득점 합/.test(text) ? `${text} — 점수가 틀렸다면 ‘선수 기록’ 탭에서 점수와 기록을 함께 고쳐 주세요` : text })
     } finally {
       setBusy(false)
     }
@@ -177,7 +195,7 @@ export function MatchesTab({ data, reload, onGoRecords }: { data: AdminData; rel
     if (!match) return
     setBusy(true)
     try {
-      await updateVersioned('matches', match.id, match.version, { archived_at: match.archived_at ? null : new Date().toISOString() })
+      await updateVersioned('matches', match.id, match.version, { archived_at: match.archived_at ? null : nowIso() })
       await reload()
       setFeedback({ tone: 'ok', text: match.archived_at ? '되살렸어요' : '보관했어요. 사이트에 반영하면 사이트에서 사라져요 (‘보관된 경기 보기’에서 되살릴 수 있어요)' })
     } catch (e) {

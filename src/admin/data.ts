@@ -58,6 +58,7 @@ export interface Standing {
   yellow: number
   red: number
   checked_on: string
+  version: number
 }
 export interface Post {
   id: number

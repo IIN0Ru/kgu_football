@@ -98,7 +98,12 @@ const notes = []
 const incomplete = firstN.filter((m) => !lineups.has(m.date))
 if (incomplete.length === 0) {
   let yellow = 0, red = 0
-  for (const m of firstN) for (const p of lineups.get(m.date).players) (yellow += p.yellow), (red += p.red)
+  for (const m of firstN) {
+    for (const p of lineups.get(m.date).players) {
+      yellow += p.yellow
+      red += p.red
+    }
+  }
   assert.deepEqual({ yellow: ours.yellow, red: ours.red }, { yellow, red }, `순위표 경기대 경고·퇴장과 앞 ${N}경기 선수 기록 합이 다름`)
 } else {
   notes.push(`경고·퇴장 대조 건너뜀: ${incomplete.map((m) => md(m.date)).join(', ')} 선수 기록 ${incomplete.some((m) => missing.has(m.date)) ? '없음·대기' : '대기'}`)
