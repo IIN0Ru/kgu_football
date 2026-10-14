@@ -37,10 +37,12 @@ function num(cells: string[], i: number, fallback: number | null = 0): number | 
   return INT.test(v) ? Number(v) : NaN
 }
 
-/** '홍길동(경기대)' → { name: '홍길동', school: '경기대' } */
-export function splitSchool(raw: string) {
+/** '홍길동(경기대)' → 학교, '박준원(3)' → 등번호 (KUSF 경기 기록은 괄호에 등번호) */
+export function splitSchool(raw: string): { name: string; school: string | null; number: number | null } {
   const m = raw.trim().match(/^(.+?)\s*\((.+)\)$/)
-  return m ? { name: m[1].trim(), school: m[2].trim() } : { name: raw.trim(), school: null }
+  if (!m) return { name: raw.trim(), school: null, number: null }
+  const inner = m[2].trim()
+  return /^\d{1,2}$/.test(inner) ? { name: m[1].trim(), school: null, number: Number(inner) } : { name: m[1].trim(), school: inner, number: null }
 }
 
 /** 학교 이름 맞추기: '경기대학교' · '경기 대' · '경기대' → '경기대' */
@@ -75,41 +77,76 @@ const PLAYER_COLS = {
   red: ['퇴장', '레드카드', '레드'],
 }
 
+/**
+ * KUSF '경기대 선수기록'을 복사하면 이름 칸과 숫자 칸이 따로 붙어 나온다 (2026-10-14 실제 붙여넣기로 확인):
+ *   선수명 / 박준원(3) / 황병석(4) … (한 줄에 한 명)  →  득점 도움 경고 퇴장 / 0 0 0 0 … (같은 순서)
+ * 이런 '세로 묶음'이면 이름 줄과 숫자 줄을 순서대로 짝지어 보통 표처럼 만든다. 개수가 다르면 읽지 않음
+ */
+function blockToRows(lines: string[]): { header: string[]; rows: { line: number; raw: string; cells: string[] }[]; error?: string } | null {
+  const isName = (l: string) => findColumns(splitRow(l), PLAYER_COLS).name >= 0 && splitRow(l).length === 1
+  const nameAt = lines.findIndex(isName)
+  if (nameAt < 0) return null
+  const statAt = lines.findIndex((l, i) => i > nameAt && findColumns(splitRow(l), PLAYER_COLS).goals >= 0)
+  if (statAt < 0) return null
+  const names = lines.slice(nameAt + 1, statAt).map((l, i) => ({ line: nameAt + 2 + i, text: l.trim() })).filter((x) => x.text)
+  const stats = lines.slice(statAt + 1).map((l, i) => ({ line: statAt + 2 + i, text: l })).filter((x) => x.text.trim())
+  const header = [splitRow(lines[nameAt])[0], ...splitRow(lines[statAt])]
+  if (names.length !== stats.length) {
+    return { header, rows: [], error: `선수 이름은 ${names.length}명인데 숫자 줄은 ${stats.length}줄이에요. 표를 처음부터 끝까지 다시 복사해 주세요` }
+  }
+  return {
+    header,
+    rows: names.map((n, i) => ({ line: stats[i].line, raw: `${n.text}\t${stats[i].text.trim()}`, cells: [n.text, ...splitRow(stats[i].text)] })),
+  }
+}
+
 export function parsePlayers(text: string, ourSchool = '경기대'): PlayerParse {
   const lines = text.split(/\r?\n/)
   const res: PlayerParse = { rows: [], errors: [], skipped: [], missingColumns: [], headerFound: false }
-  let cols: Record<keyof typeof PLAYER_COLS, number> | null = null
 
-  lines.forEach((raw, idx) => {
-    const line = idx + 1
-    if (!raw.trim()) return
-    const cells = splitRow(raw)
-    if (!cols) {
-      const c = findColumns(cells, PLAYER_COLS)
-      if (c.name >= 0 && c.goals >= 0) {
-        cols = c
+  // 1) 한 줄에 머리줄 전체가 있는 보통 표  2) 이름·숫자가 따로 붙은 KUSF 세로 묶음
+  let header: string[] | null = null
+  let rows: { line: number; raw: string; cells: string[] }[] = []
+  const headerAt = lines.findIndex((l) => {
+    const c = findColumns(splitRow(l), PLAYER_COLS)
+    return c.name >= 0 && c.goals >= 0
+  })
+  if (headerAt >= 0) {
+    header = splitRow(lines[headerAt])
+    rows = lines.slice(headerAt + 1).map((l, i) => ({ line: headerAt + 2 + i, raw: l, cells: splitRow(l) }))
+  } else {
+    const block = blockToRows(lines)
+    if (block) {
+      header = block.header
+      rows = block.rows
+      if (block.error) {
         res.headerFound = true
-        res.missingColumns = (['assists', 'yellow', 'red'] as const)
-          .filter((k) => c[k] < 0)
-          .map((k) => ({ assists: '도움', yellow: '경고', red: '퇴장' })[k])
+        res.errors.push({ line: 1, text: '', reason: block.error })
+        return res
       }
-      return // 머리줄 앞의 제목 줄 등은 건너뜀
     }
+  }
+  if (!header) return res
+  const cols = findColumns(header, PLAYER_COLS)
+  res.headerFound = true
+  res.missingColumns = (['assists', 'yellow', 'red'] as const).filter((k) => cols[k] < 0).map((k) => ({ assists: '도움', yellow: '경고', red: '퇴장' })[k])
+
+  for (const { line, raw, cells } of rows) {
+    if (!raw.trim()) continue
     // 머리줄이 표 중간에 다시 나오거나 합계 줄이면 건너뜀
     const first = norm(cells.join(''))
-    if (findColumns(cells, PLAYER_COLS).name >= 0 || /^(합계|계|총계)/.test(first)) return
+    if (findColumns(cells, PLAYER_COLS).name >= 0 || /^(합계|계|총계)/.test(first)) continue
 
-    const rawName = cells[cols.name] ?? ''
-    const { name, school } = splitSchool(rawName)
+    const { name, school, number: parenNumber } = splitSchool(cells[cols.name] ?? '')
     if (!name || INT.test(name)) {
       res.errors.push({ line, text: raw, reason: '선수 이름 칸이 비어 있거나 숫자예요' })
-      return
+      continue
     }
     if (school && schoolKey(school) !== schoolKey(ourSchool)) {
       res.skipped.push({ line, text: raw, reason: `${school} 선수라 뺐어요` })
-      return
+      continue
     }
-    const number = num(cells, cols.number, null)
+    const number = cols.number >= 0 ? num(cells, cols.number, null) : parenNumber
     const goals = num(cells, cols.goals)
     const assists = num(cells, cols.assists)
     const yellow = num(cells, cols.yellow)
@@ -122,17 +159,17 @@ export function parsePlayers(text: string, ourSchool = '경기대'): PlayerParse
     if (red === null || Number.isNaN(red) || red < 0 || red > 1) bad.push('퇴장')
     if (bad.length) {
       res.errors.push({ line, text: raw, reason: `${bad.join('·')} 칸을 숫자로 읽지 못했어요` })
-      return
+      continue
     }
     res.rows.push({ line, number, name, goals: goals!, assists: assists!, yellow: yellow!, red: red! })
-  })
+  }
 
   // 같은 선수가 두 번 나오면 표를 잘못 복사했을 가능성 → 둘째 줄을 오류로
   const seen = new Map<string, number>()
   res.rows = res.rows.filter((r) => {
     const key = `${r.number ?? ''}|${r.name}`
     if (seen.has(key)) {
-      res.errors.push({ line: r.line, text: lines[r.line - 1], reason: `${seen.get(key)}번째 줄과 같은 선수예요` })
+      res.errors.push({ line: r.line, text: `${r.number ?? ''} ${r.name}`, reason: `${seen.get(key)}번째 줄과 같은 선수예요` })
       return false
     }
     seen.set(key, r.line)

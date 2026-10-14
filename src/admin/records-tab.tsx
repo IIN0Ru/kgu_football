@@ -195,7 +195,10 @@ export function RecordsTab({ data, reload, initialMatch }: { data: AdminData; re
               <p className="text-xs text-fg/60">‘새 선수’는 지금까지 기록에 없는 이름이에요. 오타가 아닌지 확인해 주세요.</p>
             )}
             {parsed.errors.map((e) => (
-              <FeedbackLine key={e.line} value={{ tone: 'warn', text: `${e.line}번째 줄을 읽지 못했어요: “${e.text.replace(/\t/g, ' ').slice(0, 40)}” — ${e.reason}` }} />
+              <FeedbackLine
+                key={`${e.line}-${e.reason}`}
+                value={{ tone: 'warn', text: e.text ? `${e.line}번째 줄을 읽지 못했어요: “${e.text.replace(/\t/g, ' ').slice(0, 40)}” — ${e.reason}` : e.reason }}
+              />
             ))}
             {parsed.skipped.length > 0 && <p className="text-xs text-fg/60">다른 학교 선수 {parsed.skipped.length}줄은 뺐어요.</p>}
           </>

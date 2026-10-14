@@ -23,4 +23,18 @@ assert.equal(s.rows.length, 1)
 assert.equal(s.rows[0].rank, 1)
 assert.equal(s.rows[0].team, '경기대학교')
 assert.equal(s.errors[0].line, 3) // 9경기인데 5+1+2
+// KUSF 실제 붙여넣기 (2026-10-14, 10/9 홍익대전): 이름(등번호) 세로 묶음 → 득점·도움·경고·퇴장 숫자 묶음
+const names = ['박준원(3)', '황병석(4)', '황장연(5)', '조민석(7)', '최지호(8)', '유태호(9)', '갈정민(10)', '정하민(14)', '권기원(16)', '이남호(17)', '한경호(18)', '권오성(20)', '최진수(21)', '김기완(22)', '손석주(27)', '민선재(77)', '박성준(99)']
+const stats = names.map((_, i) => (i === 7 ? '0\t0\t1\t0' : i === 13 || i === 15 ? '1\t0\t0\t0' : '0\t0\t0\t0'))
+const k = parsePlayers(['경기대 선수기록', '선수명', ...names, '득점\t도움\t경고\t퇴장', ...stats].join('\n'))
+assert.equal(k.headerFound, true)
+assert.equal(k.errors.length, 0)
+assert.equal(k.rows.length, 17)
+assert.deepEqual(k.rows[0], { line: 21, number: 3, name: '박준원', goals: 0, assists: 0, yellow: 0, red: 0 })
+assert.deepEqual([k.rows[7].name, k.rows[7].yellow], ['정하민', 1])
+assert.deepEqual(k.rows.filter((r) => r.goals).map((r) => [r.number, r.name]), [[22, '김기완'], [77, '민선재']])
+// 숫자 줄이 하나 모자라면 짝을 맞추지 않음
+const short = parsePlayers(['선수명', ...names, '득점\t도움\t경고\t퇴장', ...stats.slice(1)].join('\n'))
+assert.equal(short.rows.length, 0)
+assert.match(short.errors[0].reason, /17명인데 숫자 줄은 16줄/)
 console.log('붙여넣기 읽기 시험 통과')
