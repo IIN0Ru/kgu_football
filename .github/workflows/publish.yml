@@ -36,13 +36,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if git diff --quiet -- src/data public/content-revision.json; then
+          # 새로 생긴 파일(처음 만든 반영 버전 파일)도 잡히도록 먼저 add 한 뒤 비교
+          git add src/data public/content-revision.json
+          if git diff --cached --quiet; then
             echo "변경 없음"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          git add src/data public/content-revision.json
           git commit -m "관리자 입력 반영 (DB 버전 $(node -p "require('./public/content-revision.json').revision"))"
           git push
           # 봇이 한 push 는 다른 워크플로를 깨우지 않으므로 배포를 직접 실행 (workflow_dispatch 는 예외로 실행됨)

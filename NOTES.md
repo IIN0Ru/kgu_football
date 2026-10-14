@@ -78,6 +78,7 @@
 - `supabase/functions/request-publish`: 로그인 토큰으로 DB request_publish()(운영진 확인·60초 중복 거름) → GitHub workflow_dispatch. GitHub 토큰은 함수 비밀값만, 권한은 이 저장소 Actions 쓰기만. 허용 주소(Origin) 제한
 - 시험: test:db 에 내보내기 시험 추가(같으면 0개, 글 고치면 posts.json 만, 글 급감·접속 실패 시 실패하고 파일 유지). 중계 함수는 TypeScript 문법 검사만(실행은 배포 후 확인)
 - 남은 단계: 사용자 GitHub 토큰·중계 함수 배포(docs/ADMIN_SETUP.md 5) → 관리자 화면 시안 → 구현
+- main 반영(사용자 승인 "다 진행") 후 publish 수동 실행: 성공했지만 새 파일 public/content-revision.json 을 git diff 가 못 봐 커밋 안 됨 → add 후 --cached 로 비교하게 수정
 
 ### 2026-10-09 #56 — 결과·다음 경기 카드 바로가기 줄, 10/9 홍익대전 점수 (Claude, 사용자 승인)
 
