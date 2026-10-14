@@ -48,7 +48,8 @@ npm run check:records
 | 경기 일정·결과 | `src/data/matches.json` | KUSF 자료 수동 확인 |
 | 순위표·선수 경기 기록 | `src/data/records.json` | KUSF 자료 수동 확인 (경기 끝나면 사용자가 복사해 전달) |
 | 선수 명단 | `src/data/roster.json` | KUFC 자료 매주 월요일 한국 시간 03:00 확인 |
-| 블로그·매거진·채널 | `src/data/home.ts` | 소식 수동 반영, 유튜브 공식 플레이어 사용 |
+| 유튜브·블로그 주소 | `src/data/home.ts` | 유튜브 공식 플레이어 사용 |
+| 블로그·매거진 | `src/data/posts.json` | 수동 반영 (관리자 화면 준비 중) |
 | 학교 로고·링크 | `src/data/teams.ts` | 공식 출처 확인 후 반영 |
 
 다음 경기와 D-day는 페이지를 연 시각을 기준으로 계산한다. 경기 결과는 사람이 입력해야 하며, 명단 수집에 실패하면 기존 데이터를 유지한다.
