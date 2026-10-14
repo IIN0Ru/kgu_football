@@ -1,4 +1,5 @@
-/** 사이트 공통 푸터: 비공식 안내(각주 `*` 의 도착 지점 #notice)와 자료·사진 출처 */
+/** 사이트 공통 푸터: 비공식 안내(각주 `*` 의 도착 지점 #notice)와 자료·사진 출처, 맨 아래 작은 운영진 로그인 링크(2026-10-14 사용자 결정) */
+import { Link } from 'react-router-dom'
 import { photoCredit } from '@/data/home'
 
 export function SiteFooter() {
@@ -18,6 +19,11 @@ export function SiteFooter() {
           <a href={photoCredit.url} target="_blank" rel="noopener" className="tap-area underline underline-offset-2 hover:text-fg/70">
             {photoCredit.url}
           <span className="sr-only">(새 창)</span></a>
+        </p>
+        <p className="text-xs text-fg/60">
+          <Link to="/admin" className="tap-area underline underline-offset-2 hover:text-fg/70">
+            운영진 로그인
+          </Link>
         </p>
       </footer>
   )
