@@ -7,6 +7,7 @@
  * main.tsx 가 그 주소로 되돌린다.
  */
 import { Route, Routes } from 'react-router-dom'
+import { AdminPage } from '@/pages/AdminPage'
 import { HomePage } from '@/pages/HomePage'
 import { RecordsPage } from '@/pages/RecordsPage'
 import { SchedulePage } from '@/pages/SchedulePage'
@@ -17,6 +18,7 @@ export default function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/schedule" element={<SchedulePage />} />
       <Route path="/records" element={<RecordsPage />} />
+      <Route path="/admin" element={<AdminPage />} />
       <Route path="*" element={<HomePage />} />
     </Routes>
   )
