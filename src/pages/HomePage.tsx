@@ -9,7 +9,7 @@ import { RosterSection } from '@/components/roster-section'
 import { NewsSection } from '@/components/news-section'
 import { NextMatchSection } from '@/components/next-match-section'
 import { VenueSection } from '@/components/venue-section'
-import { PrismaHero } from '@/components/ui/prisma-hero'
+import { HomeHero } from '@/components/home-hero'
 import { navItems, pageLinks } from '@/data/nav'
 import { useHeroSnap } from '@/components/use-hero-snap'
 import {
@@ -55,15 +55,7 @@ export function HomePage() {
         onNavigate={cancelSnap}
       />
 
-      <PrismaHero
-        id="top"
-        bare
-        title="KGU"
-        logo={heroLogo}
-        asteriskHref="#notice"
-        outlineWord="TURTLES"
-        scrollHint
-      />
+      <HomeHero id="top" title={heroLogo.alt} outlineWord="TURTLES" />
 
       <main className="mx-auto flex max-w-[1440px] flex-col gap-2 p-2 pt-14 md:gap-3 md:p-3 md:pt-16">
 

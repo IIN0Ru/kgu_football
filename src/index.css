@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* =========================================================
-   디자인 기준: PrismaHero(21st.dev) 감성 — DESIGN.md 참고
+   디자인 기준: DESIGN.md 참고
    ========================================================= */
 
 /* 밝은 테마 (2026-10-06 어두운 테마에서 전환). 값은 아래 :root 의 변수에서 온다 */
@@ -91,7 +91,7 @@
   }
 }
 
-/* PrismaHero가 쓰는 노이즈 질감 (원본 코드에 정의가 없어 직접 추가) */
+/* 첫 화면 배경 사진 위 노이즈 질감 (site-background.tsx) */
 .noise-overlay {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
 }
@@ -164,7 +164,7 @@ html {
   scrollbar-color: rgb(20 20 19 / 0.25) var(--paper);
 }
 
-/* 첫 화면 SCROLL 안내 선 (prisma-hero.tsx) */
+/* 첫 화면 SCROLL 안내 선 (home-hero.tsx) */
 @keyframes scroll-drip {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(200%); }

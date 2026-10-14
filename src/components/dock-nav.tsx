@@ -13,7 +13,7 @@ import { ChevronLeft } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { PagesMenu } from '@/components/pages-menu'
 import type { PageLink } from '@/data/nav'
-import type { HeroNavItem } from '@/components/ui/prisma-hero'
+import type { HeroNavItem } from '@/data/nav'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 

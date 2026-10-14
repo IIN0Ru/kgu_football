@@ -31,7 +31,7 @@ function measure(heroTop: number, heroH: number): Box {
   const vh = window.innerHeight
   const md = vw >= 768
   const sm = vw >= 640
-  // 첫 화면 위치·크기 (prisma-hero 의 여백과 같게)
+  // 첫 화면 위치·크기 (home-hero 첫 화면의 여백과 같게)
   const w0 = md ? Math.min(vw * 0.3, vh * 0.34 * 1.45) : Math.min(vw * 0.58, vh * 0.32 * 1.45)
   const x0 = md ? 40 : sm ? 24 : 16
   const bottomGap = md ? 8 + 40 : 8 + 24
