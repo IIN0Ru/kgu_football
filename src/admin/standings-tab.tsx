@@ -154,7 +154,7 @@ export function StandingsTab({ data, reload }: { data: AdminData; reload: () => 
           </table>
         </div>
         {parsed?.errors.map((e) => (
-          <FeedbackLine key={e.line} value={{ tone: 'warn', text: `${e.line}번째 줄: ${e.reason}` }} />
+          <FeedbackLine key={`${e.line}-${e.reason}`} value={{ tone: 'warn', text: e.text ? `${e.line}번째 줄: ${e.reason}` : e.reason }} />
         ))}
         {adjusted.length > 0 && (
           <p className="text-sm text-fg/60">

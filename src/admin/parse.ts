@@ -217,14 +217,58 @@ const STANDING_COLS = {
   red: ['퇴장'],
 }
 
+const STANDING_REQUIRED = ['team', 'won', 'drawn', 'lost', 'goalsFor', 'goalsAgainst', 'points'] as const
+
+/**
+ * KUSF 순위표도 복사하면 '학교명' 아래 학교 이름 한 줄씩 → '순위 경기수 승점 …' 아래 숫자 줄이 따로 붙어 나온다 (2026-10-14 확인)
+ * 이 세로 묶음을 '학교 + 숫자' 한 줄짜리 표로 바꿈. lineOf: 바꾼 표의 줄 → 원래 붙여 넣은 글의 줄 번호
+ */
+function standingsBlock(lines: string[]): { lines: string[]; lineOf: number[]; error?: string } | null {
+  const teamAt = lines.findIndex((l) => splitRow(l).length === 1 && findColumns(splitRow(l), STANDING_COLS).team >= 0)
+  if (teamAt < 0) return null
+  const statAt = lines.findIndex((l, i) => {
+    if (i <= teamAt) return false
+    const c = findColumns(splitRow(l), STANDING_COLS)
+    return STANDING_REQUIRED.filter((k) => k !== 'team').every((k) => c[k] >= 0)
+  })
+  if (statAt < 0) return null
+  const teams = lines.slice(teamAt + 1, statAt).map((l, i) => ({ line: teamAt + 2 + i, text: l.trim() })).filter((x) => x.text)
+  const stats = lines.slice(statAt + 1).map((l, i) => ({ line: statAt + 2 + i, text: l.trim() })).filter((x) => x.text)
+  if (teams.length !== stats.length) {
+    return { lines: [], lineOf: [], error: `학교는 ${teams.length}개인데 숫자 줄은 ${stats.length}줄이에요. 표를 처음부터 끝까지 다시 복사해 주세요` }
+  }
+  return {
+    lines: [`${lines[teamAt].trim()}\t${lines[statAt].trim()}`, ...teams.map((t, i) => `${t.text}\t${stats[i].text}`)],
+    lineOf: [statAt + 1, ...stats.map((x) => x.line)],
+  }
+}
+
 export function parseStandings(text: string): StandingParse {
-  const lines = text.split(/\r?\n/)
+  let lines = text.split(/\r?\n/)
   const res: StandingParse = { rows: [], errors: [], missingColumns: [], headerFound: false }
   let cols: Record<keyof typeof STANDING_COLS, number> | null = null
-  const required = ['team', 'won', 'drawn', 'lost', 'goalsFor', 'goalsAgainst', 'points'] as const
+  const required = STANDING_REQUIRED
+  let lineOf = lines.map((_, i) => i + 1)
+
+  const oneLineHeader = lines.some((l) => {
+    const c = findColumns(splitRow(l), STANDING_COLS)
+    return required.every((k) => c[k] >= 0)
+  })
+  if (!oneLineHeader) {
+    const block = standingsBlock(lines)
+    if (block?.error) {
+      res.headerFound = true
+      res.errors.push({ line: 1, text: '', reason: block.error })
+      return res
+    }
+    if (block) {
+      lines = block.lines
+      lineOf = block.lineOf
+    }
+  }
 
   lines.forEach((raw, idx) => {
-    const line = idx + 1
+    const line = lineOf[idx]
     if (!raw.trim()) return
     const cells = splitRow(raw)
     if (!cols) {
