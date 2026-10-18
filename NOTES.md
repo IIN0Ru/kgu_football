@@ -63,7 +63,7 @@
 - 첫 파일 분리: `App.tsx`에서 일정·기록 페이지도 관리자처럼 `lazy`로, `vite.config.ts`에서 React·framer-motion을 따로 묶음. 첫 파일 522KB → 82KB, react 258KB·motion 147KB 별도(홈 첫 방문에 받는 총량은 비슷하고, 일정·기록·관리자 코드와 이후 재배포 때 라이브러리를 다시 받지 않는 것이 이득). 500KB 경고 없어짐
 - lint `set-state-in-effect` 2개: `AdminPage` 첫 불러오기를 응답 뒤 setState + 떠나면 결과 버림으로, 사이트 버전 읽기를 `fetchSiteRevision()`으로 분리. `publish-bar`의 첫 확인은 다음 틱(`setTimeout 0`)에. 동작은 같음
 - `deploy.yml`: 빌드 전에 `lint --deny-warnings` · `check:time` · `check:calendar` · `check:records` · `test:records` · `test:parse`. 하나라도 실패하면 배포 안 함. `test:db`는 로컬 Postgres가 필요해 제외
-- 브랜치: main에 모두 합쳐진(안 합쳐진 커밋 0개) 작업·시안 브랜치 14개를 원격에서 삭제. 커밋은 main 이력에 그대로 있음
+- 브랜치: main에 모두 합쳐진(안 합쳐진 커밋 0개) 작업·시안 브랜치 14개를 지우려 했으나 Claude 작업 환경에서는 원격 브랜치 삭제가 막힘 → 사용자가 GitHub 웹(Branches)에서 삭제. 지워도 커밋은 main 이력에 그대로 있음. `main`·`gh-pages`는 남김
 - 검증: 위 시험 전부 통과(`TZ=UTC`에서도), `npm run build` 통과, 로컬 미리보기로 홈·일정·기록 화면 확인
 
 ### 2026-10-14 #57 — 관리자 입력 1단계: Supabase DB 설계와 로컬 시험 (Claude, feat/admin-db, 배포 안 함)
