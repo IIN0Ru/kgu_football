@@ -22,7 +22,7 @@
 - 선수단은 GK·DF·MF·FW별 이름·번호·학년만 표시한다.
 - 밝은 반투명 카드·빨강 포인트·TURTLES 글자·육각형 무늬가 현재 디자인이다.
 - 고정 메뉴와 로고 이동, 첫 화면 넘김, 카드 등장, 동작 줄이기 설정을 지원한다.
-- `main` push → GitHub Actions 빌드 → `gh-pages` 배포.
+- `main` push → GitHub Actions 시험(lint·날짜·기록·붙여넣기) → 빌드 → `gh-pages` 배포. 시험이 하나라도 실패하면 배포 안 함.
 - 다음 작업 순서(사용자 결정 2026-10-08): 2 시즌 기록 대시보드(완료 #51) → 3 직관 가이드(별도 페이지 대신 홈 맨 아래 '찾아오는 곳'으로 축소, 완료 #54) → 4 선수단 페이지 확장(하지 않음, 사용자 결정 2026-10-08: 더 많은 선수 데이터는 필요 없음) → 7 관리자 입력(방식은 나중에 결정). 모두 별도 페이지
 
 ## 유지할 결정
@@ -56,6 +56,15 @@
 - 전달받은 PrismaHero 원본의 정확한 배포 라이선스 기록 보완.
 
 ## 개발 로그
+
+### 2026-10-19 #66 — 포트폴리오 정리: README 갱신, 첫 파일 분리, lint 경고 0, 배포 전 시험 (Claude, 사용자 요청 "2, 3, 4번은 지금 당장 고치자")
+- 왜: 포트폴리오 점검 결과 README가 "서버·DB·관리자 없음"으로 낡았고, 첫 JS 파일 522KB 경고·lint 경고 2개·배포 전 시험 없음·합쳐진 작업 브랜치 14개가 남아 있었음
+- README: 관리자 화면·Supabase·반영 흐름 반영, 구조도(Mermaid), 화면 캡처 4장(`docs/screenshots/`, 로컬 빌드를 1440px·390px로 찍어 WebP), '설계하면서 정한 것', 검증 명령 표, 데이터 표를 관리자 입력 기준으로 갱신
+- 첫 파일 분리: `App.tsx`에서 일정·기록 페이지도 관리자처럼 `lazy`로, `vite.config.ts`에서 React·framer-motion을 따로 묶음. 첫 파일 522KB → 82KB, react 258KB·motion 147KB 별도(홈 첫 방문에 받는 총량은 비슷하고, 일정·기록·관리자 코드와 이후 재배포 때 라이브러리를 다시 받지 않는 것이 이득). 500KB 경고 없어짐
+- lint `set-state-in-effect` 2개: `AdminPage` 첫 불러오기를 응답 뒤 setState + 떠나면 결과 버림으로, 사이트 버전 읽기를 `fetchSiteRevision()`으로 분리. `publish-bar`의 첫 확인은 다음 틱(`setTimeout 0`)에. 동작은 같음
+- `deploy.yml`: 빌드 전에 `lint --deny-warnings` · `check:time` · `check:calendar` · `check:records` · `test:records` · `test:parse`. 하나라도 실패하면 배포 안 함. `test:db`는 로컬 Postgres가 필요해 제외
+- 브랜치: main에 모두 합쳐진(안 합쳐진 커밋 0개) 작업·시안 브랜치 14개를 원격에서 삭제. 커밋은 main 이력에 그대로 있음
+- 검증: 위 시험 전부 통과(`TZ=UTC`에서도), `npm run build` 통과, 로컬 미리보기로 홈·일정·기록 화면 확인
 
 ### 2026-10-14 #57 — 관리자 입력 1단계: Supabase DB 설계와 로컬 시험 (Claude, feat/admin-db, 배포 안 함)
 
