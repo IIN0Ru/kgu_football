@@ -45,9 +45,13 @@ export function PublishBar({ dbRevision, siteRevision, refreshSite }: { dbRevisi
 
   useEffect(() => {
     if (!wait) return
-    poll()
+    // 첫 확인은 바로 다음 틱에, 그 뒤로 20초마다 (효과 안에서 바로 setState 하지 않음 — lint 정리 2026-10-19)
+    const first = setTimeout(poll, 0)
     const t = setInterval(poll, POLL_MS)
-    return () => clearInterval(t)
+    return () => {
+      clearTimeout(first)
+      clearInterval(t)
+    }
   }, [wait, poll])
 
   async function publish() {

@@ -25,6 +25,13 @@ import { StandingsTab } from '@/admin/standings-tab'
 import { FeedbackLine, type Feedback } from '@/admin/ui'
 import { btnLine, btnMain, input, label } from '@/admin/ui-tokens'
 
+/** 지금 사이트에 반영된 DB 버전 (배포된 content-revision.json). 캐시를 피해 매번 새로 받음 */
+async function fetchSiteRevision(): Promise<{ revision: number | null; changedAt: string | null }> {
+  const res = await fetch(`${import.meta.env.BASE_URL}content-revision.json?t=${Date.now()}`, { cache: 'no-store' })
+  const j = res.ok ? await res.json() : null
+  return { revision: typeof j?.revision === 'number' ? j.revision : null, changedAt: j?.changedAt ?? null }
+}
+
 const card = 'rounded-2xl bg-surface surface-blur p-6 md:rounded-[2rem] md:p-10'
 
 type Tab = 'matches' | 'records' | 'standings' | 'posts' | 'log'
@@ -115,9 +122,7 @@ function Workspace({ name, onLogout }: { name: string; onLogout: () => void }) {
 
   const refreshSite = useCallback(async () => {
     try {
-      const res = await fetch(`${import.meta.env.BASE_URL}content-revision.json?t=${Date.now()}`, { cache: 'no-store' })
-      const j = res.ok ? await res.json() : null
-      const s = { revision: typeof j?.revision === 'number' ? j.revision : null, changedAt: j?.changedAt ?? null }
+      const s = await fetchSiteRevision()
       setSite(s)
       // 반영을 기다리는 동안 DB 버전도 새로 (다른 운영진이 저장했을 수 있음)
       const rev = await loadRevision().catch(() => null)
@@ -128,10 +133,25 @@ function Workspace({ name, onLogout }: { name: string; onLogout: () => void }) {
     }
   }, [])
 
+  // 처음 열 때 한 번 불러옴. 응답이 오기 전에 화면을 떠나면 결과를 버림 (lint set-state-in-effect 정리, 2026-10-19)
   useEffect(() => {
-    reload()
-    refreshSite()
-  }, [reload, refreshSite])
+    let alive = true
+    loadAll().then(
+      (d) => {
+        if (!alive) return
+        setData(d)
+        setLoadError('')
+      },
+      (e) => alive && setLoadError(friendlyError(e)),
+    )
+    fetchSiteRevision().then(
+      (s) => alive && setSite(s),
+      () => {},
+    )
+    return () => {
+      alive = false
+    }
+  }, [])
 
   function go(t: Tab, force = false) {
     if (dirty && t !== tab && !force) {
