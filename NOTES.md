@@ -64,6 +64,7 @@
 - 오류 대비: `src/components/error-boundary.tsx`로 `Routes` 전체를 감쌈. 흔한 경우는 새로 배포된 뒤 열려 있던 창이 지워진 옛 페이지 파일을 불러오다 실패하는 것이라 버튼은 새로고침·홈 주소 이동(최신 파일을 받음). 주소가 바뀌면 오류 상태를 풀어 다시 시도. 안내 화면은 배경·탭·움직임 컴포넌트를 쓰지 않음
 - 공유 미리보기: `index.html`에 og·twitter 태그와 theme-color. 이미지 `public/images/og-image.jpg`(1200×630)는 `scripts/make-og-image.py`로 캠퍼스 사진 + 로고 + 'UNOFFICIAL FAN SITE'를 합쳐 만듦(사이트 밖에서 보이므로 비공식 표시를 이미지 안에, `docs/SOURCES.md` 기록). canonical은 모든 페이지가 같은 index.html을 쓰므로 넣지 않음
 - 검증: lint(`--deny-warnings`)·check:time·check:calendar·check:records·test:records·test:parse·build 통과. 로컬 미리보기에서 `/no-such-page`(1440px·390px) 화면·창 제목·콘솔 오류 없음 확인, 일정 페이지 파일 요청을 막아 오류 안내가 뜨고 홈으로 가면 정상 화면으로 돌아오는 것 확인
+- 오류 안내 다시 맞춤(사용자 요청 "좌측 상단에 kgu로고 넣고 폰트 신경쓰고. 색도 본 사이트랑 통일시켜"): 흰 바탕·알약 버튼 → 사이트 배경·반투명 카드·404와 같은 배치, 왼쪽 위 로고, 버튼은 '글자 + 화살표 원' 줄. 1440px·390px 캡처 확인, 제목 글꼴 Black Han Sans 적용 확인
 - 남은 확인: 배포 뒤 카카오톡·SNS에 주소를 붙여 실제 미리보기 확인 (카카오는 미리보기를 캐시하므로 처음 붙인 뒤 바뀌면 카카오 개발자 도구에서 캐시 초기화)
 
 ### 2026-10-19 #66 — 포트폴리오 정리: README 갱신, 첫 파일 분리, lint 경고 0, 배포 전 시험 (Claude, 사용자 요청 "2, 3, 4번은 지금 당장 고치자")
