@@ -31,6 +31,7 @@
 
 - 캠퍼스 항공 사진: [경기대학교](https://www.kyonggi.ac.kr/). `public/images/campus-aerial-*`에 1200px·2000px JPG/WebP로 저장하고 푸터에 출처를 표시한다.
 - 히어로 로고: 경기대학교 공식 UI(1947) 로고, 사용자 전달. `kgu-logo-1947.png`는 원본, `kgu-logo-1947-light.png`는 검은 글자만 크림색으로 바꾼 판이다. 색 테두리는 유지한다.
+- 공유 미리보기 이미지 `public/images/og-image.jpg`(2026-10-20): 위 캠퍼스 항공 사진 + `kgu-logo-1947-light.png` + 'UNOFFICIAL FAN SITE' 글자(Anton)를 합친 1200×630 판. `scripts/make-og-image.py`로 만든다. 사이트 밖(SNS 미리보기)에 보이므로 비공식 표시를 이미지 안에 넣었다.
 - 학교별 로고는 2026-10-06 공식 홈페이지에서 받았다. 각 로고 링크와 접근성 이름에 학교 홈페이지·출처를 표시한다.
 
 | 학교 | 받은 곳 | 처리 |
